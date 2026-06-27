@@ -32,6 +32,11 @@
             <i class="bi bi-clipboard-check"></i> Evaluaciones
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath.startsWith('/evidencias') ? 'active' : '' %>" href="/evidencias">
+            <i class="bi bi-archive"></i> Evidencias
+          </a>
+        </li>
         <li class="nav-section">Proc. 2 - Auditoria</li>
         <li class="nav-item">
           <a class="nav-link <%= currentPath.startsWith('/auditorias') ? 'active' : '' %>" href="/auditorias">
@@ -50,10 +55,22 @@
             <i class="bi bi-chat-square-text"></i> Reclamos
           </a>
         </li>
+        <li class="nav-section">Proc. 5 - Conflictos</li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath.startsWith('/conflictos') ? 'active' : '' %>" href="/conflictos">
+            <i class="bi bi-exclamation-triangle"></i> Conflictos de Interes
+          </a>
+        </li>
         <li class="nav-section">Proc. 6 - Documentos</li>
         <li class="nav-item">
           <a class="nav-link <%= currentPath.startsWith('/documentos') ? 'active' : '' %>" href="/documentos">
             <i class="bi bi-folder2-open"></i> Documentos
+          </a>
+        </li>
+        <li class="nav-section">Proc. 7 - Registros</li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath.startsWith('/registros') ? 'active' : '' %>" href="/registros">
+            <i class="bi bi-journal-text"></i> Control Registros
           </a>
         </li>
         <li class="nav-section">Proc. 8 - Satisfaccion</li>

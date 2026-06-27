@@ -1,0 +1,46 @@
+<% const title = 'Conflictos de Interes' %>
+<%- include('../partials/header', { title }) %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Declaraciones de Conflicto de Interes</h4>
+  <a href="/conflictos/nuevo" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva Declaracion</a>
+</div>
+<div class="card border-0 shadow-sm"><div class="card-body p-0">
+  <table class="table table-hover mb-0">
+    <thead><tr><th>Evaluador</th><th>Candidato</th><th>Tipo</th><th>Fecha Decl.</th><th>Estado</th><th>Accion Tomada</th><th></th></tr></thead>
+    <tbody>
+      <% if (conflicts.length === 0) { %>
+        <tr><td colspan="7" class="text-muted text-center py-4">Sin declaraciones registradas</td></tr>
+      <% } else { conflicts.forEach(c => { %>
+        <tr>
+          <td><%= c.evaluator_name %></td>
+          <td><%= c.candidate_name || '-' %></td>
+          <td><span class="badge bg-<%= c.type === 'parentesco' ? 'danger' : c.type === 'laboral' ? 'warning' : c.type === 'comercial' ? 'info' : 'secondary' %>"><%= c.type %></span></td>
+          <td><%= c.declaration_date || '-' %></td>
+          <td><span class="badge bg-<%= c.status === 'resuelto' ? 'success' : c.status === 'rechazado' ? 'danger' : 'warning' %>"><%= c.status %></span></td>
+          <td><%= c.action_taken || '-' %></td>
+          <td class="text-end">
+            <a href="/conflictos/<%= c.id %>/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+            <% if (c.status === 'declarado') { %>
+              <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#resolve<%= c.id %>"><i class="bi bi-check-lg"></i></button>
+            <% } %>
+          </td>
+        </tr>
+        <% if (c.status === 'declarado') { %>
+        <div class="modal fade" id="resolve<%= c.id %>" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+          <form method="POST" action="/conflictos/<%= c.id %>/resolver">
+            <div class="modal-header"><h5 class="modal-title">Resolver Conflicto</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+              <p><strong>Evaluador:</strong> <%= c.evaluator_name %></p>
+              <p><strong>Tipo:</strong> <%= c.type %></p>
+              <p><strong>Descripcion:</strong> <%= c.description || 'Sin descripcion' %></p>
+              <div class="mb-3"><label class="form-label">Accion tomada *</label><textarea name="action_taken" class="form-control" rows="3" required placeholder="Ej: Reasignacion de evaluador, recusacion..."></textarea></div>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-success">Resolver</button></div>
+          </form>
+        </div></div></div>
+        <% } %>
+      <% })} %>
+    </tbody>
+  </table>
+</div></div>
+<%- include('../partials/footer') %>

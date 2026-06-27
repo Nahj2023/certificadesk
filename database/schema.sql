@@ -242,3 +242,23 @@ CREATE TABLE IF NOT EXISTS activity_log (
   FOREIGN KEY (org_id) REFERENCES organizations(id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+CREATE TABLE IF NOT EXISTS records_control (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  org_id INTEGER NOT NULL,
+  code TEXT,
+  name TEXT NOT NULL,
+  category TEXT DEFAULT 'evaluacion',
+  procedure_ref TEXT,
+  format TEXT DEFAULT 'digital',
+  location TEXT,
+  responsible_id INTEGER,
+  retention_years INTEGER DEFAULT 5,
+  retention_date DATE,
+  access_level TEXT DEFAULT 'interno',
+  status TEXT DEFAULT 'vigente',
+  notes TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (org_id) REFERENCES organizations(id),
+  FOREIGN KEY (responsible_id) REFERENCES users(id)
+);

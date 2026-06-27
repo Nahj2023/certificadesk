@@ -1,0 +1,45 @@
+<% const title = 'Control de Registros' %>
+<%- include('../partials/header', { title }) %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Control de Registros</h4>
+  <a href="/registros/nuevo" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nuevo Registro</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="stat-card"><div class="stat-value"><%= stats.total %></div><div class="stat-label">Total Registros</div></div></div>
+  <div class="col-md-3"><div class="stat-card"><div class="stat-value text-success"><%= stats.vigentes %></div><div class="stat-label">Vigentes</div></div></div>
+  <div class="col-md-3"><div class="stat-card"><div class="stat-value text-warning"><%= stats.por_revisar %></div><div class="stat-label">Por Revisar</div></div></div>
+  <div class="col-md-3"><div class="stat-card"><div class="stat-value text-danger"><%= stats.vencidos %></div><div class="stat-label">Retencion Vencida</div></div></div>
+</div>
+<div class="card border-0 shadow-sm"><div class="card-body p-0">
+  <table class="table table-hover mb-0">
+    <thead><tr><th>Codigo</th><th>Nombre</th><th>Categoria</th><th>Proc.</th><th>Formato</th><th>Responsable</th><th>Retencion</th><th>Acceso</th><th>Estado</th><th></th></tr></thead>
+    <tbody>
+      <% if (records.length === 0) { %>
+        <tr><td colspan="10" class="text-muted text-center py-4">Sin registros definidos</td></tr>
+      <% } else { records.forEach(r => {
+        const vencido = r.retention_date && r.retention_date < new Date().toISOString().substring(0,10);
+      %>
+        <tr>
+          <td><code><%= r.code || '-' %></code></td>
+          <td><%= r.name %></td>
+          <td><span class="badge bg-<%= r.category === 'evaluacion' ? 'primary' : r.category === 'administrativo' ? 'info' : r.category === 'auditoria' ? 'warning' : 'secondary' %>"><%= r.category %></span></td>
+          <td><%= r.procedure_ref || '-' %></td>
+          <td><i class="bi bi-<%= r.format === 'digital' ? 'file-earmark' : r.format === 'fisico' ? 'archive' : 'files' %>"></i> <%= r.format %></td>
+          <td><%= r.responsible_name || '-' %></td>
+          <td class="<%= vencido ? 'text-danger fw-bold' : '' %>"><%= r.retention_date || '-' %></td>
+          <td><%= r.access_level %></td>
+          <td><span class="badge bg-<%= r.status === 'vigente' ? 'success' : r.status === 'por_revisar' ? 'warning' : r.status === 'eliminado' ? 'danger' : 'secondary' %>"><%= r.status %></span></td>
+          <td class="text-end">
+            <a href="/registros/<%= r.id %>/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+            <% if (r.status !== 'eliminado') { %>
+              <form method="POST" action="/registros/<%= r.id %>/eliminar" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Marcar este registro como eliminado?"><i class="bi bi-trash"></i></button>
+              </form>
+            <% } %>
+          </td>
+        </tr>
+      <% })} %>
+    </tbody>
+  </table>
+</div></div>
+<%- include('../partials/footer') %>

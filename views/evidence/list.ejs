@@ -1,0 +1,37 @@
+<% const title = 'Portafolio de Evidencias' %>
+<%- include('../partials/header', { title }) %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Portafolio de Evidencias</h4>
+</div>
+<p class="text-muted mb-3">Seleccione una evaluacion para ver y gestionar sus evidencias.</p>
+<div class="card border-0 shadow-sm"><div class="card-body p-0">
+  <table class="table table-hover mb-0">
+    <thead><tr><th>Candidato</th><th>RUT</th><th>Perfil</th><th>Evaluador</th><th>Fecha</th><th>Estado</th><th>Evidencias</th><th></th></tr></thead>
+    <tbody>
+      <% if (evaluations.length === 0) { %>
+        <tr><td colspan="8" class="text-muted text-center py-4">Sin evaluaciones registradas</td></tr>
+      <% } else { evaluations.forEach(ev => { %>
+        <tr>
+          <td><%= ev.candidate_name %></td>
+          <td><%= ev.candidate_rut || '-' %></td>
+          <td><%= ev.profile_name || '-' %></td>
+          <td><%= ev.evaluator_name || '-' %></td>
+          <td><%= ev.scheduled_date || '-' %></td>
+          <td>
+            <span class="badge bg-<%= ev.status === 'completada' ? 'success' : ev.status === 'en_curso' ? 'primary' : ev.status === 'cancelada' ? 'danger' : 'warning' %>"><%= ev.status %></span>
+            <% if (ev.result) { %>
+              <span class="badge bg-<%= ev.result === 'competente' ? 'success' : 'danger' %>"><%= ev.result %></span>
+            <% } %>
+          </td>
+          <td>
+            <span class="badge bg-<%= ev.evidence_count > 0 ? 'primary' : 'secondary' %>"><%= ev.evidence_count %> archivo<%= ev.evidence_count !== 1 ? 's' : '' %></span>
+          </td>
+          <td>
+            <a href="/evidencias/<%= ev.id %>" class="btn btn-sm btn-outline-primary"><i class="bi bi-folder2-open"></i> Ver</a>
+          </td>
+        </tr>
+      <% })} %>
+    </tbody>
+  </table>
+</div></div>
+<%- include('../partials/footer') %>

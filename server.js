@@ -34,6 +34,9 @@ app.use("/reclamos", require("./routes/complaints"));
 app.use("/documentos", require("./routes/documents"));
 app.use("/satisfaccion", require("./routes/satisfaction"));
 app.use("/reportes", require("./routes/reports"));
+app.use("/conflictos", require("./routes/conflicts"));
+app.use("/registros", require("./routes/records"));
+app.use("/evidencias", require("./routes/evidence"));
 
 app.get("/", (req, res) => res.redirect("/dashboard"));
 
