@@ -21,6 +21,7 @@ app.use((req, res, next) => {
 });
 
 // Public
+app.use("/", require("./routes/landing"));
 app.use("/", require("./routes/auth"));
 
 // Protected
@@ -37,8 +38,6 @@ app.use("/reportes", require("./routes/reports"));
 app.use("/conflictos", require("./routes/conflicts"));
 app.use("/registros", require("./routes/records"));
 app.use("/evidencias", require("./routes/evidence"));
-
-app.get("/", (req, res) => res.redirect("/dashboard"));
 
 app.use((req, res) => {
   res.status(404).render("error", { title: "No encontrado", message: "Página no encontrada" });
