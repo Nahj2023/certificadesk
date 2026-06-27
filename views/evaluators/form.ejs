@@ -1,0 +1,30 @@
+<% const title = evaluator && evaluator.id ? 'Editar Evaluador' : 'Nuevo Evaluador' %>
+<%- include('../partials/header', { title }) %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0"><%= title %></h4>
+  <a href="/evaluadores" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+<div class="card border-0 shadow-sm"><div class="card-body">
+  <form method="POST" action="<%= evaluator && evaluator.id ? '/evaluadores/' + evaluator.id : '/evaluadores' %>">
+    <div class="row g-3">
+      <div class="col-md-6"><label class="form-label">Nombre *</label><input type="text" name="name" class="form-control" value="<%= evaluator ? evaluator.name || '' : '' %>" required></div>
+      <div class="col-md-3"><label class="form-label">RUT</label><input type="text" name="rut" class="form-control" value="<%= evaluator ? evaluator.rut || '' : '' %>"></div>
+      <div class="col-md-3"><label class="form-label">Telefono</label><input type="text" name="phone" class="form-control" value="<%= evaluator ? evaluator.phone || '' : '' %>"></div>
+      <div class="col-md-4"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="<%= evaluator ? evaluator.email || '' : '' %>"></div>
+      <div class="col-md-4"><label class="form-label">Especialidades</label><input type="text" name="specialties" class="form-control" value="<%= evaluator ? evaluator.specialties || '' : '' %>"></div>
+      <div class="col-md-2"><label class="form-label">Tipo contrato</label>
+        <select name="contract_type" class="form-select">
+          <% ['honorarios','plazo_fijo','indefinido','boleta'].forEach(t => { %>
+            <option value="<%= t %>" <%= evaluator && evaluator.contract_type === t ? 'selected' : '' %>><%= t.replace('_',' ') %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-2"><label class="form-label">DJS vence</label><input type="date" name="djs_expiry" class="form-control" value="<%= evaluator ? evaluator.djs_expiry || '' : '' %>"></div>
+      <% if (evaluator && evaluator.id) { %>
+      <div class="col-md-2"><label class="form-label">Activo</label><div class="form-check mt-2"><input type="checkbox" name="active" class="form-check-input" value="1" <%= evaluator.active ? 'checked' : '' %>><label class="form-check-label">Si</label></div></div>
+      <% } %>
+    </div>
+    <div class="mt-4"><button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar</button></div>
+  </form>
+</div></div>
+<%- include('../partials/footer') %>

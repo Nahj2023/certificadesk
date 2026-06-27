@@ -1,0 +1,56 @@
+<% const title = 'Candidatos' %>
+<%- include('../partials/header', { title }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Candidatos</h4>
+  <a href="/candidatos/nuevo" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nuevo Candidato</a>
+</div>
+
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body py-2">
+    <form method="GET" class="row g-2 align-items-center">
+      <div class="col-md-4">
+        <input type="text" name="q" class="form-control form-control-sm" placeholder="Buscar por nombre, RUT o email..." value="<%= filters.q || '' %>">
+      </div>
+      <div class="col-md-3">
+        <select name="status" class="form-select form-select-sm">
+          <option value="">Todos los estados</option>
+          <% statuses.forEach(s => { %>
+            <option value="<%= s %>" <%= filters.status === s ? 'selected' : '' %>><%= s.charAt(0).toUpperCase() + s.slice(1).replace('_', ' ') %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-sm btn-outline-primary">Filtrar</button>
+        <a href="/candidatos" class="btn btn-sm btn-outline-secondary">Limpiar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr><th>Nombre</th><th>RUT</th><th>Perfil</th><th>Estado</th><th>Fecha</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% if (candidates.length === 0) { %>
+          <tr><td colspan="6" class="text-muted text-center py-4">No hay candidatos registrados</td></tr>
+        <% } else { candidates.forEach(c => { %>
+          <tr>
+            <td><a href="/candidatos/<%= c.id %>"><%= c.name %></a></td>
+            <td><%= c.rut || '-' %></td>
+            <td><%= c.profile_name || '-' %></td>
+            <td><span class="badge bg-<%= c.status === 'certificado' ? 'success' : c.status === 'no_certificado' ? 'danger' : c.status === 'evaluando' ? 'warning' : 'secondary' %>"><%= c.status %></span></td>
+            <td><%= c.created_at ? c.created_at.substring(0,10) : '-' %></td>
+            <td><a href="/candidatos/<%= c.id %>/editar" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i></a></td>
+          </tr>
+        <% })} %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<p class="text-muted mt-2"><small><%= candidates.length %> candidato(s)</small></p>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,42 @@
+<% const title = 'Auditorias' %>
+<%- include('../partials/header', { title }) %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Auditorias Internas</h4>
+  <a href="/auditorias/nueva" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva Auditoria</a>
+</div>
+<div class="card border-0 shadow-sm"><div class="card-body p-0">
+  <table class="table table-hover mb-0">
+    <thead><tr><th>Tipo</th><th>Auditor</th><th>Alcance</th><th>Fecha</th><th>Estado</th><th>Hallazgos</th><th>NC</th><th></th></tr></thead>
+    <tbody>
+      <% if (audits.length === 0) { %>
+        <tr><td colspan="8" class="text-muted text-center py-4">Sin auditorias registradas</td></tr>
+      <% } else { audits.forEach(a => { %>
+        <tr>
+          <td><%= a.type %></td><td><%= a.auditor_name || '-' %></td><td><%= a.scope || '-' %></td>
+          <td><%= a.scheduled_date || '-' %></td>
+          <td><span class="badge bg-<%= a.status === 'completada' ? 'success' : 'info' %>"><%= a.status %></span></td>
+          <td><%= a.findings_count %></td><td><%= a.non_conformities %></td>
+          <td>
+            <% if (a.status === 'programada') { %>
+              <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#completeAudit<%= a.id %>"><i class="bi bi-check-lg"></i></button>
+            <% } %>
+          </td>
+        </tr>
+        <% if (a.status === 'programada') { %>
+        <div class="modal fade" id="completeAudit<%= a.id %>" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+          <form method="POST" action="/auditorias/<%= a.id %>/completar">
+            <div class="modal-header"><h5 class="modal-title">Completar Auditoria</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+              <div class="mb-3"><label class="form-label">Hallazgos</label><input type="number" name="findings_count" class="form-control" min="0" value="0"></div>
+              <div class="mb-3"><label class="form-label">No conformidades</label><input type="number" name="non_conformities" class="form-control" min="0" value="0"></div>
+              <div class="mb-3"><label class="form-label">Observaciones</label><textarea name="observations" class="form-control" rows="3"></textarea></div>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-primary">Completar</button></div>
+          </form>
+        </div></div></div>
+        <% } %>
+      <% })} %>
+    </tbody>
+  </table>
+</div></div>
+<%- include('../partials/footer') %>

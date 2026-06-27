@@ -1,0 +1,30 @@
+<% const title = 'Nuevo Reclamo/Sugerencia' %>
+<%- include('../partials/header', { title }) %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Nuevo Registro</h4>
+  <a href="/reclamos" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+<div class="card border-0 shadow-sm"><div class="card-body">
+  <form method="POST" action="/reclamos">
+    <div class="row g-3">
+      <div class="col-md-3"><label class="form-label">Tipo *</label>
+        <select name="type" class="form-select"><option value="reclamo">Reclamo</option><option value="felicitacion">Felicitacion</option><option value="sugerencia">Sugerencia</option></select>
+      </div>
+      <div class="col-md-3"><label class="form-label">Prioridad</label>
+        <select name="priority" class="form-select"><option value="baja">Baja</option><option value="media" selected>Media</option><option value="alta">Alta</option></select>
+      </div>
+      <div class="col-md-3"><label class="form-label">Asignar a</label>
+        <select name="assigned_to" class="form-select"><option value="">Sin asignar</option>
+          <% staff.forEach(s => { %><option value="<%= s.id %>"><%= s.display_name %></option><% }) %>
+        </select>
+      </div>
+      <div class="col-md-4"><label class="form-label">Nombre remitente</label><input type="text" name="from_name" class="form-control"></div>
+      <div class="col-md-4"><label class="form-label">Email remitente</label><input type="email" name="from_email" class="form-control"></div>
+      <div class="col-md-4"><label class="form-label">Telefono remitente</label><input type="text" name="from_phone" class="form-control"></div>
+      <div class="col-12"><label class="form-label">Asunto *</label><input type="text" name="subject" class="form-control" required></div>
+      <div class="col-12"><label class="form-label">Descripcion</label><textarea name="description" class="form-control" rows="4"></textarea></div>
+    </div>
+    <div class="mt-4"><button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Registrar</button></div>
+  </form>
+</div></div>
+<%- include('../partials/footer') %>

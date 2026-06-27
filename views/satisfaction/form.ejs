@@ -1,0 +1,35 @@
+<% const title = 'Nueva Encuesta' %>
+<%- include('../partials/header', { title }) %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Nueva Encuesta de Satisfaccion</h4>
+  <a href="/satisfaccion" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+<div class="card border-0 shadow-sm"><div class="card-body">
+  <form method="POST" action="/satisfaccion">
+    <div class="row g-3">
+      <div class="col-md-6"><label class="form-label">Candidato</label>
+        <select name="candidate_id" class="form-select"><option value="">Seleccionar</option>
+          <% candidates.forEach(c => { %><option value="<%= c.id %>"><%= c.name %></option><% }) %>
+        </select>
+      </div>
+      <div class="col-md-3"><label class="form-label">Satisfaccion General *</label>
+        <select name="score_overall" class="form-select" required><option value="5">5 - Excelente</option><option value="4">4 - Bueno</option><option value="3">3 - Regular</option><option value="2">2 - Malo</option><option value="1">1 - Muy malo</option></select>
+      </div>
+      <div class="col-md-3"><label class="form-label">Evaluador</label>
+        <select name="score_evaluator" class="form-select"><option value="">-</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
+      </div>
+      <div class="col-md-3"><label class="form-label">Proceso</label>
+        <select name="score_process" class="form-select"><option value="">-</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
+      </div>
+      <div class="col-md-3"><label class="form-label">Infraestructura</label>
+        <select name="score_infrastructure" class="form-select"><option value="">-</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
+      </div>
+      <div class="col-md-3"><label class="form-label">Comunicacion</label>
+        <select name="score_communication" class="form-select"><option value="">-</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
+      </div>
+      <div class="col-12"><label class="form-label">Comentarios</label><textarea name="comments" class="form-control" rows="3"></textarea></div>
+    </div>
+    <div class="mt-4"><button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar</button></div>
+  </form>
+</div></div>
+<%- include('../partials/footer') %>

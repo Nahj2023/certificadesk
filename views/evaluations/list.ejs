@@ -1,0 +1,51 @@
+<% const title = 'Evaluaciones' %>
+<%- include('../partials/header', { title }) %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Evaluaciones</h4>
+  <a href="/evaluaciones/nueva" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva Evaluacion</a>
+</div>
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>Candidato</th><th>RUT</th><th>Perfil</th><th>Evaluador</th><th>Fecha</th><th>Estado</th><th>Resultado</th><th></th></tr></thead>
+      <tbody>
+        <% if (evaluations.length === 0) { %>
+          <tr><td colspan="8" class="text-muted text-center py-4">Sin evaluaciones</td></tr>
+        <% } else { evaluations.forEach(e => { %>
+          <tr>
+            <td><%= e.candidate_name || '-' %></td>
+            <td><%= e.candidate_rut || '-' %></td>
+            <td><%= e.profile_name || '-' %></td>
+            <td><%= e.evaluator_name || '-' %></td>
+            <td><%= e.scheduled_date || '-' %></td>
+            <td><span class="badge bg-<%= e.status === 'completada' ? 'success' : e.status === 'programada' ? 'info' : 'secondary' %>"><%= e.status %></span></td>
+            <td><%= e.result || '-' %></td>
+            <td>
+              <% if (e.status === 'programada') { %>
+                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#resultModal<%= e.id %>"><i class="bi bi-check-lg"></i></button>
+              <% } %>
+            </td>
+          </tr>
+          <% if (e.status === 'programada') { %>
+          <div class="modal fade" id="resultModal<%= e.id %>" tabindex="-1">
+            <div class="modal-dialog"><div class="modal-content">
+              <form method="POST" action="/evaluaciones/<%= e.id %>/resultado">
+                <div class="modal-header"><h5 class="modal-title">Registrar Resultado</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                  <div class="mb-3"><label class="form-label">Resultado</label>
+                    <select name="result" class="form-select" required><option value="competente">Competente</option><option value="aun_no_competente">Aun No Competente</option></select>
+                  </div>
+                  <div class="mb-3"><label class="form-label">Puntaje</label><input type="number" name="score" class="form-control" min="0" max="100" step="0.1"></div>
+                  <div class="mb-3"><label class="form-label">Observaciones</label><textarea name="observations" class="form-control" rows="3"></textarea></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn btn-primary">Guardar</button></div>
+              </form>
+            </div></div>
+          </div>
+          <% } %>
+        <% })} %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<%- include('../partials/footer') %>

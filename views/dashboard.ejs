@@ -1,0 +1,128 @@
+<% const title = 'Dashboard' %>
+<%- include('partials/header', { title }) %>
+
+<h4 class="mb-4">Dashboard</h4>
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><div class="stat-label">Candidatos</div><div class="stat-value"><%= stats.candidates %></div></div>
+          <div class="stat-icon bg-primary-subtle text-primary"><i class="bi bi-people fs-4"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><div class="stat-label">Certificados</div><div class="stat-value"><%= stats.certified %></div></div>
+          <div class="stat-icon bg-success-subtle text-success"><i class="bi bi-patch-check fs-4"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><div class="stat-label">Eval. Pendientes</div><div class="stat-value"><%= stats.pending %></div></div>
+          <div class="stat-icon bg-warning-subtle text-warning"><i class="bi bi-clock fs-4"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><div class="stat-label">Reclamos Abiertos</div><div class="stat-value"><%= stats.complaints_open %></div></div>
+          <div class="stat-icon bg-danger-subtle text-danger"><i class="bi bi-exclamation-triangle fs-4"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><div class="stat-label">Evaluadores</div><div class="stat-value"><%= stats.evaluators %></div></div>
+          <div class="stat-icon bg-info-subtle text-info"><i class="bi bi-person-badge fs-4"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><div class="stat-label">Docs por Vencer</div><div class="stat-value"><%= stats.docs_expiring %></div></div>
+          <div class="stat-icon bg-warning-subtle text-warning"><i class="bi bi-file-earmark-x fs-4"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><div class="stat-label">Satisfaccion</div><div class="stat-value"><%= stats.satisfaction_avg ? Number(stats.satisfaction_avg).toFixed(1) : '-' %>/5</div></div>
+          <div class="stat-icon bg-success-subtle text-success"><i class="bi bi-emoji-smile fs-4"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div><div class="stat-label">Evaluaciones</div><div class="stat-value"><%= stats.evaluations %></div></div>
+          <div class="stat-icon bg-primary-subtle text-primary"><i class="bi bi-clipboard-check fs-4"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><strong>Proximas Evaluaciones</strong></div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <thead><tr><th>Candidato</th><th>Perfil</th><th>Fecha</th></tr></thead>
+          <tbody>
+            <% if (upcoming.length === 0) { %>
+              <tr><td colspan="3" class="text-muted text-center py-3">Sin evaluaciones programadas</td></tr>
+            <% } else { upcoming.forEach(e => { %>
+              <tr><td><%= e.candidate_name || '-' %></td><td><%= e.profile_name || '-' %></td><td><%= e.scheduled_date || '-' %></td></tr>
+            <% })} %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><strong>Actividad Reciente</strong></div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <thead><tr><th>Accion</th><th>Tipo</th><th>Detalle</th></tr></thead>
+          <tbody>
+            <% if (recent.length === 0) { %>
+              <tr><td colspan="3" class="text-muted text-center py-3">Sin actividad reciente</td></tr>
+            <% } else { recent.forEach(a => { %>
+              <tr><td><%= a.action %></td><td><%= a.entity_type || '' %></td><td><%= a.details || '' %></td></tr>
+            <% })} %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

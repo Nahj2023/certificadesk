@@ -1,0 +1,52 @@
+<% const title = 'Reportes' %>
+<%- include('../partials/header', { title }) %>
+<h4 class="mb-4">Reportes para ChileValora</h4>
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm text-center"><div class="card-body">
+      <div class="stat-label">Candidatos Totales</div><div class="stat-value"><%= summary.candidates_total %></div>
+    </div></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm text-center"><div class="card-body">
+      <div class="stat-label">Tasa Certificacion</div><div class="stat-value"><%= rate %>%</div>
+    </div></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm text-center"><div class="card-body">
+      <div class="stat-label">Satisfaccion Prom.</div><div class="stat-value"><%= summary.satisfaction_avg ? Number(summary.satisfaction_avg).toFixed(1) : '-' %>/5</div>
+    </div></div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm text-center"><div class="card-body">
+      <div class="stat-label">Auditorias</div><div class="stat-value"><%= summary.audits_done %></div>
+    </div></div>
+  </div>
+</div>
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm"><div class="card-header bg-white"><strong>Resumen Certificaciones</strong></div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tr><th>Certificados (Competente)</th><td class="text-success fw-bold"><%= summary.certified %></td></tr>
+          <tr><th>No Certificados</th><td class="text-danger"><%= summary.not_certified %></td></tr>
+          <tr><th>Evaluaciones Completadas</th><td><%= summary.evaluations_done %></td></tr>
+          <tr><th>Tasa de Certificacion</th><td><%= rate %>%</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm"><div class="card-header bg-white"><strong>Gestion de Calidad</strong></div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tr><th>Reclamos Totales</th><td><%= summary.complaints_total %></td></tr>
+          <tr><th>Reclamos Resueltos</th><td class="text-success"><%= summary.complaints_resolved %></td></tr>
+          <tr><th>Tasa Resolucion</th><td><%= summary.complaints_total > 0 ? ((summary.complaints_resolved / summary.complaints_total) * 100).toFixed(0) : 0 %>%</td></tr>
+          <tr><th>Auditorias Completadas</th><td><%= summary.audits_done %></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,43 @@
+<% const title = 'Reclamos y Sugerencias' %>
+<%- include('../partials/header', { title }) %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0">Reclamos, Felicitaciones y Sugerencias</h4>
+  <a href="/reclamos/nuevo" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nuevo</a>
+</div>
+<div class="card border-0 shadow-sm"><div class="card-body p-0">
+  <table class="table table-hover mb-0">
+    <thead><tr><th>Tipo</th><th>De</th><th>Asunto</th><th>Prioridad</th><th>Asignado</th><th>Estado</th><th>Fecha</th><th></th></tr></thead>
+    <tbody>
+      <% if (complaints.length === 0) { %>
+        <tr><td colspan="8" class="text-muted text-center py-4">Sin registros</td></tr>
+      <% } else { complaints.forEach(c => { %>
+        <tr>
+          <td><span class="badge bg-<%= c.type === 'reclamo' ? 'danger' : c.type === 'felicitacion' ? 'success' : 'info' %>"><%= c.type %></span></td>
+          <td><%= c.from_name || '-' %></td><td><%= c.subject %></td>
+          <td><span class="badge bg-<%= c.priority === 'alta' ? 'danger' : c.priority === 'media' ? 'warning' : 'secondary' %>"><%= c.priority %></span></td>
+          <td><%= c.assigned_name || '-' %></td>
+          <td><span class="badge bg-<%= c.status === 'resuelto' ? 'success' : 'warning' %>"><%= c.status %></span></td>
+          <td><%= c.created_at ? c.created_at.substring(0,10) : '-' %></td>
+          <td>
+            <% if (c.status !== 'resuelto') { %>
+              <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#resolve<%= c.id %>"><i class="bi bi-check-lg"></i></button>
+            <% } %>
+          </td>
+        </tr>
+        <% if (c.status !== 'resuelto') { %>
+        <div class="modal fade" id="resolve<%= c.id %>" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+          <form method="POST" action="/reclamos/<%= c.id %>/resolver">
+            <div class="modal-header"><h5 class="modal-title">Resolver: <%= c.subject %></h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+              <p><strong>Descripcion:</strong> <%= c.description || 'Sin descripcion' %></p>
+              <div class="mb-3"><label class="form-label">Resolucion</label><textarea name="resolution" class="form-control" rows="3" required></textarea></div>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-success">Resolver</button></div>
+          </form>
+        </div></div></div>
+        <% } %>
+      <% })} %>
+    </tbody>
+  </table>
+</div></div>
+<%- include('../partials/footer') %>

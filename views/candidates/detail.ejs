@@ -1,0 +1,66 @@
+<% const title = candidate.name %>
+<%- include('../partials/header', { title }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-0"><%= candidate.name %></h4>
+    <span class="badge bg-<%= candidate.status === 'certificado' ? 'success' : candidate.status === 'no_certificado' ? 'danger' : candidate.status === 'evaluando' ? 'warning' : 'secondary' %> mt-1"><%= candidate.status %></span>
+  </div>
+  <div>
+    <a href="/candidatos/<%= candidate.id %>/editar" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
+    <a href="/candidatos" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><strong>Datos del Candidato</strong></div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tr><th style="width:35%">RUT</th><td><%= candidate.rut || '-' %></td></tr>
+          <tr><th>Email</th><td><%= candidate.email || '-' %></td></tr>
+          <tr><th>Telefono</th><td><%= candidate.phone || '-' %></td></tr>
+          <tr><th>Region</th><td><%= candidate.region || '-' %></td></tr>
+          <tr><th>Educacion</th><td><%= candidate.education_level || '-' %></td></tr>
+          <tr><th>Experiencia</th><td><%= candidate.work_experience_years %> anos</td></tr>
+          <tr><th>Perfil</th><td><%= candidate.profile_name || '-' %></td></tr>
+          <tr><th>Registro</th><td><%= candidate.created_at ? candidate.created_at.substring(0,10) : '-' %></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><strong>Evaluaciones</strong></div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <thead><tr><th>Fecha</th><th>Evaluador</th><th>Resultado</th></tr></thead>
+          <tbody>
+            <% if (evaluations.length === 0) { %>
+              <tr><td colspan="3" class="text-muted text-center py-3">Sin evaluaciones</td></tr>
+            <% } else { evaluations.forEach(e => { %>
+              <tr>
+                <td><%= e.scheduled_date || '-' %></td>
+                <td><%= e.evaluator_name || '-' %></td>
+                <td><span class="badge bg-<%= e.result === 'competente' ? 'success' : e.result === 'aun_no_competente' ? 'danger' : 'secondary' %>"><%= e.result || e.status %></span></td>
+              </tr>
+            <% })} %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% if (candidate.notes) { %>
+    <div class="card border-0 shadow-sm mt-3">
+      <div class="card-header bg-white"><strong>Notas</strong></div>
+      <div class="card-body"><%= candidate.notes %></div>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<form method="POST" action="/candidatos/<%= candidate.id %>/eliminar" onsubmit="return confirm('Eliminar este candidato?')">
+  <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Eliminar candidato</button>
+</form>
+
+<%- include('../partials/footer') %>
