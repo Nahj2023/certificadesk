@@ -22,7 +22,10 @@
             <td><%= e.result || '-' %></td>
             <td>
               <% if (e.status === 'programada') { %>
-                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#resultModal<%= e.id %>"><i class="bi bi-check-lg"></i></button>
+                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#resultModal<%= e.id %>" title="Registrar resultado"><i class="bi bi-check-lg"></i></button>
+              <% } %>
+              <% if (e.status === 'completada' && e.candidate_status === 'pendiente_comite') { %>
+                <a href="/evaluaciones/<%= e.id %>/comite" class="btn btn-sm btn-outline-primary" title="Comite de Decision"><i class="bi bi-people-fill"></i></a>
               <% } %>
             </td>
           </tr>

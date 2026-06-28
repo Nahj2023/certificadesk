@@ -26,6 +26,7 @@ function initSchema() {
   if (orgCount === 0) {
     seedDefaults();
   }
+  seedManuals();
 }
 
 function seedDefaults() {
@@ -42,16 +43,35 @@ function seedDefaults() {
   );
 
   const profiles = [
-    ["UCL0001", "Operador de Maquinaria Pesada", "Minería", "Extracción"],
-    ["UCL0002", "Soldador por Arco Manual", "Manufactura", "Metalmecánica"],
-    ["UCL0003", "Electricista de Instalaciones Domiciliarias", "Construcción", "Instalaciones"],
-    ["UCL0004", "Guía de Turismo Aventura", "Turismo", "Actividades"],
-    ["UCL0005", "Operador de Grúa Horquilla", "Logística", "Transporte"],
+    ["UCL0001", "Operador de Maquinaria Pesada", "Mineria", "Extraccion"],
+    ["UCL0002", "Soldador por Arco Manual", "Manufactura", "Metalmecanica"],
+    ["UCL0003", "Electricista de Instalaciones Domiciliarias", "Construccion", "Instalaciones"],
+    ["UCL0004", "Guia de Turismo Aventura", "Turismo", "Actividades"],
+    ["UCL0005", "Operador de Grua Horquilla", "Logistica", "Transporte"],
   ];
   const stmt = db.prepare("INSERT INTO profiles (code, name, sector, subsector) VALUES (?,?,?,?)");
   for (const p of profiles) stmt.run(...p);
 
   console.log("[DB] Seed: org demo + admin + 5 perfiles");
+}
+
+function seedManuals() {
+  const org = db.prepare("SELECT id FROM organizations LIMIT 1").get();
+  if (!org) return;
+  const count = db.prepare("SELECT COUNT(*) as c FROM documents WHERE org_id=? AND category='manual_chilevalora'").get(org.id).c;
+  if (count >= 3) return;
+
+  const stmt = db.prepare("INSERT INTO documents (org_id, category, name, version, status) VALUES (?,?,?,?,?)");
+  const manuals = [
+    'Manual del Candidato — Guia de Evaluacion y Certificacion',
+    'Manual del Evaluador — Metodologia e Instrumentos',
+    'Manual del Auditor — Procedimiento de Auditoria Interna',
+  ];
+  for (const m of manuals) {
+    const exists = db.prepare("SELECT id FROM documents WHERE org_id=? AND category='manual_chilevalora' AND name=?").get(org.id, m);
+    if (!exists) stmt.run(org.id, 'manual_chilevalora', m, '1.0', 'vigente');
+  }
+  console.log("[DB] Manuales ChileValora verificados");
 }
 
 function logActivity(orgId, userId, action, entityType, entityId, details) {

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CertificaDesk — Software para Centros de Evaluacion y Certificacion ChileValora</title>
+<meta name="description" content="Gestiona candidatos, evaluadores, auditorias y los 8 procedimientos ChileValora desde una sola plataforma. Cumple la norma sin Excel.">
+<link rel="stylesheet" href="/css/landing.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✓</text></svg>">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">Certifica<span>Desk</span></a>
+    <div class="nav-links">
+      <a href="#problema">Problema</a>
+      <a href="#procedimientos">Procedimientos</a>
+      <a href="#precios">Planes</a>
+      <a href="/login" class="btn-nav">Acceder</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container" style="display:contents">
+    <div class="hero-content">
+      <div class="hero-eyebrow"><span class="pulse"></span> Plataforma para CEC acreditados</div>
+      <h1>Cumple los 8 procedimientos <em>ChileValora</em> sin planillas</h1>
+      <p class="hero-sub">Gestiona candidatos, evaluadores, auditorias y evidencias desde una sola plataforma. Deja de improvisar con Excel antes de la proxima visita de supervision.</p>
+      <div class="hero-cta">
+        <a href="#precios" class="btn-primary">Ver planes &rarr;</a>
+        <a href="#procedimientos" class="btn-outline">Como funciona</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-glow"></div>
+      <div class="hero-mockup">
+        <div class="mock-bar">
+          <span class="mock-dot r"></span><span class="mock-dot y"></span><span class="mock-dot g"></span>
+          <span class="mock-url">certificadesk.jvh-labs.cl/dashboard</span>
+        </div>
+        <div class="mock-body">
+          <div class="mock-side">
+            <div class="mock-side-item active"></div>
+            <div class="mock-side-item" style="width:70%"></div>
+            <div class="mock-side-item" style="width:60%"></div>
+            <div class="mock-side-item" style="width:75%"></div>
+            <div class="mock-side-item" style="width:55%"></div>
+            <div class="mock-side-item" style="width:65%"></div>
+            <div class="mock-side-item" style="width:50%"></div>
+            <div class="mock-side-item" style="width:72%"></div>
+          </div>
+          <div class="mock-main">
+            <div class="mock-stats">
+              <div class="mock-stat"><strong>247</strong><small>Candidatos</small></div>
+              <div class="mock-stat"><strong>18</strong><small>Evaluadores</small></div>
+              <div class="mock-stat"><strong>96%</strong><small>Cumplimiento</small></div>
+            </div>
+            <div class="mock-table">
+              <div class="mock-row"></div>
+              <div class="mock-row"></div>
+              <div class="mock-row"></div>
+              <div class="mock-row"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pain" id="problema">
+  <div class="container">
+    <div class="pain-grid reveal">
+      <div>
+        <p class="pain-tag">El problema</p>
+        <h2>ChileValora exige 8 procedimientos.<br>La mayoria de los CEC los gestiona en Excel.</h2>
+        <p class="pain-desc">Carpetas compartidas, planillas sin version, evidencias en WhatsApp. Cuando llega la supervision, el equipo improvisa.</p>
+      </div>
+      <div class="pain-list">
+        <div class="pain-item">
+          <div class="pain-icon">📋</div>
+          <div>
+            <h4>Trazabilidad inexistente</h4>
+            <p>No hay registro unico de candidatos, evaluaciones ni resultados. Cada evaluador tiene su propia planilla.</p>
+          </div>
+        </div>
+        <div class="pain-item">
+          <div class="pain-icon">⏰</div>
+          <div>
+            <h4>Horas perdidas en reportes</h4>
+            <p>Armar informes para ChileValora toma dias. Copiar-pegar datos entre archivos es propenso a errores.</p>
+          </div>
+        </div>
+        <div class="pain-item">
+          <div class="pain-icon">⚠️</div>
+          <div>
+            <h4>Riesgo en supervision</h4>
+            <p>Sin sistema, las no conformidades aparecen recien en la visita. Poner al dia los procedimientos ya es tarde.</p>
+          </div>
+        </div>
+        <div class="pain-item">
+          <div class="pain-icon">🔒</div>
+          <div>
+            <h4>Evidencias dispersas</h4>
+            <p>Fotos en celulares, documentos en correo, firmas en papel. Nada centralizado ni respaldado.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="procs" id="procedimientos">
+  <div class="container">
+    <div class="procs-header reveal">
+      <h2>Los 8 procedimientos, resueltos</h2>
+      <p>Cada procedimiento ChileValora tiene su modulo dedicado con flujos, formularios y reportes listos.</p>
+    </div>
+    <div class="procs-tabs reveal" role="tablist">
+      <button class="proc-tab active" data-tab="0">Evaluacion</button>
+      <button class="proc-tab" data-tab="1">Auditorias</button>
+      <button class="proc-tab" data-tab="2">Evaluadores</button>
+      <button class="proc-tab" data-tab="3">Reclamos</button>
+      <button class="proc-tab" data-tab="4">Conflictos</button>
+      <button class="proc-tab" data-tab="5">Documentos</button>
+      <button class="proc-tab" data-tab="6">Registros</button>
+      <button class="proc-tab" data-tab="7">Satisfaccion</button>
+    </div>
+
+    <div class="proc-panel active" data-panel="0">
+      <div class="proc-info">
+        <h3>Evaluacion y Certificacion</h3>
+        <p>Gestiona el ciclo completo: inscripcion del candidato, asignacion de evaluador, plan de evaluacion, recopilacion de evidencias, decision de competencia y emision de certificado.</p>
+        <div class="proc-features">
+          <div class="proc-feat"><span class="check">✓</span> Portafolio digital de evidencias</div>
+          <div class="proc-feat"><span class="check">✓</span> Rubricas y pautas precargadas</div>
+          <div class="proc-feat"><span class="check">✓</span> Firma electronica del evaluador</div>
+          <div class="proc-feat"><span class="check">✓</span> Trazabilidad candidato-a-certificado</div>
+        </div>
+      </div>
+      <div class="proc-visual">
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Inscritos</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:85%"></div></div>
+          <span class="proc-visual-val">247</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">En evaluacion</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:42%"></div></div>
+          <span class="proc-visual-val">64</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Competentes</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:70%"></div></div>
+          <span class="proc-visual-val">158</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot warn"></span>
+          <span class="proc-visual-label">Aun no comp.</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:15%;background:#F59E0B"></div></div>
+          <span class="proc-visual-val">25</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="proc-panel" data-panel="1">
+      <div class="proc-info">
+        <h3>Auditorias Internas</h3>
+        <p>Programa, ejecuta y da seguimiento a auditorias internas. Registra hallazgos, no conformidades y acciones correctivas con plazos y responsables.</p>
+        <div class="proc-features">
+          <div class="proc-feat"><span class="check">✓</span> Calendario de auditorias</div>
+          <div class="proc-feat"><span class="check">✓</span> Checklist por procedimiento</div>
+          <div class="proc-feat"><span class="check">✓</span> Seguimiento de hallazgos</div>
+          <div class="proc-feat"><span class="check">✓</span> Indicadores de cierre</div>
+        </div>
+      </div>
+      <div class="proc-visual">
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Programadas</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:100%"></div></div>
+          <span class="proc-visual-val">12</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Ejecutadas</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:75%"></div></div>
+          <span class="proc-visual-val">9</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot warn"></span>
+          <span class="proc-visual-label">Hallazgos</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:30%;background:#F59E0B"></div></div>
+          <span class="proc-visual-val">7</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Cerrados</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:60%"></div></div>
+          <span class="proc-visual-val">5</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="proc-panel" data-panel="2">
+      <div class="proc-info">
+        <h3>Gestion de Evaluadores</h3>
+        <p>Mantiene el registro de evaluadores con sus perfiles, vigencia de habilitacion, evaluaciones de desempeno y capacitaciones.</p>
+        <div class="proc-features">
+          <div class="proc-feat"><span class="check">✓</span> Ficha completa por evaluador</div>
+          <div class="proc-feat"><span class="check">✓</span> Alertas de vencimiento</div>
+          <div class="proc-feat"><span class="check">✓</span> Evaluacion de desempeno</div>
+          <div class="proc-feat"><span class="check">✓</span> Historial de asignaciones</div>
+        </div>
+      </div>
+      <div class="proc-visual">
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Habilitados</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:90%"></div></div>
+          <span class="proc-visual-val">18</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot warn"></span>
+          <span class="proc-visual-label">Por vencer</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:15%;background:#F59E0B"></div></div>
+          <span class="proc-visual-val">3</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Desempeno OK</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:80%"></div></div>
+          <span class="proc-visual-val">15</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Capacitados</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:65%"></div></div>
+          <span class="proc-visual-val">12</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="proc-panel" data-panel="3">
+      <div class="proc-info">
+        <h3>Reclamos, Felicitaciones y Sugerencias</h3>
+        <p>Canal formal para recibir y gestionar feedback de candidatos, evaluadores y partes interesadas con seguimiento hasta cierre.</p>
+        <div class="proc-features">
+          <div class="proc-feat"><span class="check">✓</span> Formulario web publico</div>
+          <div class="proc-feat"><span class="check">✓</span> Clasificacion automatica</div>
+          <div class="proc-feat"><span class="check">✓</span> SLA de respuesta</div>
+          <div class="proc-feat"><span class="check">✓</span> Dashboard de tendencias</div>
+        </div>
+      </div>
+      <div class="proc-visual">
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot err"></span>
+          <span class="proc-visual-label">Reclamos</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:20%;background:#EF4444"></div></div>
+          <span class="proc-visual-val">4</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Felicitaciones</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:55%"></div></div>
+          <span class="proc-visual-val">12</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot warn"></span>
+          <span class="proc-visual-label">Sugerencias</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:35%;background:#F59E0B"></div></div>
+          <span class="proc-visual-val">8</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Cerrados</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:85%"></div></div>
+          <span class="proc-visual-val">21</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="proc-panel" data-panel="4">
+      <div class="proc-info">
+        <h3>Conflictos de Interes</h3>
+        <p>Declaracion, revision y resolucion de conflictos de interes entre evaluadores, candidatos y personal del CEC.</p>
+        <div class="proc-features">
+          <div class="proc-feat"><span class="check">✓</span> Declaracion jurada digital</div>
+          <div class="proc-feat"><span class="check">✓</span> Validacion cruzada automatica</div>
+          <div class="proc-feat"><span class="check">✓</span> Acta de resolucion</div>
+          <div class="proc-feat"><span class="check">✓</span> Registro historico</div>
+        </div>
+      </div>
+      <div class="proc-visual">
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Declaraciones</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:100%"></div></div>
+          <span class="proc-visual-val">18</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot warn"></span>
+          <span class="proc-visual-label">Detectados</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:10%;background:#F59E0B"></div></div>
+          <span class="proc-visual-val">2</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Resueltos</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:10%"></div></div>
+          <span class="proc-visual-val">2</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="proc-panel" data-panel="5">
+      <div class="proc-info">
+        <h3>Control de Documentos</h3>
+        <p>Administra el ciclo de vida de documentos normativos: creacion, revision, aprobacion, distribucion y obsolescencia.</p>
+        <div class="proc-features">
+          <div class="proc-feat"><span class="check">✓</span> Versionado automatico</div>
+          <div class="proc-feat"><span class="check">✓</span> Flujo de aprobacion</div>
+          <div class="proc-feat"><span class="check">✓</span> Lista maestra</div>
+          <div class="proc-feat"><span class="check">✓</span> Control de copias</div>
+        </div>
+      </div>
+      <div class="proc-visual">
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Vigentes</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:70%"></div></div>
+          <span class="proc-visual-val">34</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot warn"></span>
+          <span class="proc-visual-label">En revision</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:15%;background:#F59E0B"></div></div>
+          <span class="proc-visual-val">5</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Obsoletos</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:25%"></div></div>
+          <span class="proc-visual-val">12</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="proc-panel" data-panel="6">
+      <div class="proc-info">
+        <h3>Control de Registros</h3>
+        <p>Almacena, protege y permite recuperar todos los registros de calidad exigidos por la norma. Retención, acceso y disposicion controlados.</p>
+        <div class="proc-features">
+          <div class="proc-feat"><span class="check">✓</span> Archivo digital seguro</div>
+          <div class="proc-feat"><span class="check">✓</span> Politica de retencion</div>
+          <div class="proc-feat"><span class="check">✓</span> Busqueda avanzada</div>
+          <div class="proc-feat"><span class="check">✓</span> Backup automatico</div>
+        </div>
+      </div>
+      <div class="proc-visual">
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Registros</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:90%"></div></div>
+          <span class="proc-visual-val">1.247</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Respaldados</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:100%"></div></div>
+          <span class="proc-visual-val">100%</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Indexados</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:95%"></div></div>
+          <span class="proc-visual-val">100%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="proc-panel" data-panel="7">
+      <div class="proc-info">
+        <h3>Satisfaccion de Clientes</h3>
+        <p>Encuestas automaticas post-certificacion, analisis de resultados y planes de mejora basados en datos reales.</p>
+        <div class="proc-features">
+          <div class="proc-feat"><span class="check">✓</span> Encuesta automatica</div>
+          <div class="proc-feat"><span class="check">✓</span> NPS y metricas</div>
+          <div class="proc-feat"><span class="check">✓</span> Alertas por baja puntuacion</div>
+          <div class="proc-feat"><span class="check">✓</span> Planes de mejora</div>
+        </div>
+      </div>
+      <div class="proc-visual">
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Encuestas</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:65%"></div></div>
+          <span class="proc-visual-val">183</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">Tasa resp.</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:72%"></div></div>
+          <span class="proc-visual-val">72%</span>
+        </div>
+        <div class="proc-visual-row">
+          <span class="proc-visual-dot ok"></span>
+          <span class="proc-visual-label">NPS</span>
+          <div class="proc-visual-bar"><div class="proc-visual-fill" style="width:78%"></div></div>
+          <span class="proc-visual-val">+62</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="numbers reveal">
+  <div class="container">
+    <div class="numbers-grid">
+      <div class="number-card"><strong>41</strong><span>CEC en Chile</span></div>
+      <div class="number-card"><strong>8</strong><span>Procedimientos cubiertos</span></div>
+      <div class="number-card"><strong>1.899</strong><span>Evaluadores registrados</span></div>
+      <div class="number-card"><strong>100%</strong><span>Cumplimiento normativo</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="precios">
+  <div class="container">
+    <div class="pricing-header reveal">
+      <h2>Un plan para cada CEC</h2>
+      <p>Sin permanencia. Implementacion guiada incluida. Migra tus datos sin costo.</p>
+    </div>
+    <div class="pricing-grid reveal">
+      <div class="price-card">
+        <p class="price-name">Starter</p>
+        <p class="price-desc">Para CEC con hasta 3 perfiles y 1 evaluador interno.</p>
+        <div class="price-amount"><strong>$49.990</strong> <span>CLP/mes</span></div>
+        <ul class="price-features">
+          <li>Procedimientos 1 al 8</li>
+          <li>Hasta 50 candidatos/mes</li>
+          <li>1 usuario administrador</li>
+          <li>Soporte por email</li>
+          <li>Reportes basicos</li>
+        </ul>
+        <a href="#contacto" class="btn-price ghost">Empezar</a>
+      </div>
+      <div class="price-card featured">
+        <p class="price-name">Professional</p>
+        <p class="price-desc">Para CEC con multiples perfiles y equipo de evaluadores.</p>
+        <div class="price-amount"><strong>$99.990</strong> <span>CLP/mes</span></div>
+        <ul class="price-features">
+          <li>Todo lo de Starter</li>
+          <li>Candidatos ilimitados</li>
+          <li>Hasta 10 usuarios</li>
+          <li>Soporte prioritario</li>
+          <li>Reportes ChileValora</li>
+          <li>Portafolio digital</li>
+        </ul>
+        <a href="#contacto" class="btn-price fill">Empezar</a>
+      </div>
+      <div class="price-card">
+        <p class="price-name">Enterprise</p>
+        <p class="price-desc">Para OTEC o redes de CEC con operacion nacional.</p>
+        <div class="price-amount"><strong>$199.990</strong> <span>CLP/mes</span></div>
+        <ul class="price-features">
+          <li>Todo lo de Professional</li>
+          <li>Usuarios ilimitados</li>
+          <li>Multi-sede</li>
+          <li>API de integracion</li>
+          <li>SLA 99.9% + soporte dedicado</li>
+        </ul>
+        <a href="#contacto" class="btn-price ghost">Contactar</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="contacto">
+  <div class="container">
+    <div class="cta-box reveal">
+      <h2>Deja de improvisar con Excel</h2>
+      <p>Agenda una demo de 20 minutos y ve como CertificaDesk resuelve tus 8 procedimientos.</p>
+      <a href="mailto:contacto@jvh-labs.cl?subject=Demo%20CertificaDesk" class="btn-primary">Agendar demo gratuita &rarr;</a>
+      <p class="cta-contact">O escribe a <a href="mailto:contacto@jvh-labs.cl">contacto@jvh-labs.cl</a></p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-copy">&copy; 2026 CertificaDesk &mdash; JVH Labs</span>
+      <div class="footer-links">
+        <a href="https://jvh-labs.cl">JVH Labs</a>
+        <a href="/login">Acceder</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('.proc-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.proc-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.proc-panel').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelector('[data-panel="'+tab.dataset.tab+'"]').classList.add('active');
+  });
+});
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})
+},{threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

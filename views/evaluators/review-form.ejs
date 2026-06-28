@@ -1,0 +1,88 @@
+<% const title = 'Evaluacion de Desempeno' %>
+<%- include('../partials/header', { title }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0"><i class="bi bi-clipboard2-check"></i> Evaluacion de Desempeno — <%= evaluator.name %></h4>
+  <a href="/evaluadores/<%= evaluator.id %>" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white">
+        <strong>Formulario D016 — Proc. 2.4 Evaluacion de Desempeno de Evaluadores</strong>
+      </div>
+      <div class="card-body">
+        <form method="POST" action="/evaluadores/<%= evaluator.id %>/evaluar">
+          <div class="mb-3">
+            <label class="form-label">Periodo</label>
+            <input type="text" name="period" class="form-control" placeholder="Ej: 2026-S1" value="<%= new Date().getFullYear() %>-S<%= new Date().getMonth() < 6 ? 1 : 2 %>" required>
+            <small class="text-muted">Formato: YYYY-S1 o YYYY-S2 (semestre)</small>
+          </div>
+
+          <hr>
+          <h6 class="text-muted mb-3">Criterios de Evaluacion (escala 1 a 5)</h6>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">1. Cumplimiento de Plazos</label>
+            <p class="text-muted small mb-2">Entrega oportuna de informes, portafolios y resultados dentro de los plazos establecidos.</p>
+            <div class="d-flex gap-3">
+              <% for (let i = 1; i <= 5; i++) { %>
+              <div class="form-check">
+                <input type="radio" name="score_deadlines" value="<%= i %>" class="form-check-input" id="d<%= i %>" <%= i===3 ? 'checked' : '' %> required>
+                <label for="d<%= i %>" class="form-check-label"><%= i %></label>
+              </div>
+              <% } %>
+            </div>
+            <small class="text-muted">1=Deficiente, 2=Insuficiente, 3=Aceptable, 4=Bueno, 5=Excelente</small>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">2. Calidad de los Informes</label>
+            <p class="text-muted small mb-2">Claridad, completitud y fundamentacion de los informes de evaluacion y portafolios de evidencia.</p>
+            <div class="d-flex gap-3">
+              <% for (let i = 1; i <= 5; i++) { %>
+              <div class="form-check">
+                <input type="radio" name="score_report_quality" value="<%= i %>" class="form-check-input" id="q<%= i %>" <%= i===3 ? 'checked' : '' %> required>
+                <label for="q<%= i %>" class="form-check-label"><%= i %></label>
+              </div>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">3. Cumplimiento de Procedimientos</label>
+            <p class="text-muted small mb-2">Adherencia a los procedimientos operacionales del CEC, declaraciones juradas, protocolo de confidencialidad.</p>
+            <div class="d-flex gap-3">
+              <% for (let i = 1; i <= 5; i++) { %>
+              <div class="form-check">
+                <input type="radio" name="score_procedure_compliance" value="<%= i %>" class="form-check-input" id="p<%= i %>" <%= i===3 ? 'checked' : '' %> required>
+                <label for="p<%= i %>" class="form-check-label"><%= i %></label>
+              </div>
+              <% } %>
+            </div>
+          </div>
+
+          <hr>
+          <div class="mb-3">
+            <label class="form-label">Observaciones</label>
+            <textarea name="observations" class="form-control" rows="3" placeholder="Observaciones adicionales, areas de mejora, fortalezas..."></textarea>
+          </div>
+
+          <div class="alert alert-info small">
+            <i class="bi bi-info-circle"></i> <strong>Escala de acciones:</strong><br>
+            Promedio ≥ 4.0 → Sin accion requerida<br>
+            Promedio 3.0-3.9 → Capacitacion recomendada<br>
+            Promedio &lt; 3.0 → Suspension recomendada
+          </div>
+
+          <button type="submit" class="btn btn-primary" onclick="return confirm('Registrar evaluacion de desempeno?')">
+            <i class="bi bi-check-circle"></i> Registrar Evaluacion
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

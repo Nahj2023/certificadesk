@@ -1,0 +1,96 @@
+<% const title = 'Comite de Certificacion' %>
+<%- include('../partials/header', { title }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0"><i class="bi bi-people-fill"></i> Comite de Decision — Certificacion</h4>
+  <a href="/evaluaciones" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><strong>Datos de la Evaluacion</strong></div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tr><th style="width:35%">Candidato</th><td><%= evaluation.candidate_name %></td></tr>
+          <tr><th>RUT</th><td><%= evaluation.candidate_rut || '-' %></td></tr>
+          <tr><th>Perfil</th><td><%= evaluation.profile_name || '-' %></td></tr>
+          <tr><th>Evaluador</th><td><%= evaluation.evaluator_name || '-' %></td></tr>
+          <tr><th>Fecha Evaluacion</th><td><%= evaluation.scheduled_date || '-' %></td></tr>
+          <tr><th>Tipo</th><td><%= evaluation.type %></td></tr>
+          <tr><th>Resultado Evaluador</th><td>
+            <span class="badge bg-<%= evaluation.result === 'competente' ? 'success' : 'danger' %>"><%= evaluation.result %></span>
+          </td></tr>
+          <tr><th>Puntaje</th><td><%= evaluation.score || '-' %></td></tr>
+          <tr><th>Observaciones</th><td><%= evaluation.observations || '-' %></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><strong>Decision del Comite</strong></div>
+      <div class="card-body">
+        <% if (decision) { %>
+          <div class="alert alert-<%= decision.decision === 'certificar' ? 'success' : 'danger' %>">
+            Decision ya registrada: <strong><%= decision.decision === 'certificar' ? 'CERTIFICAR' : 'NO CERTIFICAR' %></strong>
+            <br><small>Fecha: <%= decision.committee_date %> — <%= decision.justification %></small>
+          </div>
+        <% } else { %>
+          <form method="POST" action="/evaluaciones/<%= evaluation.id %>/comite">
+            <div class="mb-3">
+              <label class="form-label">Fecha del Comite</label>
+              <input type="date" name="committee_date" class="form-control" value="<%= new Date().toISOString().substring(0,10) %>" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Miembros del Comite</label>
+              <textarea name="members" class="form-control" rows="3" placeholder="Nombre - Rol (uno por linea)" required></textarea>
+              <small class="text-muted">Ej: Juan Perez - Coordinador CEC</small>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Recomendacion del Evaluador</label>
+              <select name="evaluator_recommendation" class="form-select">
+                <option value="competente" <%= evaluation.result === 'competente' ? 'selected' : '' %>>Competente</option>
+                <option value="aun_no_competente" <%= evaluation.result !== 'competente' ? 'selected' : '' %>>Aun No Competente</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Estado de Auditoria</label>
+              <select name="audit_status" class="form-select">
+                <option value="sin_auditoria">Sin auditoria para este caso</option>
+                <option value="aprobado">Auditoria aprobada</option>
+                <option value="observado">Auditoria con observaciones</option>
+              </select>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" name="portfolio_reviewed" value="1" class="form-check-input" id="portfolio">
+              <label for="portfolio" class="form-check-label">Portafolio de evidencias revisado</label>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Decision del Comite</label>
+              <div class="d-flex gap-3">
+                <div class="form-check">
+                  <input type="radio" name="decision" value="certificar" class="form-check-input" id="dec_cert" required>
+                  <label for="dec_cert" class="form-check-label text-success fw-bold">Certificar</label>
+                </div>
+                <div class="form-check">
+                  <input type="radio" name="decision" value="no_certificar" class="form-check-input" id="dec_no">
+                  <label for="dec_no" class="form-check-label text-danger fw-bold">No Certificar</label>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Justificacion</label>
+              <textarea name="justification" class="form-control" rows="3" required placeholder="Fundamento de la decision del comite..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" onclick="return confirm('Confirmar decision del comite?')">
+              <i class="bi bi-check-circle"></i> Registrar Decision
+            </button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

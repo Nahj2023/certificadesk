@@ -1,492 +1,499 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CertificaDesk — Software para Centros de Certificacion ChileValora</title>
-  <meta name="description" content="Gestiona los 8 procedimientos operacionales que ChileValora exige a tu CEC. Deja Excel y WhatsApp.">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="/css/landing.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CertificaDesk - Plataforma para Centros de Certificacion ChileValora</title>
+<meta name="description" content="Los 8 procedimientos ChileValora en una sola plataforma. Gestiona candidatos, evaluadores, auditorias y evidencias. Deja Excel atras.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/landing.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x2713;</text></svg>">
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="/">CertificaDesk</a>
-    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navMain">
-      <ul class="navbar-nav ms-auto me-3">
-        <li class="nav-item"><a class="nav-link" href="#problema">El Problema</a></li>
-        <li class="nav-item"><a class="nav-link" href="#modulos">Modulos</a></li>
-        <li class="nav-item"><a class="nav-link" href="#pricing">Planes</a></li>
-        <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
-      </ul>
-      <a href="/login" class="btn btn-outline-light btn-sm px-3">Ingresar</a>
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <div class="logo-seal">C</div>
+      CertificaDesk
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#problema">El problema</a>
+      <a href="#plataforma">Plataforma</a>
+      <a href="#procedimientos">Los 8</a>
+      <a href="#precios">Planes</a>
+      <a href="/login" class="nav-cta">Acceder</a>
     </div>
+    <button class="menu-toggle" aria-label="Menu" onclick="document.getElementById('navLinks').classList.toggle('open')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
   </div>
 </nav>
 
+<!-- ═══════════ HERO ═══════════ -->
 <section class="hero">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-6">
-        <div class="hero-badge">Para los 41 CEC acreditados por ChileValora</div>
-        <h1>Los 8 procedimientos que ChileValora te exige.<br>En una sola plataforma.</h1>
-        <p class="hero-sub">CertificaDesk reemplaza tus Excel, carpetas de Drive y grupos de WhatsApp por un sistema disenado para centros de evaluacion y certificacion de competencias laborales.</p>
-        <div class="d-flex gap-3 mt-4">
-          <a href="#contacto" class="btn btn-primary btn-lg px-4">Solicitar demo gratuita</a>
-          <a href="#modulos" class="btn btn-outline-light btn-lg px-4">Ver modulos</a>
+  <div class="hero-bg-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-chip">
+        <span class="chip-dot"></span>
+        Plataforma para CEC acreditados
+      </div>
+      <h1>Cumple ChileValora.<br><span class="hero-accent">Sin planillas.</span></h1>
+      <p class="hero-sub">Los 8 procedimientos que tu CEC necesita documentar, ahora viven en un solo sistema. Trazabilidad completa, reportes en un clic, cero improvisacion en la supervision.</p>
+      <div class="hero-actions">
+        <a href="#contacto" class="btn-gold">Agendar demo de 20 min</a>
+        <a href="#plataforma" class="btn-ghost">Ver la plataforma</a>
+      </div>
+      <div class="hero-proof">
+        <div class="proof-item">
+          <strong>41</strong>
+          <span>CEC en Chile</span>
         </div>
-        <div class="hero-stats">
-          <div><span>8</span>Procedimientos</div>
-          <div><span>41</span>CEC en Chile</div>
-          <div><span>40h</span>Ahorro mensual</div>
+        <div class="proof-sep"></div>
+        <div class="proof-item">
+          <strong>8/8</strong>
+          <span>Procedimientos</span>
+        </div>
+        <div class="proof-sep"></div>
+        <div class="proof-item">
+          <strong>48h</strong>
+          <span>Implementacion</span>
         </div>
       </div>
-      <div class="col-lg-6 mt-5 mt-lg-0">
-        <div class="hero-screenshot">
-          <div class="screenshot-frame">
-            <div class="screenshot-bar"><span></span><span></span><span></span></div>
-            <div class="screenshot-content">
-              <div class="ss-header">
-                <div class="ss-sidebar">
-                  <div class="ss-logo">CD</div>
-                  <div class="ss-nav-item active"></div>
-                  <div class="ss-nav-item"></div>
-                  <div class="ss-nav-item"></div>
-                  <div class="ss-nav-item"></div>
-                  <div class="ss-nav-item"></div>
-                  <div class="ss-nav-item"></div>
-                  <div class="ss-nav-item"></div>
-                  <div class="ss-nav-item"></div>
-                </div>
-                <div class="ss-main">
-                  <div class="ss-title">Dashboard</div>
-                  <div class="ss-cards">
-                    <div class="ss-card c1"><div class="ss-num">127</div><div class="ss-lbl">Candidatos</div></div>
-                    <div class="ss-card c2"><div class="ss-num">43</div><div class="ss-lbl">Evaluaciones</div></div>
-                    <div class="ss-card c3"><div class="ss-num">89%</div><div class="ss-lbl">Certificados</div></div>
-                    <div class="ss-card c4"><div class="ss-num">4.6</div><div class="ss-lbl">Satisfaccion</div></div>
-                  </div>
-                  <div class="ss-table">
-                    <div class="ss-row head"><span>Candidato</span><span>Perfil</span><span>Estado</span></div>
-                    <div class="ss-row"><span>Maria Lopez</span><span>Soldadura</span><span class="badge-g">Certificado</span></div>
-                    <div class="ss-row"><span>Pedro Soto</span><span>Electricidad</span><span class="badge-y">Evaluando</span></div>
-                    <div class="ss-row"><span>Ana Reyes</span><span>Gastronomia</span><span class="badge-g">Certificado</span></div>
-                  </div>
-                </div>
+    </div>
+    <div class="hero-visual">
+      <!-- Seal illustration -->
+      <div class="seal-container">
+        <div class="seal">
+          <div class="seal-ring"></div>
+          <div class="seal-ring ring-2"></div>
+          <div class="seal-center">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+        </div>
+        <!-- Orbiting procedure icons -->
+        <div class="orbit-item o1"><span>&#128203;</span><small>Evaluacion</small></div>
+        <div class="orbit-item o2"><span>&#128101;</span><small>Evaluadores</small></div>
+        <div class="orbit-item o3"><span>&#128269;</span><small>Auditorias</small></div>
+        <div class="orbit-item o4"><span>&#128196;</span><small>Documentos</small></div>
+        <div class="orbit-item o5"><span>&#128193;</span><small>Registros</small></div>
+        <div class="orbit-item o6"><span>&#128172;</span><small>Reclamos</small></div>
+        <div class="orbit-item o7"><span>&#9878;</span><small>Conflictos</small></div>
+        <div class="orbit-item o8"><span>&#11088;</span><small>Satisfaccion</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PROBLEMA ═══════════ -->
+<section class="problem" id="problema">
+  <div class="container">
+    <div class="problem-intro reveal">
+      <span class="label-teal">El problema real</span>
+      <h2>ChileValora exige 8 procedimientos documentados.<br>La mayoria de los CEC los gestiona asi:</h2>
+    </div>
+    <div class="chaos-vs-order reveal">
+      <div class="chaos-side">
+        <div class="chaos-papers">
+          <div class="paper p1">
+            <div class="paper-line"></div><div class="paper-line short"></div>
+            <div class="paper-line"></div><div class="paper-line short"></div>
+          </div>
+          <div class="paper p2">
+            <div class="paper-line"></div><div class="paper-line"></div>
+            <div class="paper-line short"></div>
+          </div>
+          <div class="paper p3">
+            <div class="paper-line short"></div><div class="paper-line"></div>
+            <div class="paper-line"></div><div class="paper-line short"></div>
+          </div>
+          <div class="paper p4">
+            <div class="paper-cells">
+              <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+              <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+              <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            </div>
+          </div>
+        </div>
+        <h3>Hoy</h3>
+        <ul class="chaos-list">
+          <li>Planillas Excel sin versionamiento</li>
+          <li>Evidencias en WhatsApp y email</li>
+          <li>Reportes armados en panico antes de supervision</li>
+          <li>Cada evaluador con su propia carpeta</li>
+        </ul>
+      </div>
+
+      <div class="transform-arrow">
+        <svg width="60" height="60" viewBox="0 0 60 60"><path d="M10 30 H45 M38 22 L48 30 L38 38" stroke="#0D9488" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+      </div>
+
+      <div class="order-side">
+        <div class="order-mockup">
+          <div class="om-bar">
+            <span class="om-dot r"></span><span class="om-dot y"></span><span class="om-dot g"></span>
+          </div>
+          <div class="om-body">
+            <div class="om-sidebar">
+              <div class="om-nav-item active"></div>
+              <div class="om-nav-item"></div>
+              <div class="om-nav-item"></div>
+              <div class="om-nav-item"></div>
+            </div>
+            <div class="om-content">
+              <div class="om-stats-row">
+                <div class="om-stat"><div class="om-stat-bar" style="width:85%"></div></div>
+                <div class="om-stat"><div class="om-stat-bar" style="width:100%"></div></div>
+                <div class="om-stat"><div class="om-stat-bar warn" style="width:65%"></div></div>
+              </div>
+              <div class="om-rows">
+                <div class="om-row"><span class="om-check">&#10003;</span></div>
+                <div class="om-row"><span class="om-check">&#10003;</span></div>
+                <div class="om-row"><span class="om-check">&#10003;</span></div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="problema" class="section bg-white">
-  <div class="container">
-    <div class="text-center mb-5">
-      <h2 class="section-title">Asi gestionas tu CEC hoy</h2>
-      <p class="section-sub">Y asi es como ChileValora espera que lo hagas</p>
-    </div>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="pain-card">
-          <div class="pain-icon"><i class="bi bi-file-earmark-spreadsheet"></i></div>
-          <h5>Excel para todo</h5>
-          <p>Candidatos en una hoja, evaluaciones en otra, reportes armados a mano. Un error de formula y el informe a ChileValora sale mal.</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="pain-card">
-          <div class="pain-icon"><i class="bi bi-whatsapp"></i></div>
-          <h5>WhatsApp como sistema</h5>
-          <p>Coordinacion de evaluadores por chat. Sin trazabilidad, sin registro, sin evidencia de que se cumplio el procedimiento.</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="pain-card">
-          <div class="pain-icon"><i class="bi bi-folder"></i></div>
-          <h5>Carpetas de Drive</h5>
-          <p>Portafolios de evidencia desperdigados. DJS vencidas que nadie detecto. Documentos sin control de versiones.</p>
-        </div>
-      </div>
-    </div>
-    <div class="risk-box mt-5">
-      <div class="row align-items-center">
-        <div class="col-md-8">
-          <h5><i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>El riesgo real</h5>
-          <p class="mb-0">ChileValora audita el cumplimiento de los 8 procedimientos operacionales (D.S. N° 29/2011, Documento D016). Una no-conformidad puede significar suspension de la acreditacion. <strong>No es solo organizacion — es supervivencia del CEC.</strong></p>
-        </div>
-        <div class="col-md-4 text-end">
-          <a href="#modulos" class="btn btn-dark btn-lg">Ver la solucion <i class="bi bi-arrow-down"></i></a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="modulos" class="section">
-  <div class="container">
-    <div class="text-center mb-5">
-      <h2 class="section-title">8 procedimientos. 8 modulos. Cero Excel.</h2>
-      <p class="section-sub">Cada modulo de CertificaDesk mapea directamente a un procedimiento obligatorio de ChileValora</p>
-    </div>
-    <div class="row g-4">
-      <div class="col-md-6 col-lg-3">
-        <div class="mod-card">
-          <div class="mod-number">1</div>
-          <div class="mod-weight">65%</div>
-          <h5>Evaluacion y Certificacion</h5>
-          <ul>
-            <li>Registro de candidatos</li>
-            <li>Programacion de evaluaciones</li>
-            <li>Portafolio de evidencias</li>
-            <li>Resultados y certificacion</li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="mod-card">
-          <div class="mod-number">2</div>
-          <div class="mod-weight">35%</div>
-          <h5>Auditoria Interna</h5>
-          <ul>
-            <li>Planificacion de auditorias</li>
-            <li>Registro de hallazgos</li>
-            <li>No conformidades</li>
-            <li>Seguimiento correctivas</li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="mod-card">
-          <div class="mod-number">3</div>
-          <div class="mod-weight">17%</div>
-          <h5>Desempeno Evaluadores</h5>
-          <ul>
-            <li>Registro de evaluadores</li>
-            <li>Control DJS vigentes</li>
-            <li>Metricas de desempeno</li>
-            <li>Alertas de vencimiento</li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="mod-card">
-          <div class="mod-number">4</div>
-          <div class="mod-weight">15%</div>
-          <h5>Reclamos y Sugerencias</h5>
-          <ul>
-            <li>Tickets con prioridad</li>
-            <li>Asignacion responsable</li>
-            <li>Seguimiento resolucion</li>
-            <li>Metricas de respuesta</li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="mod-card">
-          <div class="mod-number">5</div>
-          <div class="mod-weight">17%</div>
-          <h5>Conflictos de Interes</h5>
-          <ul>
-            <li>Declaraciones formales</li>
-            <li>Tipos: parentesco, laboral</li>
-            <li>Acciones correctivas</li>
-            <li>Trazabilidad completa</li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="mod-card">
-          <div class="mod-number">6</div>
-          <div class="mod-weight">17%</div>
-          <h5>Control de Documentos</h5>
-          <ul>
-            <li>Repositorio centralizado</li>
-            <li>Versionado automatico</li>
-            <li>Alertas de vencimiento</li>
-            <li>Categorias ChileValora</li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="mod-card">
-          <div class="mod-number">7</div>
-          <div class="mod-weight">17%</div>
-          <h5>Control de Registros</h5>
-          <ul>
-            <li>Inventario de registros</li>
-            <li>Retencion y eliminacion</li>
-            <li>Niveles de acceso</li>
-            <li>Trazabilidad por proc.</li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3">
-        <div class="mod-card">
-          <div class="mod-number">8</div>
-          <div class="mod-weight">17%</div>
-          <h5>Satisfaccion del Cliente</h5>
-          <ul>
-            <li>Encuestas post-certificacion</li>
-            <li>5 dimensiones de evaluacion</li>
-            <li>Dashboard de resultados</li>
-            <li>Historico por periodo</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    <div class="text-center mt-5">
-      <p class="text-muted">Los porcentajes corresponden al peso de cada procedimiento en la evaluacion de acreditacion de ChileValora.</p>
-    </div>
-  </div>
-</section>
-
-<section class="section bg-dark text-white">
-  <div class="container">
-    <div class="row g-5 align-items-center">
-      <div class="col-lg-6">
-        <h2 class="section-title text-white">Lo que cambia con CertificaDesk</h2>
-        <div class="benefit-list">
-          <div class="benefit-item">
-            <div class="benefit-icon"><i class="bi bi-clock-history"></i></div>
-            <div>
-              <h5>40 horas menos al mes</h5>
-              <p>Tu coordinador deja de armar reportes en Excel y coordinar por WhatsApp. El sistema genera todo automaticamente.</p>
-            </div>
-          </div>
-          <div class="benefit-item">
-            <div class="benefit-icon"><i class="bi bi-shield-check"></i></div>
-            <div>
-              <h5>100% procedimientos cubiertos</h5>
-              <p>Los 8 procedimientos que ChileValora audita. Cada accion queda registrada con fecha, usuario y detalle.</p>
-            </div>
-          </div>
-          <div class="benefit-item">
-            <div class="benefit-icon"><i class="bi bi-file-earmark-bar-graph"></i></div>
-            <div>
-              <h5>Reportes en 1 click</h5>
-              <p>Tasa de certificacion, satisfaccion, evaluadores activos, documentos por vencer. Todo listo para la auditoria.</p>
-            </div>
-          </div>
-          <div class="benefit-item">
-            <div class="benefit-icon"><i class="bi bi-phone"></i></div>
-            <div>
-              <h5>Desde cualquier dispositivo</h5>
-              <p>Web responsive. Tu evaluador sube evidencias desde terreno con el celular. Sin instalar nada.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-6">
-        <div class="before-after">
-          <div class="ba-col">
-            <h6 class="text-danger"><i class="bi bi-x-circle-fill"></i> Antes</h6>
-            <ul>
-              <li>Candidatos en Excel</li>
-              <li>Evaluaciones por WhatsApp</li>
-              <li>Evidencias en Google Drive</li>
-              <li>DJS en carpeta local</li>
-              <li>Reclamos por email</li>
-              <li>Satisfaccion con Google Forms</li>
-              <li>Reportes armados a mano</li>
-              <li>Auditorias en papel</li>
-            </ul>
-          </div>
-          <div class="ba-col">
-            <h6 class="text-success"><i class="bi bi-check-circle-fill"></i> Con CertificaDesk</h6>
-            <ul>
-              <li>CRUD con busqueda y filtros</li>
-              <li>Calendario + asignacion directa</li>
-              <li>Portafolio por evaluacion</li>
-              <li>Alertas de vencimiento</li>
-              <li>Tickets con seguimiento</li>
-              <li>Encuestas integradas</li>
-              <li>KPIs en tiempo real</li>
-              <li>Checklist + no conformidades</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="pricing" class="section bg-white">
-  <div class="container">
-    <div class="text-center mb-5">
-      <h2 class="section-title">Planes para cada CEC</h2>
-      <p class="section-sub">30 dias gratis. Sin tarjeta de credito. Cancela cuando quieras.</p>
-    </div>
-    <div class="row g-4 justify-content-center">
-      <div class="col-md-4">
-        <div class="price-card">
-          <h5>Starter</h5>
-          <div class="price">$49.990<small>/mes</small></div>
-          <p class="price-desc">Para CEC pequenos (1-5 personas)</p>
-          <ul>
-            <li><i class="bi bi-check2"></i> 8 modulos completos</li>
-            <li><i class="bi bi-check2"></i> Hasta 3 usuarios</li>
-            <li><i class="bi bi-check2"></i> 500 candidatos</li>
-            <li><i class="bi bi-check2"></i> 5 GB almacenamiento</li>
-            <li><i class="bi bi-check2"></i> Soporte email</li>
-          </ul>
-          <a href="#contacto" class="btn btn-outline-dark w-100">Empezar gratis</a>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="price-card featured">
-          <div class="price-badge">Recomendado</div>
-          <h5>Professional</h5>
-          <div class="price">$99.990<small>/mes</small></div>
-          <p class="price-desc">Para CEC en crecimiento (5-15 personas)</p>
-          <ul>
-            <li><i class="bi bi-check2"></i> Todo de Starter</li>
-            <li><i class="bi bi-check2"></i> Hasta 10 usuarios</li>
-            <li><i class="bi bi-check2"></i> Candidatos ilimitados</li>
-            <li><i class="bi bi-check2"></i> 20 GB almacenamiento</li>
-            <li><i class="bi bi-check2"></i> Reportes avanzados</li>
-            <li><i class="bi bi-check2"></i> Soporte prioritario</li>
-          </ul>
-          <a href="#contacto" class="btn btn-primary w-100">Empezar gratis</a>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="price-card">
-          <h5>Enterprise</h5>
-          <div class="price">$199.990<small>/mes</small></div>
-          <p class="price-desc">Para CEC grandes o multi-sede</p>
-          <ul>
-            <li><i class="bi bi-check2"></i> Todo de Professional</li>
-            <li><i class="bi bi-check2"></i> Usuarios ilimitados</li>
-            <li><i class="bi bi-check2"></i> 100 GB almacenamiento</li>
-            <li><i class="bi bi-check2"></i> API de integracion</li>
-            <li><i class="bi bi-check2"></i> Capacitacion presencial</li>
-            <li><i class="bi bi-check2"></i> SLA 99.9%</li>
-          </ul>
-          <a href="#contacto" class="btn btn-outline-dark w-100">Contactar ventas</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="contacto" class="section">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="cta-box">
-          <h2>Agenda tu demo gratuita</h2>
-          <p>Te mostramos como CertificaDesk se adapta a tu CEC en 20 minutos. Sin compromiso.</p>
-          <form class="row g-3 mt-3" id="contactForm" method="POST" action="/api/contact">
-            <div class="col-md-6">
-              <input type="text" name="name" class="form-control form-control-lg" placeholder="Tu nombre" required>
-            </div>
-            <div class="col-md-6">
-              <input type="text" name="cec_name" class="form-control form-control-lg" placeholder="Nombre del CEC">
-            </div>
-            <div class="col-md-6">
-              <input type="email" name="email" class="form-control form-control-lg" placeholder="Email" required>
-            </div>
-            <div class="col-md-6">
-              <input type="tel" name="phone" class="form-control form-control-lg" placeholder="Telefono / WhatsApp">
-            </div>
-            <div class="col-12">
-              <textarea name="message" class="form-control form-control-lg" rows="3" placeholder="Cuentanos sobre tu CEC (perfiles acreditados, cantidad de evaluaciones al mes, etc.)"></textarea>
-            </div>
-            <div class="col-12">
-              <button type="submit" class="btn btn-primary btn-lg w-100 py-3">
-                <i class="bi bi-calendar-check me-2"></i>Solicitar demo gratuita
-              </button>
-            </div>
-          </form>
-          <div id="contactSuccess" class="alert alert-success mt-3 d-none">
-            <i class="bi bi-check-circle-fill me-2"></i>Recibimos tu solicitud. Te contactaremos dentro de 24 horas.
-          </div>
-          <div class="text-center mt-4">
-            <p class="text-muted mb-2">O escríbenos directamente:</p>
-            <a href="https://wa.me/56962577488?text=Hola%2C%20me%20interesa%20CertificaDesk%20para%20mi%20CEC" class="btn btn-success btn-lg me-2" target="_blank">
-              <i class="bi bi-whatsapp me-1"></i>WhatsApp
-            </a>
-            <a href="mailto:contacto@jvh-labs.cl?subject=Demo%20CertificaDesk" class="btn btn-outline-dark btn-lg">
-              <i class="bi bi-envelope me-1"></i>contacto@jvh-labs.cl
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer class="landing-footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-4 mb-4 mb-md-0">
-        <h5 class="fw-bold text-white">CertificaDesk</h5>
-        <p>Software de gestion operacional para Centros de Evaluacion y Certificacion acreditados por ChileValora.</p>
-      </div>
-      <div class="col-md-4 mb-4 mb-md-0">
-        <h6 class="text-white">Producto</h6>
-        <ul class="list-unstyled">
-          <li><a href="#modulos">Modulos</a></li>
-          <li><a href="#pricing">Planes y precios</a></li>
-          <li><a href="#contacto">Solicitar demo</a></li>
-          <li><a href="/login">Ingresar</a></li>
-        </ul>
-      </div>
-      <div class="col-md-4">
-        <h6 class="text-white">JVH Labs</h6>
-        <ul class="list-unstyled">
-          <li><a href="https://jvh-labs.cl" target="_blank">jvh-labs.cl</a></li>
-          <li><a href="https://jvhsoporte.cl" target="_blank">JVH Soporte Informatico</a></li>
-          <li><a href="mailto:contacto@jvh-labs.cl">contacto@jvh-labs.cl</a></li>
-          <li><a href="tel:+56962577488">+56 9 6257 7488</a></li>
+        <h3>Con CertificaDesk</h3>
+        <ul class="order-list">
+          <li>Un sistema, 8 procedimientos resueltos</li>
+          <li>Portafolio digital de evidencias</li>
+          <li>Reportes generados en un clic</li>
+          <li>Trazabilidad candidato a certificado</li>
         </ul>
       </div>
     </div>
-    <hr style="border-color: rgba(255,255,255,0.15)">
-    <div class="d-flex justify-content-between align-items-center">
-      <small>&copy; 2026 JVH Labs. Todos los derechos reservados.</small>
-      <small>Santiago, Chile</small>
+  </div>
+</section>
+
+<!-- ═══════════ PLATAFORMA (feature showcase) ═══════════ -->
+<section class="platform" id="plataforma">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="label-teal">La plataforma</span>
+      <h2>Cada modulo resuelve un dolor concreto</h2>
+    </div>
+
+    <div class="feature-row reveal">
+      <div class="feature-text">
+        <span class="feature-num">01</span>
+        <h3>Dashboard de cumplimiento</h3>
+        <p>Vista panoramica de tu CEC. Candidatos activos, evaluaciones en curso, cumplimiento por procedimiento, alertas de vencimiento. Todo en una pantalla para que llegues preparado a cualquier supervision.</p>
+        <div class="feature-details">
+          <span class="fd">&#10003; Indicadores en tiempo real</span>
+          <span class="fd">&#10003; Alertas de evaluadores por vencer</span>
+          <span class="fd">&#10003; Vista rapida por procedimiento</span>
+        </div>
+      </div>
+      <div class="feature-visual">
+        <div class="fv-dashboard">
+          <div class="fv-toprow">
+            <div class="fv-card"><div class="fv-card-num">247</div><div class="fv-card-label">Candidatos</div></div>
+            <div class="fv-card accent"><div class="fv-card-num">96%</div><div class="fv-card-label">Cumplimiento</div></div>
+            <div class="fv-card"><div class="fv-card-num">18</div><div class="fv-card-label">Evaluadores</div></div>
+          </div>
+          <div class="fv-bars">
+            <div class="fv-bar-row"><span class="fv-bar-label">Evaluacion</span><div class="fv-bar"><div class="fv-bar-fill" style="width:92%"></div></div></div>
+            <div class="fv-bar-row"><span class="fv-bar-label">Auditorias</span><div class="fv-bar"><div class="fv-bar-fill" style="width:85%"></div></div></div>
+            <div class="fv-bar-row"><span class="fv-bar-label">Evaluadores</span><div class="fv-bar"><div class="fv-bar-fill warn" style="width:68%"></div></div></div>
+            <div class="fv-bar-row"><span class="fv-bar-label">Registros</span><div class="fv-bar"><div class="fv-bar-fill" style="width:100%"></div></div></div>
+          </div>
+          <div class="fv-alert">
+            <span class="fv-alert-icon">&#9888;&#65039;</span>
+            <span>3 evaluadores vencen en 30 dias</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-row reverse reveal">
+      <div class="feature-text">
+        <span class="feature-num">02</span>
+        <h3>Flujo de evaluacion completo</h3>
+        <p>Desde la inscripcion del candidato hasta la emision del certificado. Asignacion de evaluador, plan de evaluacion, portafolio de evidencias, decision de competencia. Todo trazado, todo auditable.</p>
+        <div class="feature-details">
+          <span class="fd">&#10003; Pipeline visual tipo kanban</span>
+          <span class="fd">&#10003; Portafolio digital de evidencias</span>
+          <span class="fd">&#10003; Firma electronica del evaluador</span>
+        </div>
+      </div>
+      <div class="feature-visual">
+        <div class="fv-pipeline">
+          <div class="fv-pipe-col">
+            <div class="fv-pipe-head">Inscritos</div>
+            <div class="fv-pipe-item"><span class="fv-avatar" style="background:#0D9488">CM</span>C. Morales</div>
+            <div class="fv-pipe-item"><span class="fv-avatar" style="background:#6366F1">RV</span>R. Vergara</div>
+            <div class="fv-pipe-item"><span class="fv-avatar" style="background:#D97706">LP</span>L. Pizarro</div>
+          </div>
+          <div class="fv-pipe-col">
+            <div class="fv-pipe-head">Evaluando</div>
+            <div class="fv-pipe-item"><span class="fv-avatar" style="background:#0891B2">AF</span>A. Fuentes</div>
+            <div class="fv-pipe-item"><span class="fv-avatar" style="background:#9333EA">MS</span>M. Silva</div>
+          </div>
+          <div class="fv-pipe-col">
+            <div class="fv-pipe-head done">Competentes</div>
+            <div class="fv-pipe-item certified"><span class="fv-avatar" style="background:#059669">JR</span>J. Rojas <span class="fv-badge-check">&#10003;</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-row reveal">
+      <div class="feature-text">
+        <span class="feature-num">03</span>
+        <h3>Auditorias con seguimiento real</h3>
+        <p>Programa auditorias internas por procedimiento. Registra hallazgos, asigna acciones correctivas con plazo y responsable. Cuando llegue la supervision, tu checklist ya esta cerrado.</p>
+        <div class="feature-details">
+          <span class="fd">&#10003; Checklist por procedimiento</span>
+          <span class="fd">&#10003; Hallazgos con acciones correctivas</span>
+          <span class="fd">&#10003; Indicadores de cierre</span>
+        </div>
+      </div>
+      <div class="feature-visual">
+        <div class="fv-audit">
+          <div class="fv-audit-head">Auditoria Q2-2026 <span class="fv-audit-status">En curso</span></div>
+          <div class="fv-checklist">
+            <div class="fv-chk done"><span class="fv-chk-box done">&#10003;</span>P1 Evaluacion y Certificacion</div>
+            <div class="fv-chk done"><span class="fv-chk-box done">&#10003;</span>P2 Gestion de Evaluadores</div>
+            <div class="fv-chk done"><span class="fv-chk-box done">&#10003;</span>P3 Control de Documentos</div>
+            <div class="fv-chk active"><span class="fv-chk-box active"></span>P4 Auditorias Internas</div>
+            <div class="fv-chk"><span class="fv-chk-box"></span>P5 Reclamos</div>
+            <div class="fv-chk"><span class="fv-chk-box"></span>P6 Conflictos de Interes</div>
+          </div>
+          <div class="fv-finding"><span>&#9888;&#65039;</span> 2 hallazgos menores - accion correctiva asignada</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 8 PROCEDIMIENTOS (timeline) ═══════════ -->
+<section class="eight" id="procedimientos">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="label-gold">Cobertura total</span>
+      <h2>Los 8 procedimientos ChileValora</h2>
+      <p class="section-sub">Cada uno con su modulo, sus formularios, sus reportes. Integrados entre si.</p>
+    </div>
+    <div class="timeline reveal">
+      <div class="timeline-line"></div>
+      <div class="tl-item left">
+        <div class="tl-node">1</div>
+        <div class="tl-card">
+          <h4>Evaluacion y Certificacion</h4>
+          <p>Ciclo completo inscripcion-evaluacion-certificacion. Portafolio digital, rubricas precargadas, firma electronica.</p>
+        </div>
+      </div>
+      <div class="tl-item right">
+        <div class="tl-node">2</div>
+        <div class="tl-card">
+          <h4>Gestion de Evaluadores</h4>
+          <p>Registro de evaluadores, vigencia de habilitacion, evaluacion de desempeno, alertas automaticas de vencimiento.</p>
+        </div>
+      </div>
+      <div class="tl-item left">
+        <div class="tl-node">3</div>
+        <div class="tl-card">
+          <h4>Auditorias Internas</h4>
+          <p>Calendario de auditorias, checklist por procedimiento, hallazgos con acciones correctivas y plazos de cierre.</p>
+        </div>
+      </div>
+      <div class="tl-item right">
+        <div class="tl-node">4</div>
+        <div class="tl-card">
+          <h4>Control de Documentos</h4>
+          <p>Versionado automatico, flujo de aprobacion, lista maestra y control de copias. Nunca mas un documento obsoleto en uso.</p>
+        </div>
+      </div>
+      <div class="tl-item left">
+        <div class="tl-node">5</div>
+        <div class="tl-card">
+          <h4>Control de Registros</h4>
+          <p>Archivo digital con politica de retencion, busqueda avanzada por tipo y fecha, backup automatico diario.</p>
+        </div>
+      </div>
+      <div class="tl-item right">
+        <div class="tl-node">6</div>
+        <div class="tl-card">
+          <h4>Reclamos, Felicitaciones y Sugerencias</h4>
+          <p>Canal formal con clasificacion automatica, SLA de respuesta configurable y dashboard de tendencias.</p>
+        </div>
+      </div>
+      <div class="tl-item left">
+        <div class="tl-node">7</div>
+        <div class="tl-card">
+          <h4>Conflictos de Interes</h4>
+          <p>Declaracion jurada digital, validacion cruzada automatica entre evaluadores y candidatos, actas de resolucion.</p>
+        </div>
+      </div>
+      <div class="tl-item right">
+        <div class="tl-node">8</div>
+        <div class="tl-card">
+          <h4>Satisfaccion de Clientes</h4>
+          <p>Encuestas automaticas post-certificacion, metricas NPS, alertas por baja puntuacion, planes de mejora.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ TRUST STRIP ═══════════ -->
+<section class="trust">
+  <div class="container">
+    <div class="trust-grid reveal">
+      <div class="trust-item">
+        <div class="trust-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <strong>Datos en Chile</strong>
+          <span>Servidor dedicado. Backup diario. Tus datos nunca salen del pais.</span>
+        </div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <div>
+          <strong>Operativo en 48 horas</strong>
+          <span>Configuras tu CEC, subes evaluadores y candidatos. Sin meses de implementacion.</span>
+        </div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0D9488" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div>
+          <strong>Soporte humano</strong>
+          <span>No un chatbot. Te acompanamos en tu primera supervision con CertificaDesk.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PRECIOS ═══════════ -->
+<section class="pricing" id="precios">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="label-teal">Planes</span>
+      <h2>Elige segun el tamano de tu CEC</h2>
+      <p class="section-sub">Sin permanencia. Implementacion guiada. Migracion desde Excel sin costo adicional.</p>
+    </div>
+    <div class="pricing-grid reveal">
+      <div class="plan-card">
+        <div class="plan-header">
+          <h4>Starter</h4>
+          <p>CEC con hasta 3 perfiles y 1 evaluador interno.</p>
+        </div>
+        <div class="plan-price">
+          <strong>$49.990</strong>
+          <span>CLP / mes + IVA</span>
+        </div>
+        <ul class="plan-features">
+          <li>Los 8 procedimientos</li>
+          <li>Hasta 50 candidatos/mes</li>
+          <li>1 usuario administrador</li>
+          <li>Soporte por email</li>
+          <li>Reportes basicos</li>
+        </ul>
+        <a href="#contacto" class="plan-btn outline">Empezar</a>
+      </div>
+      <div class="plan-card featured">
+        <div class="plan-popular">Recomendado</div>
+        <div class="plan-header">
+          <h4>Professional</h4>
+          <p>CEC con multiples perfiles y equipo de evaluadores.</p>
+        </div>
+        <div class="plan-price">
+          <strong>$99.990</strong>
+          <span>CLP / mes + IVA</span>
+        </div>
+        <ul class="plan-features">
+          <li>Todo lo de Starter</li>
+          <li>Candidatos ilimitados</li>
+          <li>Hasta 10 usuarios</li>
+          <li>Soporte prioritario</li>
+          <li>Reportes para ChileValora</li>
+          <li>Portafolio digital de evidencias</li>
+        </ul>
+        <a href="#contacto" class="plan-btn solid">Empezar</a>
+      </div>
+      <div class="plan-card">
+        <div class="plan-header">
+          <h4>Enterprise</h4>
+          <p>OTEC o redes de CEC con operacion nacional.</p>
+        </div>
+        <div class="plan-price">
+          <strong>$199.990</strong>
+          <span>CLP / mes + IVA</span>
+        </div>
+        <ul class="plan-features">
+          <li>Todo lo de Professional</li>
+          <li>Usuarios ilimitados</li>
+          <li>Multi-sede</li>
+          <li>API de integracion</li>
+          <li>SLA 99.9% + soporte dedicado</li>
+        </ul>
+        <a href="#contacto" class="plan-btn outline">Contactar</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ CTA ═══════════ -->
+<section class="cta" id="contacto">
+  <div class="container">
+    <div class="cta-card reveal">
+      <div class="cta-seal">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <h2>Deja de improvisar antes de cada supervision</h2>
+      <p>20 minutos de demo. Te mostramos los 8 procedimientos funcionando con datos reales de un CEC.</p>
+      <a href="mailto:contacto@jvh-labs.cl?subject=Demo%20CertificaDesk" class="btn-gold lg">Agendar demo gratuita</a>
+      <span class="cta-email">O escribe a <a href="mailto:contacto@jvh-labs.cl">contacto@jvh-labs.cl</a></span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-logo"><span class="footer-seal">C</span> CertificaDesk</span>
+        <span class="footer-by">por <a href="https://jvh-labs.cl">JVH Labs</a></span>
+      </div>
+      <div class="footer-links">
+        <a href="https://jvh-labs.cl">JVH Labs</a>
+        <a href="https://sst.agentedesk.cl">JVH SST</a>
+        <a href="https://app.agentedesk.cl">AgenteDesk</a>
+        <a href="/login">Acceder</a>
+      </div>
+      <div class="footer-copy">&copy; 2026 JVH Labs Chile</div>
     </div>
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-document.getElementById('contactForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const form = this;
-  const data = Object.fromEntries(new FormData(form));
-  fetch('/api/contact', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  }).then(r => {
-    if (r.ok) {
-      form.reset();
-      document.getElementById('contactSuccess').classList.remove('d-none');
-      setTimeout(() => document.getElementById('contactSuccess').classList.add('d-none'), 8000);
-    }
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
   });
-});
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    e.preventDefault();
-    const t = document.querySelector(a.getAttribute('href'));
-    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-});
-
-window.addEventListener('scroll', () => {
-  document.querySelector('.navbar').classList.toggle('scrolled', window.scrollY > 50);
+document.querySelectorAll('.tl-item').forEach((item, i) => {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.2 });
+  obs.observe(item);
 });
 </script>
 </body>

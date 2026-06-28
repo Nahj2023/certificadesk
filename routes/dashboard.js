@@ -15,6 +15,17 @@ router.get("/", (req, res) => {
     docs_expiring: db.prepare("SELECT COUNT(*) as c FROM documents WHERE org_id=? AND expiry_date <= date(?,?)")
       .get(oid, "now", "+30 days").c,
     satisfaction_avg: db.prepare("SELECT AVG(score_overall) as avg FROM satisfaction WHERE org_id=?").get(oid).avg || 0,
+    // D016 compliance stats
+    registrados: db.prepare("SELECT COUNT(*) as c FROM candidates WHERE org_id=? AND status='registrado'").get(oid).c,
+    elegibles: db.prepare("SELECT COUNT(*) as c FROM candidates WHERE org_id=? AND status='elegible'").get(oid).c,
+    evaluando: db.prepare("SELECT COUNT(*) as c FROM candidates WHERE org_id=? AND status='evaluando'").get(oid).c,
+    pendiente_comite: db.prepare("SELECT COUNT(*) as c FROM candidates WHERE org_id=? AND status='pendiente_comite'").get(oid).c,
+    certificados: db.prepare("SELECT COUNT(*) as c FROM candidates WHERE org_id=? AND status='certificado'").get(oid).c,
+    manuales: db.prepare("SELECT COUNT(*) as c FROM documents WHERE org_id=? AND category='manual_chilevalora'").get(oid).c,
+    eval_reviews_pending: db.prepare(
+      `SELECT COUNT(*) as c FROM evaluators WHERE org_id=? AND active=1
+       AND id NOT IN (SELECT evaluator_id FROM evaluator_reviews WHERE org_id=? AND period LIKE ?)`
+    ).get(oid, oid, new Date().getFullYear() + '%').c,
   };
 
   const recent = db.prepare(

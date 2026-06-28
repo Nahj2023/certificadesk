@@ -1,5 +1,5 @@
--- CertificaDesk - Schema v1.0
--- SaaS para CEC ChileValora
+-- CertificaDesk - Schema v2.0
+-- SaaS para CEC ChileValora — D016-01-18 Compliant
 
 CREATE TABLE IF NOT EXISTS organizations (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -242,6 +242,7 @@ CREATE TABLE IF NOT EXISTS activity_log (
   FOREIGN KEY (org_id) REFERENCES organizations(id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
 CREATE TABLE IF NOT EXISTS records_control (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   org_id INTEGER NOT NULL,
@@ -261,4 +262,54 @@ CREATE TABLE IF NOT EXISTS records_control (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (org_id) REFERENCES organizations(id),
   FOREIGN KEY (responsible_id) REFERENCES users(id)
+);
+
+-- v2: D016-01-18 Compliance tables
+
+CREATE TABLE IF NOT EXISTS contact_requests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  cec_name TEXT,
+  email TEXT NOT NULL,
+  phone TEXT,
+  message TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS certification_decisions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  org_id INTEGER NOT NULL,
+  evaluation_id INTEGER NOT NULL,
+  candidate_id INTEGER NOT NULL,
+  committee_date DATE,
+  members TEXT,
+  evaluator_recommendation TEXT,
+  audit_status TEXT DEFAULT 'sin_auditoria',
+  portfolio_reviewed INTEGER DEFAULT 0,
+  decision TEXT DEFAULT 'pendiente',
+  justification TEXT,
+  decided_by INTEGER,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (org_id) REFERENCES organizations(id),
+  FOREIGN KEY (evaluation_id) REFERENCES evaluations(id),
+  FOREIGN KEY (candidate_id) REFERENCES candidates(id),
+  FOREIGN KEY (decided_by) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS evaluator_reviews (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  org_id INTEGER NOT NULL,
+  evaluator_id INTEGER NOT NULL,
+  period TEXT NOT NULL,
+  score_deadlines INTEGER NOT NULL,
+  score_report_quality INTEGER NOT NULL,
+  score_procedure_compliance INTEGER NOT NULL,
+  overall_score REAL NOT NULL,
+  observations TEXT,
+  action_required TEXT DEFAULT 'ninguna',
+  reviewed_by INTEGER,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (org_id) REFERENCES organizations(id),
+  FOREIGN KEY (evaluator_id) REFERENCES evaluators(id),
+  FOREIGN KEY (reviewed_by) REFERENCES users(id)
 );

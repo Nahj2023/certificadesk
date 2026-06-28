@@ -4,13 +4,21 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h4 class="mb-0"><%= candidate.name %></h4>
-    <span class="badge bg-<%= candidate.status === 'certificado' ? 'success' : candidate.status === 'no_certificado' ? 'danger' : candidate.status === 'evaluando' ? 'warning' : 'secondary' %> mt-1"><%= candidate.status %></span>
+    <%
+      const statusColors = { registrado:'secondary', elegible:'info', evaluando:'warning', pendiente_comite:'primary', certificado:'success', no_certificado:'danger', apelacion:'dark' };
+      const statusColor = statusColors[candidate.status] || 'secondary';
+    %>
+    <span class="badge bg-<%= statusColor %> mt-1"><%= candidate.status %></span>
   </div>
   <div>
     <a href="/candidatos/<%= candidate.id %>/editar" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
     <a href="/candidatos" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
   </div>
 </div>
+
+<% if (req.query.error === 'elegibilidad') { %>
+<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> Debe marcar todos los requisitos de elegibilidad.</div>
+<% } %>
 
 <div class="row g-3 mb-4">
   <div class="col-md-6">
@@ -29,6 +37,35 @@
         </table>
       </div>
     </div>
+
+    <% if (candidate.status === 'registrado') { %>
+    <div class="card border-0 shadow-sm mt-3">
+      <div class="card-header bg-white"><strong><i class="bi bi-check2-square"></i> Verificacion de Elegibilidad (D016 Proc. 1.1)</strong></div>
+      <div class="card-body">
+        <form method="POST" action="/candidatos/<%= candidate.id %>/elegibilidad">
+          <div class="form-check mb-2">
+            <input type="checkbox" name="perfil_verificado" value="1" class="form-check-input" id="chk1">
+            <label for="chk1" class="form-check-label">Perfil ocupacional verificado</label>
+          </div>
+          <div class="form-check mb-2">
+            <input type="checkbox" name="requisitos_cumplidos" value="1" class="form-check-input" id="chk2">
+            <label for="chk2" class="form-check-label">Requisitos del perfil cumplidos</label>
+          </div>
+          <div class="form-check mb-2">
+            <input type="checkbox" name="documentacion_ok" value="1" class="form-check-input" id="chk3">
+            <label for="chk3" class="form-check-label">Documentacion de identidad OK</label>
+          </div>
+          <div class="form-check mb-3">
+            <input type="checkbox" name="sin_conflictos" value="1" class="form-check-input" id="chk4">
+            <label for="chk4" class="form-check-label">Sin conflictos de interes</label>
+          </div>
+          <button type="submit" class="btn btn-info text-white" onclick="return confirm('Marcar candidato como elegible?')">
+            <i class="bi bi-check-circle"></i> Marcar Elegible
+          </button>
+        </form>
+      </div>
+    </div>
+    <% } %>
   </div>
   <div class="col-md-6">
     <div class="card border-0 shadow-sm">
@@ -50,6 +87,27 @@
         </table>
       </div>
     </div>
+
+    <% if (decisions && decisions.length > 0) { %>
+    <div class="card border-0 shadow-sm mt-3">
+      <div class="card-header bg-white"><strong>Decisiones del Comite</strong></div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <thead><tr><th>Fecha</th><th>Decision</th><th>Por</th></tr></thead>
+          <tbody>
+            <% decisions.forEach(d => { %>
+            <tr>
+              <td><%= d.committee_date || '-' %></td>
+              <td><span class="badge bg-<%= d.decision === 'certificar' ? 'success' : 'danger' %>"><%= d.decision %></span></td>
+              <td><%= d.decided_by_name || '-' %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% } %>
+
     <% if (candidate.notes) { %>
     <div class="card border-0 shadow-sm mt-3">
       <div class="card-header bg-white"><strong>Notas</strong></div>

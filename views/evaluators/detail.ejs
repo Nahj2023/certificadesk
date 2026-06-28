@@ -1,0 +1,65 @@
+<% const title = evaluator.name %>
+<%- include('../partials/header', { title }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-0"><%= evaluator.name %></h4>
+    <span class="badge bg-<%= evaluator.active ? 'success' : 'secondary' %> mt-1"><%= evaluator.active ? 'Activo' : 'Inactivo' %></span>
+    <% if (evaluator.performance_score > 0) { %>
+      <span class="badge bg-<%= evaluator.performance_score >= 4 ? 'success' : evaluator.performance_score >= 3 ? 'warning' : 'danger' %> mt-1">
+        Score: <%= evaluator.performance_score.toFixed(1) %>
+      </span>
+    <% } %>
+  </div>
+  <div>
+    <a href="/evaluadores/<%= evaluator.id %>/evaluar" class="btn btn-primary"><i class="bi bi-clipboard2-check"></i> Evaluar Desempeno</a>
+    <a href="/evaluadores/<%= evaluator.id %>/editar" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
+    <a href="/evaluadores" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><strong>Datos del Evaluador</strong></div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tr><th style="width:35%">RUT</th><td><%= evaluator.rut || '-' %></td></tr>
+          <tr><th>Email</th><td><%= evaluator.email || '-' %></td></tr>
+          <tr><th>Telefono</th><td><%= evaluator.phone || '-' %></td></tr>
+          <tr><th>Especialidades</th><td><%= evaluator.specialties || '-' %></td></tr>
+          <tr><th>Tipo Contrato</th><td><%= evaluator.contract_type || '-' %></td></tr>
+          <tr><th>DJS Vencimiento</th><td><%= evaluator.djs_expiry || '-' %></td></tr>
+          <tr><th>Habilitacion CV</th><td><%= evaluator.habilitacion_cv || '-' %></td></tr>
+          <tr><th>Evaluaciones</th><td><%= evalCompleted %>/<%= evalCount %> completadas</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white"><strong>Historial Evaluaciones de Desempeno</strong></div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <thead><tr><th>Periodo</th><th>Plazos</th><th>Informes</th><th>Proc.</th><th>Prom.</th><th>Accion</th></tr></thead>
+          <tbody>
+            <% if (reviews.length === 0) { %>
+              <tr><td colspan="6" class="text-muted text-center py-3">Sin evaluaciones de desempeno</td></tr>
+            <% } else { reviews.forEach(r => { %>
+              <tr>
+                <td><%= r.period %></td>
+                <td><%= r.score_deadlines %></td>
+                <td><%= r.score_report_quality %></td>
+                <td><%= r.score_procedure_compliance %></td>
+                <td><span class="badge bg-<%= r.overall_score >= 4 ? 'success' : r.overall_score >= 3 ? 'warning' : 'danger' %>"><%= r.overall_score.toFixed(1) %></span></td>
+                <td><span class="badge bg-<%= r.action_required === 'ninguna' ? 'success' : r.action_required === 'capacitacion' ? 'warning' : 'danger' %>"><%= r.action_required %></span></td>
+              </tr>
+            <% })} %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

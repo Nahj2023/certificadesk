@@ -15,7 +15,7 @@ router.get("/", (req, res) => {
   sql += " ORDER BY c.created_at DESC";
 
   const candidates = db.prepare(sql).all(...params);
-  const statuses = ["registrado", "evaluando", "certificado", "no_certificado", "apelacion"];
+  const statuses = ["registrado", "elegible", "evaluando", "pendiente_comite", "certificado", "no_certificado", "apelacion"];
   res.render("candidates/list", { candidates, statuses, filters: { status, q } });
 });
 
@@ -55,7 +55,12 @@ router.get("/:id", (req, res) => {
      LEFT JOIN evaluators ev ON e.evaluator_id=ev.id WHERE e.candidate_id=? ORDER BY e.scheduled_date DESC`
   ).all(candidate.id);
 
-  res.render("candidates/detail", { candidate, evaluations });
+  const decisions = db.prepare(
+    `SELECT cd.*, u.display_name as decided_by_name FROM certification_decisions cd
+     LEFT JOIN users u ON cd.decided_by=u.id WHERE cd.candidate_id=? ORDER BY cd.created_at DESC`
+  ).all(candidate.id);
+
+  res.render("candidates/detail", { candidate, evaluations, decisions });
 });
 
 router.get("/:id/editar", (req, res) => {
@@ -64,6 +69,23 @@ router.get("/:id/editar", (req, res) => {
   if (!candidate) return res.redirect("/candidatos");
   const profiles = db.prepare("SELECT * FROM profiles WHERE active=1 ORDER BY name").all();
   res.render("candidates/form", { candidate, profiles, error: null });
+});
+
+// Elegibilidad — D016 Proc 1.1
+router.post("/:id/elegibilidad", (req, res) => {
+  const db = getDb();
+  const oid = req.user.org_id;
+  const candidate = db.prepare("SELECT * FROM candidates WHERE id=? AND org_id=?").get(req.params.id, oid);
+  if (!candidate || candidate.status !== 'registrado') return res.redirect(`/candidatos/${req.params.id}`);
+
+  const { perfil_verificado, requisitos_cumplidos, documentacion_ok, sin_conflictos } = req.body;
+  if (!perfil_verificado || !requisitos_cumplidos || !documentacion_ok || !sin_conflictos) {
+    return res.redirect(`/candidatos/${req.params.id}?error=elegibilidad`);
+  }
+
+  db.prepare("UPDATE candidates SET status='elegible', updated_at=CURRENT_TIMESTAMP WHERE id=? AND org_id=?").run(req.params.id, oid);
+  logActivity(oid, req.user.id, "elegibilidad", "candidato", req.params.id, `${candidate.name} marcado elegible`);
+  res.redirect(`/candidatos/${req.params.id}`);
 });
 
 router.post("/:id", (req, res) => {
