@@ -1,8 +1,10 @@
 <% const title = 'Reporte ChileValora' %>
 <%- include('../partials/header', { title }) %>
-
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0"><i class="bi bi-file-earmark-bar-graph"></i> Reporte Mensual ChileValora</h4>
+  <div>
+    <h4 class="mb-1">Reporte Mensual ChileValora</h4>
+    <span class="text-muted" style="font-size:0.85rem">CEC: <%= org.name %> — RUT: <%= org.rut || '-' %></span>
+  </div>
   <div class="d-flex gap-2 align-items-center">
     <form method="GET" action="/reportes/chilevalora" class="d-flex gap-2">
       <input type="month" name="periodo" class="form-control form-control-sm" value="<%= periodo %>">
@@ -13,54 +15,36 @@
   </div>
 </div>
 
-<div class="card border-0 shadow-sm mb-4">
-  <div class="card-header bg-white"><strong>CEC: <%= org.name %> — RUT: <%= org.rut || '-' %> — Periodo: <%= periodo %></strong></div>
+<div class="card mb-4">
+  <div class="card-header"><i class="bi bi-graph-up me-2" style="color:var(--coral)"></i> Resumen del Periodo: <%= periodo %></div>
   <div class="card-body">
-    <div class="row g-3">
-      <div class="col-md-2 text-center">
-        <div class="stat-label">Evaluaciones</div>
-        <div class="stat-value"><%= evaluaciones.length %></div>
-      </div>
-      <div class="col-md-2 text-center">
-        <div class="stat-label">Certificados</div>
-        <div class="stat-value text-success"><%= decisiones.filter(d => d.decision === 'certificar').length %></div>
-      </div>
-      <div class="col-md-2 text-center">
-        <div class="stat-label">No Certificados</div>
-        <div class="stat-value text-danger"><%= decisiones.filter(d => d.decision === 'no_certificar').length %></div>
-      </div>
-      <div class="col-md-2 text-center">
-        <div class="stat-label">Apelaciones</div>
-        <div class="stat-value"><%= apelaciones %></div>
-      </div>
-      <div class="col-md-2 text-center">
-        <div class="stat-label">Satisfaccion</div>
-        <div class="stat-value"><%= satisfaccion.avg ? Number(satisfaccion.avg).toFixed(1) : '-' %>/5</div>
-      </div>
-      <div class="col-md-2 text-center">
-        <div class="stat-label">Auditorias</div>
-        <div class="stat-value"><%= auditorias.length %></div>
-      </div>
+    <div class="row g-3 text-center">
+      <div class="col-md-2"><div class="fs-3 fw-bold"><%= evaluaciones.length %></div><div class="text-muted small">Evaluaciones</div></div>
+      <div class="col-md-2"><div class="fs-3 fw-bold" style="color:var(--green)"><%= decisiones.filter(d => d.decision === 'certificar').length %></div><div class="text-muted small">Certificados</div></div>
+      <div class="col-md-2"><div class="fs-3 fw-bold text-danger"><%= decisiones.filter(d => d.decision === 'no_certificar').length %></div><div class="text-muted small">No Certificados</div></div>
+      <div class="col-md-2"><div class="fs-3 fw-bold"><%= apelaciones %></div><div class="text-muted small">Apelaciones</div></div>
+      <div class="col-md-2"><div class="fs-3 fw-bold" style="color:var(--orange)"><%= satisfaccion.avg ? Number(satisfaccion.avg).toFixed(1) : '-' %>/5</div><div class="text-muted small">Satisfaccion</div></div>
+      <div class="col-md-2"><div class="fs-3 fw-bold"><%= auditorias.length %></div><div class="text-muted small">Auditorias</div></div>
     </div>
   </div>
 </div>
 
-<div class="row g-3 mb-4">
+<div class="row g-4 mb-4">
   <div class="col-md-6">
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white"><strong>Detalle por Perfil Ocupacional</strong></div>
+    <div class="card">
+      <div class="card-header"><i class="bi bi-diagram-3 me-2" style="color:var(--coral)"></i> Detalle por Perfil Ocupacional</div>
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
           <thead><tr><th>Codigo</th><th>Perfil</th><th>Total</th><th>Comp.</th><th>No Comp.</th></tr></thead>
           <tbody>
             <% if (perfiles.length === 0) { %>
-              <tr><td colspan="5" class="text-muted text-center py-3">Sin datos en este periodo</td></tr>
+              <tr><td colspan="5" class="empty-state"><i class="bi bi-diagram-3"></i>Sin datos en este periodo</td></tr>
             <% } else { perfiles.forEach(p => { %>
               <tr>
-                <td><%= p.code || '-' %></td>
+                <td><code><%= p.code || '-' %></code></td>
                 <td><%= p.name || '-' %></td>
-                <td><%= p.total %></td>
-                <td class="text-success"><%= p.competentes || 0 %></td>
+                <td class="fw-bold"><%= p.total %></td>
+                <td style="color:var(--green)"><%= p.competentes || 0 %></td>
                 <td class="text-danger"><%= p.no_competentes || 0 %></td>
               </tr>
             <% })} %>
@@ -70,20 +54,16 @@
     </div>
   </div>
   <div class="col-md-6">
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white"><strong>Evaluadores Participantes</strong></div>
+    <div class="card">
+      <div class="card-header"><i class="bi bi-person-badge me-2" style="color:var(--coral)"></i> Evaluadores Participantes</div>
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
           <thead><tr><th>Nombre</th><th>RUT</th><th>Evaluaciones</th></tr></thead>
           <tbody>
             <% if (evaluadores.length === 0) { %>
-              <tr><td colspan="3" class="text-muted text-center py-3">Sin evaluadores en este periodo</td></tr>
+              <tr><td colspan="3" class="empty-state"><i class="bi bi-person-badge"></i>Sin evaluadores en este periodo</td></tr>
             <% } else { evaluadores.forEach(e => { %>
-              <tr>
-                <td><%= e.name || '-' %></td>
-                <td><%= e.rut || '-' %></td>
-                <td><%= e.evaluaciones %></td>
-              </tr>
+              <tr><td class="fw-bold"><%= e.name || '-' %></td><td class="text-muted"><%= e.rut || '-' %></td><td><%= e.evaluaciones %></td></tr>
             <% })} %>
           </tbody>
         </table>
@@ -92,45 +72,41 @@
   </div>
 </div>
 
-<div class="row g-3 mb-4">
-  <div class="col-12">
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white"><strong>Detalle Evaluaciones del Periodo</strong></div>
-      <div class="card-body p-0">
-        <table class="table table-sm mb-0">
-          <thead><tr><th>Candidato</th><th>RUT</th><th>Perfil</th><th>Evaluador</th><th>Fecha</th><th>Resultado</th><th>Puntaje</th></tr></thead>
-          <tbody>
-            <% if (evaluaciones.length === 0) { %>
-              <tr><td colspan="7" class="text-muted text-center py-3">Sin evaluaciones en este periodo</td></tr>
-            <% } else { evaluaciones.forEach(e => { %>
-              <tr>
-                <td><%= e.candidate_name || '-' %></td>
-                <td><%= e.candidate_rut || '-' %></td>
-                <td><%= e.profile_name || '-' %></td>
-                <td><%= e.evaluator_name || '-' %></td>
-                <td><%= e.completed_at ? e.completed_at.substring(0,10) : '-' %></td>
-                <td><span class="badge bg-<%= e.result === 'competente' ? 'success' : 'danger' %>"><%= e.result || '-' %></span></td>
-                <td><%= e.score || '-' %></td>
-              </tr>
-            <% })} %>
-          </tbody>
-        </table>
-      </div>
-    </div>
+<div class="card mb-4">
+  <div class="card-header"><i class="bi bi-table me-2" style="color:var(--coral)"></i> Detalle Evaluaciones del Periodo</div>
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>Candidato</th><th>RUT</th><th>Perfil</th><th>Evaluador</th><th>Fecha</th><th>Resultado</th><th>Puntaje</th></tr></thead>
+      <tbody>
+        <% if (evaluaciones.length === 0) { %>
+          <tr><td colspan="7" class="empty-state"><i class="bi bi-clipboard"></i>Sin evaluaciones en este periodo</td></tr>
+        <% } else { evaluaciones.forEach(e => { %>
+          <tr>
+            <td class="fw-bold"><%= e.candidate_name || '-' %></td>
+            <td class="text-muted"><%= e.candidate_rut || '-' %></td>
+            <td><%= e.profile_name || '-' %></td>
+            <td class="text-muted"><%= e.evaluator_name || '-' %></td>
+            <td class="text-muted"><%= e.completed_at ? e.completed_at.substring(0,10) : '-' %></td>
+            <td><span class="badge bg-<%= e.result === 'competente' ? 'success' : 'danger' %>"><%= e.result || '-' %></span></td>
+            <td><%= e.score || '-' %></td>
+          </tr>
+        <% })} %>
+      </tbody>
+    </table>
   </div>
 </div>
 
 <% if (auditorias.length > 0) { %>
-<div class="card border-0 shadow-sm mb-4">
-  <div class="card-header bg-white"><strong>Auditorias del Periodo</strong></div>
+<div class="card mb-4">
+  <div class="card-header"><i class="bi bi-search me-2" style="color:var(--coral)"></i> Auditorias del Periodo</div>
   <div class="card-body p-0">
     <table class="table table-sm mb-0">
       <thead><tr><th>Auditor</th><th>Tipo</th><th>Hallazgos</th><th>No Conformidades</th><th>Estado</th></tr></thead>
       <tbody>
         <% auditorias.forEach(a => { %>
         <tr>
-          <td><%= a.auditor_name || '-' %></td>
-          <td><%= a.type %></td>
+          <td class="fw-bold"><%= a.auditor_name || '-' %></td>
+          <td><span class="badge bg-secondary"><%= a.type %></span></td>
           <td><%= a.findings_count %></td>
           <td><%= a.non_conformities %></td>
           <td><span class="badge bg-<%= a.status === 'completada' ? 'success' : 'warning' %>"><%= a.status %></span></td>
@@ -141,5 +117,4 @@
   </div>
 </div>
 <% } %>
-
 <%- include('../partials/footer') %>

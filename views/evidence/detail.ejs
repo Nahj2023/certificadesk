@@ -1,49 +1,43 @@
 <% const title = 'Evidencias - ' + evaluation.candidate_name %>
 <%- include('../partials/header', { title }) %>
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0">Portafolio de Evidencias</h4>
+  <div>
+    <h4 class="mb-1">Portafolio: <%= evaluation.candidate_name %></h4>
+    <span class="text-muted" style="font-size:0.85rem">Evaluacion <%= evaluation.type %> — <%= evaluation.scheduled_date || '' %></span>
+  </div>
   <a href="/evidencias" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
-
 <div class="row g-4">
   <div class="col-md-5">
-    <div class="card border-0 shadow-sm mb-3">
-      <div class="card-header bg-dark text-white"><h6 class="mb-0">Datos de la Evaluacion</h6></div>
-      <div class="card-body">
+    <div class="card mb-4">
+      <div class="card-header"><i class="bi bi-clipboard-data me-2" style="color:var(--coral)"></i> Datos de la Evaluacion</div>
+      <div class="card-body p-0">
         <table class="table table-sm mb-0">
-          <tr><th>Candidato</th><td><%= evaluation.candidate_name %></td></tr>
-          <tr><th>RUT</th><td><%= evaluation.candidate_rut || '-' %></td></tr>
-          <tr><th>Perfil</th><td><%= evaluation.profile_name || '-' %> <small class="text-muted">(<%= evaluation.profile_code || '' %>)</small></td></tr>
-          <tr><th>Evaluador</th><td><%= evaluation.evaluator_name || '-' %></td></tr>
-          <tr><th>Tipo</th><td><%= evaluation.type || '-' %></td></tr>
-          <tr><th>Fecha</th><td><%= evaluation.scheduled_date || '-' %></td></tr>
-          <tr><th>Lugar</th><td><%= evaluation.location || '-' %></td></tr>
-          <tr><th>Estado</th><td><span class="badge bg-<%= evaluation.status === 'completada' ? 'success' : evaluation.status === 'en_curso' ? 'primary' : 'warning' %>"><%= evaluation.status %></span></td></tr>
-          <% if (evaluation.result) { %>
-          <tr><th>Resultado</th><td><span class="badge bg-<%= evaluation.result === 'competente' ? 'success' : 'danger' %>"><%= evaluation.result %></span></td></tr>
-          <% } %>
-          <% if (evaluation.score) { %>
-          <tr><th>Puntaje</th><td><%= evaluation.score %>%</td></tr>
-          <% } %>
+          <tr><td class="text-muted" style="width:35%">Candidato</td><td class="fw-bold"><%= evaluation.candidate_name %></td></tr>
+          <tr><td class="text-muted">RUT</td><td><%= evaluation.candidate_rut || '-' %></td></tr>
+          <tr><td class="text-muted">Perfil</td><td><%= evaluation.profile_name || '-' %> <small class="text-muted">(<%= evaluation.profile_code || '' %>)</small></td></tr>
+          <tr><td class="text-muted">Evaluador</td><td><%= evaluation.evaluator_name || '-' %></td></tr>
+          <tr><td class="text-muted">Tipo</td><td><%= evaluation.type || '-' %></td></tr>
+          <tr><td class="text-muted">Fecha</td><td><%= evaluation.scheduled_date || '-' %></td></tr>
+          <tr><td class="text-muted">Lugar</td><td><%= evaluation.location || '-' %></td></tr>
+          <tr><td class="text-muted">Estado</td><td><span class="badge bg-<%= evaluation.status === 'completada' ? 'success' : evaluation.status === 'en_curso' ? 'primary' : 'warning' %>"><%= evaluation.status %></span></td></tr>
+          <% if (evaluation.result) { %><tr><td class="text-muted">Resultado</td><td><span class="badge bg-<%= evaluation.result === 'competente' ? 'success' : 'danger' %>"><%= evaluation.result %></span></td></tr><% } %>
+          <% if (evaluation.score) { %><tr><td class="text-muted">Puntaje</td><td><%= evaluation.score %>%</td></tr><% } %>
         </table>
       </div>
     </div>
-
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-primary text-white"><h6 class="mb-0"><i class="bi bi-cloud-upload"></i> Subir Evidencia</h6></div>
+    <div class="card">
+      <div class="card-header"><i class="bi bi-cloud-upload me-2" style="color:var(--coral)"></i> Subir Evidencia</div>
       <div class="card-body">
         <form method="POST" action="/evidencias/<%= evaluation.id %>/upload" enctype="multipart/form-data">
-          <div class="mb-3"><label class="form-label">Criterio / Unidad de Competencia</label>
+          <div class="mb-3"><label class="form-label">Criterio / UC</label>
             <input type="text" name="criterion" class="form-control" placeholder="Ej: UC1 - Preparar materiales">
           </div>
           <div class="mb-3"><label class="form-label">Tipo de evidencia</label>
             <select name="type" class="form-select">
-              <option value="documento">Documento</option>
-              <option value="foto">Fotografia</option>
-              <option value="video">Video</option>
-              <option value="observacion_directa">Observacion directa</option>
-              <option value="producto">Producto del trabajo</option>
-              <option value="testimonio">Testimonio</option>
+              <option value="documento">Documento</option><option value="foto">Fotografia</option>
+              <option value="video">Video</option><option value="observacion_directa">Observacion directa</option>
+              <option value="producto">Producto del trabajo</option><option value="testimonio">Testimonio</option>
             </select>
           </div>
           <div class="mb-3"><label class="form-label">Archivo * (max 20MB)</label>
@@ -54,46 +48,34 @@
       </div>
     </div>
   </div>
-
   <div class="col-md-7">
-    <div class="card border-0 shadow-sm">
-      <div class="card-header"><h6 class="mb-0">Evidencias Cargadas (<%= evidences.length %>)</h6></div>
+    <div class="card">
+      <div class="card-header"><i class="bi bi-archive me-2" style="color:var(--coral)"></i> Evidencias Cargadas (<%= evidences.length %>)</div>
       <div class="card-body p-0">
         <% if (evidences.length === 0) { %>
-          <div class="text-muted text-center py-5">
-            <i class="bi bi-folder2 display-4"></i>
-            <p class="mt-2">Sin evidencias cargadas para esta evaluacion</p>
-          </div>
+          <div class="empty-state" style="padding:3rem"><i class="bi bi-folder2"></i>Sin evidencias cargadas</div>
         <% } else { %>
           <table class="table table-hover mb-0">
-            <thead><tr><th>Archivo</th><th>Criterio</th><th>Tipo</th><th>Tamano</th><th>Subido por</th><th>Verificado</th><th></th></tr></thead>
+            <thead><tr><th>Archivo</th><th>Criterio</th><th>Tipo</th><th>Tamano</th><th>Verificado</th><th></th></tr></thead>
             <tbody>
               <% evidences.forEach(ev => { %>
               <tr>
-                <td>
-                  <a href="<%= ev.file_path %>" target="_blank" class="text-decoration-none">
-                    <i class="bi bi-<%= ev.type === 'foto' ? 'image' : ev.type === 'video' ? 'camera-video' : 'file-earmark' %>"></i>
-                    <%= ev.file_name %>
-                  </a>
-                </td>
-                <td><small><%= ev.criterion || '-' %></small></td>
+                <td><a href="<%= ev.file_path %>" target="_blank" class="text-decoration-none">
+                  <i class="bi bi-<%= ev.type === 'foto' ? 'image' : ev.type === 'video' ? 'camera-video' : 'file-earmark' %> me-1"></i><%= ev.file_name %>
+                </a></td>
+                <td><small class="text-muted"><%= ev.criterion || '-' %></small></td>
                 <td><span class="badge bg-secondary"><%= ev.type %></span></td>
-                <td><small><%= ev.file_size ? (ev.file_size / 1024).toFixed(0) + ' KB' : '-' %></small></td>
-                <td><small><%= ev.uploader_name || '-' %></small></td>
-                <td>
-                  <% if (ev.verified) { %>
-                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Si</span>
-                  <% } else { %>
-                    <form method="POST" action="/evidencias/<%= evaluation.id %>/evidence/<%= ev.id %>/verify" class="d-inline">
-                      <button type="submit" class="btn btn-sm btn-outline-success" title="Verificar"><i class="bi bi-check-lg"></i></button>
-                    </form>
-                  <% } %>
-                </td>
-                <td>
-                  <form method="POST" action="/evidencias/<%= evaluation.id %>/evidence/<%= ev.id %>/delete" class="d-inline">
-                    <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Eliminar esta evidencia?"><i class="bi bi-trash"></i></button>
+                <td><small class="text-muted"><%= ev.file_size ? (ev.file_size / 1024).toFixed(0) + ' KB' : '-' %></small></td>
+                <td><% if (ev.verified) { %>
+                  <span class="badge bg-success"><i class="bi bi-check-circle"></i></span>
+                <% } else { %>
+                  <form method="POST" action="/evidencias/<%= evaluation.id %>/evidence/<%= ev.id %>/verify" class="d-inline">
+                    <button type="submit" class="btn btn-sm btn-outline-success"><i class="bi bi-check-lg"></i></button>
                   </form>
-                </td>
+                <% } %></td>
+                <td><form method="POST" action="/evidencias/<%= evaluation.id %>/evidence/<%= ev.id %>/delete" class="d-inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Eliminar?')"><i class="bi bi-trash"></i></button>
+                </form></td>
               </tr>
               <% }) %>
             </tbody>

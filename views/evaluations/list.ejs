@@ -4,44 +4,173 @@
   <h4 class="mb-0">Evaluaciones</h4>
   <a href="/evaluaciones/nueva" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva Evaluacion</a>
 </div>
+
+<!-- Leyenda ponderaciones -->
+<div class="alert alert-light border mb-3 small">
+  <i class="bi bi-info-circle"></i> <strong>Instrumentos D016:</strong>
+  Conocimientos <span class="badge bg-secondary">20%</span>
+  Jefe Directo / Caso <span class="badge bg-secondary">10%</span>
+  Terreno / Simulacion <span class="badge bg-secondary">60%</span>
+  Evidencias <span class="badge bg-secondary">10%</span>
+  — Escala 1-4, minimo 3.0 para Competente
+</div>
+
 <div class="card border-0 shadow-sm">
   <div class="card-body p-0">
     <table class="table table-hover mb-0">
-      <thead><tr><th>Candidato</th><th>RUT</th><th>Perfil</th><th>Evaluador</th><th>Fecha</th><th>Estado</th><th>Resultado</th><th></th></tr></thead>
+      <thead><tr><th>Candidato</th><th>RUT</th><th>Perfil</th><th>Evaluador</th><th>Fecha</th><th>Estado</th><th>Pond.</th><th>Resultado</th><th></th></tr></thead>
       <tbody>
         <% if (evaluations.length === 0) { %>
-          <tr><td colspan="8" class="text-muted text-center py-4">Sin evaluaciones</td></tr>
+          <tr><td colspan="9" class="text-muted text-center py-4">Sin evaluaciones</td></tr>
         <% } else { evaluations.forEach(e => { %>
           <tr>
-            <td><%= e.candidate_name || '-' %></td>
+            <td><a href="/evaluaciones/<%= e.id %>"><%= e.candidate_name || '-' %></a></td>
             <td><%= e.candidate_rut || '-' %></td>
             <td><%= e.profile_name || '-' %></td>
             <td><%= e.evaluator_name || '-' %></td>
             <td><%= e.scheduled_date || '-' %></td>
             <td><span class="badge bg-<%= e.status === 'completada' ? 'success' : e.status === 'programada' ? 'info' : 'secondary' %>"><%= e.status %></span></td>
-            <td><%= e.result || '-' %></td>
+            <td><%= e.score_ponderado ? e.score_ponderado.toFixed(2) : '-' %></td>
+            <td>
+              <% if (e.result) { %>
+                <span class="badge bg-<%= e.result === 'competente' ? 'success' : 'danger' %>"><%= e.result %></span>
+              <% } else { %>-<% } %>
+            </td>
             <td>
               <% if (e.status === 'programada') { %>
-                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#resultModal<%= e.id %>" title="Registrar resultado"><i class="bi bi-check-lg"></i></button>
+                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#resultModal<%= e.id %>" title="Registrar resultado"><i class="bi bi-clipboard-check"></i></button>
               <% } %>
               <% if (e.status === 'completada' && e.candidate_status === 'pendiente_comite') { %>
                 <a href="/evaluaciones/<%= e.id %>/comite" class="btn btn-sm btn-outline-primary" title="Comite de Decision"><i class="bi bi-people-fill"></i></a>
               <% } %>
+              <a href="/evaluaciones/<%= e.id %>" class="btn btn-sm btn-outline-secondary" title="Ver detalle"><i class="bi bi-eye"></i></a>
             </td>
           </tr>
           <% if (e.status === 'programada') { %>
           <div class="modal fade" id="resultModal<%= e.id %>" tabindex="-1">
-            <div class="modal-dialog"><div class="modal-content">
+            <div class="modal-dialog modal-lg"><div class="modal-content">
               <form method="POST" action="/evaluaciones/<%= e.id %>/resultado">
-                <div class="modal-header"><h5 class="modal-title">Registrar Resultado</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                <div class="modal-body">
-                  <div class="mb-3"><label class="form-label">Resultado</label>
-                    <select name="result" class="form-select" required><option value="competente">Competente</option><option value="aun_no_competente">Aun No Competente</option></select>
-                  </div>
-                  <div class="mb-3"><label class="form-label">Puntaje</label><input type="number" name="score" class="form-control" min="0" max="100" step="0.1"></div>
-                  <div class="mb-3"><label class="form-label">Observaciones</label><textarea name="observations" class="form-control" rows="3"></textarea></div>
+                <div class="modal-header">
+                  <h5 class="modal-title"><i class="bi bi-clipboard-check"></i> Registrar Resultado — <%= e.candidate_name %></h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-footer"><button type="submit" class="btn btn-primary">Guardar</button></div>
+                <div class="modal-body">
+                  <div class="row g-3">
+                    <!-- Instrumento 1: Conocimientos 20% -->
+                    <div class="col-md-6">
+                      <div class="card border-info">
+                        <div class="card-header bg-info bg-opacity-10 py-2">
+                          <strong>Prueba de Conocimientos</strong> <span class="badge bg-info float-end">20%</span>
+                        </div>
+                        <div class="card-body py-2">
+                          <div class="d-flex gap-3">
+                            <% [1,2,3,4].forEach(n => { %>
+                            <div class="form-check">
+                              <input type="radio" name="score_conocimientos" value="<%= n %>" class="form-check-input score-input" id="sc<%= e.id %>_<%= n %>" data-eval="<%= e.id %>" required>
+                              <label class="form-check-label" for="sc<%= e.id %>_<%= n %>"><%= n %></label>
+                            </div>
+                            <% }) %>
+                          </div>
+                          <small class="text-muted">Evaluacion escrita de conocimientos especificos</small>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Instrumento 2: Jefe Directo / Caso 10% -->
+                    <div class="col-md-6">
+                      <div class="card border-warning">
+                        <div class="card-header bg-warning bg-opacity-10 py-2">
+                          <strong>Eval. Jefe / Caso</strong> <span class="badge bg-warning float-end">10%</span>
+                        </div>
+                        <div class="card-body py-2">
+                          <div class="mb-2">
+                            <select name="tipo_jefe" class="form-select form-select-sm">
+                              <option value="jefe_directo">Evaluacion Jefe Directo</option>
+                              <option value="analisis_caso">Analisis de Caso</option>
+                            </select>
+                          </div>
+                          <div class="d-flex gap-3">
+                            <% [1,2,3,4].forEach(n => { %>
+                            <div class="form-check">
+                              <input type="radio" name="score_jefe_directo" value="<%= n %>" class="form-check-input score-input" id="sj<%= e.id %>_<%= n %>" data-eval="<%= e.id %>" required>
+                              <label class="form-check-label" for="sj<%= e.id %>_<%= n %>"><%= n %></label>
+                            </div>
+                            <% }) %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Instrumento 3: Terreno / Simulacion 60% -->
+                    <div class="col-md-6">
+                      <div class="card border-success">
+                        <div class="card-header bg-success bg-opacity-10 py-2">
+                          <strong>Observacion Terreno</strong> <span class="badge bg-success float-end">60%</span>
+                        </div>
+                        <div class="card-body py-2">
+                          <div class="mb-2">
+                            <select name="tipo_terreno" class="form-select form-select-sm">
+                              <option value="terreno">Observacion en Terreno</option>
+                              <option value="simulacion">Simulacion</option>
+                            </select>
+                          </div>
+                          <div class="d-flex gap-3">
+                            <% [1,2,3,4].forEach(n => { %>
+                            <div class="form-check">
+                              <input type="radio" name="score_terreno" value="<%= n %>" class="form-check-input score-input" id="st<%= e.id %>_<%= n %>" data-eval="<%= e.id %>" required>
+                              <label class="form-check-label" for="st<%= e.id %>_<%= n %>"><%= n %></label>
+                            </div>
+                            <% }) %>
+                          </div>
+                          <small class="text-muted">Instrumento con mayor peso — desempeno en contexto real</small>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Instrumento 4: Evidencias 10% -->
+                    <div class="col-md-6">
+                      <div class="card border-secondary">
+                        <div class="card-header bg-secondary bg-opacity-10 py-2">
+                          <strong>Evidencias Indirectas</strong> <span class="badge bg-secondary float-end">10%</span>
+                        </div>
+                        <div class="card-body py-2">
+                          <div class="d-flex gap-3">
+                            <% [1,2,3,4].forEach(n => { %>
+                            <div class="form-check">
+                              <input type="radio" name="score_evidencias" value="<%= n %>" class="form-check-input score-input" id="se<%= e.id %>_<%= n %>" data-eval="<%= e.id %>" required>
+                              <label class="form-check-label" for="se<%= e.id %>_<%= n %>"><%= n %></label>
+                            </div>
+                            <% }) %>
+                          </div>
+                          <small class="text-muted">Certificados, cartas de recomendacion, formacion</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Score Preview -->
+                  <div class="alert alert-light border mt-3 text-center" id="scorePreview<%= e.id %>">
+                    <strong>Puntaje Ponderado:</strong> <span id="scorePond<%= e.id %>">-</span> / 4.0
+                    <span class="ms-2" id="scoreResult<%= e.id %>"></span>
+                  </div>
+
+                  <hr>
+                  <div class="mb-3">
+                    <label class="form-label">Plan de Trabajo del Evaluador</label>
+                    <textarea name="plan_trabajo" class="form-control" rows="2" placeholder="Descripcion del plan de trabajo aplicado..."></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Observaciones</label>
+                    <textarea name="observations" class="form-control" rows="2"></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Informe de Brechas <small class="text-muted">(solo si Aun No Competente)</small></label>
+                    <textarea name="informe_brechas" class="form-control" rows="2" placeholder="UCLs con brechas detectadas y recomendaciones..."></textarea>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Registrar Resultado</button>
+                </div>
               </form>
             </div></div>
           </div>
@@ -51,4 +180,28 @@
     </table>
   </div>
 </div>
+
+<script>
+document.querySelectorAll('.score-input').forEach(input => {
+  input.addEventListener('change', function() {
+    const evalId = this.dataset.eval;
+    const form = this.closest('form');
+    const sc = form.querySelector('input[name="score_conocimientos"]:checked');
+    const sj = form.querySelector('input[name="score_jefe_directo"]:checked');
+    const st = form.querySelector('input[name="score_terreno"]:checked');
+    const se = form.querySelector('input[name="score_evidencias"]:checked');
+    if (sc && sj && st && se) {
+      const pond = (parseFloat(sc.value)*0.20) + (parseFloat(sj.value)*0.10) + (parseFloat(st.value)*0.60) + (parseFloat(se.value)*0.10);
+      document.getElementById('scorePond'+evalId).textContent = pond.toFixed(2);
+      const resultEl = document.getElementById('scoreResult'+evalId);
+      if (pond >= 3.0) {
+        resultEl.innerHTML = '<span class="badge bg-success">COMPETENTE</span>';
+      } else {
+        resultEl.innerHTML = '<span class="badge bg-danger">AUN NO COMPETENTE</span>';
+      }
+    }
+  });
+});
+</script>
+
 <%- include('../partials/footer') %>

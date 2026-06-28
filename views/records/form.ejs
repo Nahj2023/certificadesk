@@ -1,86 +1,143 @@
 <% const title = record ? 'Editar Registro' : 'Nuevo Registro' %>
 <%- include('../partials/header', { title }) %>
+
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0"><%= title %></h4>
+  <div>
+    <h4 class="mb-1"><%= title %></h4>
+    <span class="text-muted" style="font-size:0.85rem">Procedimiento 7 — Control de Registros D016</span>
+  </div>
   <a href="/registros" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
-<div class="card border-0 shadow-sm"><div class="card-body">
-  <form method="POST" action="/registros<%= record ? '/'+record.id : '' %>">
-    <div class="row g-3">
-      <div class="col-md-3"><label class="form-label">Codigo</label>
-        <input type="text" name="code" class="form-control" placeholder="REG-001" value="<%= record ? record.code || '' : '' %>">
-      </div>
-      <div class="col-md-5"><label class="form-label">Nombre del registro *</label>
-        <input type="text" name="name" class="form-control" required value="<%= record ? record.name : '' %>" placeholder="Ej: Acta de evaluacion en terreno">
-      </div>
-      <div class="col-md-4"><label class="form-label">Categoria *</label>
-        <select name="category" class="form-select" required>
-          <option value="evaluacion" <%= record && record.category==='evaluacion' ? 'selected' : '' %>>Evaluacion</option>
-          <option value="administrativo" <%= record && record.category==='administrativo' ? 'selected' : '' %>>Administrativo</option>
-          <option value="auditoria" <%= record && record.category==='auditoria' ? 'selected' : '' %>>Auditoria</option>
-          <option value="reclamo" <%= record && record.category==='reclamo' ? 'selected' : '' %>>Reclamo</option>
-          <option value="satisfaccion" <%= record && record.category==='satisfaccion' ? 'selected' : '' %>>Satisfaccion</option>
-          <option value="conflicto" <%= record && record.category==='conflicto' ? 'selected' : '' %>>Conflicto de interes</option>
-          <option value="otro" <%= record && record.category==='otro' ? 'selected' : '' %>>Otro</option>
-        </select>
-      </div>
-      <div class="col-md-3"><label class="form-label">Procedimiento ref.</label>
-        <select name="procedure_ref" class="form-select">
-          <option value="">Ninguno</option>
-          <option value="Proc 1" <%= record && record.procedure_ref==='Proc 1' ? 'selected' : '' %>>Proc 1 - Certificacion</option>
-          <option value="Proc 2" <%= record && record.procedure_ref==='Proc 2' ? 'selected' : '' %>>Proc 2 - Auditoria</option>
-          <option value="Proc 3" <%= record && record.procedure_ref==='Proc 3' ? 'selected' : '' %>>Proc 3 - Evaluadores</option>
-          <option value="Proc 4" <%= record && record.procedure_ref==='Proc 4' ? 'selected' : '' %>>Proc 4 - Reclamos</option>
-          <option value="Proc 5" <%= record && record.procedure_ref==='Proc 5' ? 'selected' : '' %>>Proc 5 - Conflictos</option>
-          <option value="Proc 6" <%= record && record.procedure_ref==='Proc 6' ? 'selected' : '' %>>Proc 6 - Documentos</option>
-          <option value="Proc 7" <%= record && record.procedure_ref==='Proc 7' ? 'selected' : '' %>>Proc 7 - Registros</option>
-          <option value="Proc 8" <%= record && record.procedure_ref==='Proc 8' ? 'selected' : '' %>>Proc 8 - Satisfaccion</option>
-        </select>
-      </div>
-      <div class="col-md-3"><label class="form-label">Formato</label>
-        <select name="format" class="form-select">
-          <option value="digital" <%= record && record.format==='digital' ? 'selected' : '' %>>Digital</option>
-          <option value="fisico" <%= record && record.format==='fisico' ? 'selected' : '' %>>Fisico</option>
-          <option value="ambos" <%= record && record.format==='ambos' ? 'selected' : '' %>>Ambos</option>
-        </select>
-      </div>
-      <div class="col-md-3"><label class="form-label">Nivel de acceso</label>
-        <select name="access_level" class="form-select">
-          <option value="interno" <%= record && record.access_level==='interno' ? 'selected' : '' %>>Interno</option>
-          <option value="restringido" <%= record && record.access_level==='restringido' ? 'selected' : '' %>>Restringido</option>
-          <option value="publico" <%= record && record.access_level==='publico' ? 'selected' : '' %>>Publico</option>
-        </select>
-      </div>
-      <div class="col-md-3"><label class="form-label">Retencion (anos)</label>
-        <input type="number" name="retention_years" class="form-control" min="1" max="30" value="<%= record ? record.retention_years || '' : '5' %>">
-      </div>
-      <div class="col-md-4"><label class="form-label">Fecha limite retencion</label>
-        <input type="date" name="retention_date" class="form-control" value="<%= record ? record.retention_date || '' : '' %>">
-      </div>
-      <div class="col-md-4"><label class="form-label">Ubicacion / Ruta</label>
-        <input type="text" name="location" class="form-control" placeholder="Ej: Carpeta Drive / Archivador 3" value="<%= record ? record.location || '' : '' %>">
-      </div>
-      <div class="col-md-4"><label class="form-label">Responsable</label>
-        <select name="responsible_id" class="form-select">
-          <option value="">Sin asignar</option>
-          <% staff.forEach(s => { %><option value="<%= s.id %>" <%= record && record.responsible_id==s.id ? 'selected' : '' %>><%= s.display_name %></option><% }) %>
-        </select>
-      </div>
-      <% if (record) { %>
-      <div class="col-md-4"><label class="form-label">Estado</label>
-        <select name="status" class="form-select">
-          <option value="vigente" <%= record.status==='vigente' ? 'selected' : '' %>>Vigente</option>
-          <option value="por_revisar" <%= record.status==='por_revisar' ? 'selected' : '' %>>Por revisar</option>
-          <option value="obsoleto" <%= record.status==='obsoleto' ? 'selected' : '' %>>Obsoleto</option>
-          <option value="eliminado" <%= record.status==='eliminado' ? 'selected' : '' %>>Eliminado</option>
-        </select>
-      </div>
-      <% } %>
-      <div class="col-12"><label class="form-label">Notas</label>
-        <textarea name="notes" class="form-control" rows="2"><%= record ? record.notes || '' : '' %></textarea>
+
+<form method="POST" action="/registros<%= record ? '/'+record.id : '' %>">
+  <div class="row g-4">
+
+    <!-- Identificacion del Registro -->
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <i class="bi bi-journal-text me-2" style="color:var(--coral)"></i> Identificacion del Registro
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="form-label">Codigo</label>
+              <input type="text" name="code" class="form-control" placeholder="REG-001" value="<%= record ? record.code || '' : '' %>">
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">Nombre del registro *</label>
+              <input type="text" name="name" class="form-control" required value="<%= record ? record.name : '' %>" placeholder="Ej: Acta de evaluacion en terreno">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Categoria *</label>
+              <select name="category" class="form-select" required>
+                <option value="evaluacion" <%= record && record.category==='evaluacion' ? 'selected' : '' %>>Evaluacion</option>
+                <option value="administrativo" <%= record && record.category==='administrativo' ? 'selected' : '' %>>Administrativo</option>
+                <option value="auditoria" <%= record && record.category==='auditoria' ? 'selected' : '' %>>Auditoria</option>
+                <option value="reclamo" <%= record && record.category==='reclamo' ? 'selected' : '' %>>Reclamo</option>
+                <option value="satisfaccion" <%= record && record.category==='satisfaccion' ? 'selected' : '' %>>Satisfaccion</option>
+                <option value="conflicto" <%= record && record.category==='conflicto' ? 'selected' : '' %>>Conflicto de interes</option>
+                <option value="otro" <%= record && record.category==='otro' ? 'selected' : '' %>>Otro</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Procedimiento de referencia</label>
+              <select name="procedure_ref" class="form-select">
+                <option value="">Ninguno</option>
+                <option value="Proc 1" <%= record && record.procedure_ref==='Proc 1' ? 'selected' : '' %>>Proc 1 — Certificacion</option>
+                <option value="Proc 2" <%= record && record.procedure_ref==='Proc 2' ? 'selected' : '' %>>Proc 2 — Auditoria</option>
+                <option value="Proc 3" <%= record && record.procedure_ref==='Proc 3' ? 'selected' : '' %>>Proc 3 — Evaluadores</option>
+                <option value="Proc 4" <%= record && record.procedure_ref==='Proc 4' ? 'selected' : '' %>>Proc 4 — Reclamos</option>
+                <option value="Proc 5" <%= record && record.procedure_ref==='Proc 5' ? 'selected' : '' %>>Proc 5 — Conflictos</option>
+                <option value="Proc 6" <%= record && record.procedure_ref==='Proc 6' ? 'selected' : '' %>>Proc 6 — Documentos</option>
+                <option value="Proc 7" <%= record && record.procedure_ref==='Proc 7' ? 'selected' : '' %>>Proc 7 — Registros</option>
+                <option value="Proc 8" <%= record && record.procedure_ref==='Proc 8' ? 'selected' : '' %>>Proc 8 — Satisfaccion</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Responsable</label>
+              <select name="responsible_id" class="form-select">
+                <option value="">Sin asignar</option>
+                <% staff.forEach(s => { %><option value="<%= s.id %>" <%= record && record.responsible_id==s.id ? 'selected' : '' %>><%= s.display_name %></option><% }) %>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="mt-4"><button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> <%= record ? 'Actualizar' : 'Crear Registro' %></button></div>
-  </form>
-</div></div>
+
+    <!-- Configuracion -->
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <i class="bi bi-gear me-2" style="color:var(--coral)"></i> Configuracion
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Formato</label>
+            <select name="format" class="form-select">
+              <option value="digital" <%= record && record.format==='digital' ? 'selected' : '' %>>Digital</option>
+              <option value="fisico" <%= record && record.format==='fisico' ? 'selected' : '' %>>Fisico</option>
+              <option value="ambos" <%= record && record.format==='ambos' ? 'selected' : '' %>>Ambos</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Nivel de acceso</label>
+            <select name="access_level" class="form-select">
+              <option value="interno" <%= record && record.access_level==='interno' ? 'selected' : '' %>>Interno</option>
+              <option value="restringido" <%= record && record.access_level==='restringido' ? 'selected' : '' %>>Restringido</option>
+              <option value="publico" <%= record && record.access_level==='publico' ? 'selected' : '' %>>Publico</option>
+            </select>
+          </div>
+          <% if (record) { %>
+          <div class="mb-0">
+            <label class="form-label">Estado</label>
+            <select name="status" class="form-select">
+              <option value="vigente" <%= record.status==='vigente' ? 'selected' : '' %>>Vigente</option>
+              <option value="por_revisar" <%= record.status==='por_revisar' ? 'selected' : '' %>>Por revisar</option>
+              <option value="obsoleto" <%= record.status==='obsoleto' ? 'selected' : '' %>>Obsoleto</option>
+              <option value="eliminado" <%= record.status==='eliminado' ? 'selected' : '' %>>Eliminado</option>
+            </select>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Retencion y Ubicacion -->
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <i class="bi bi-archive me-2" style="color:var(--coral)"></i> Retencion y Almacenamiento
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <label class="form-label">Retencion (anos)</label>
+              <input type="number" name="retention_years" class="form-control" min="1" max="30" value="<%= record ? record.retention_years || '' : '5' %>">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Fecha limite retencion</label>
+              <input type="date" name="retention_date" class="form-control" value="<%= record ? record.retention_date || '' : '' %>">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Ubicacion / Ruta</label>
+              <input type="text" name="location" class="form-control" placeholder="Ej: Carpeta Drive / Archivador 3" value="<%= record ? record.location || '' : '' %>">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Notas</label>
+              <textarea name="notes" class="form-control" rows="2"><%= record ? record.notes || '' : '' %></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex gap-2">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> <%= record ? 'Actualizar Registro' : 'Crear Registro' %></button>
+    <a href="/registros" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
+</form>
+
 <%- include('../partials/footer') %>

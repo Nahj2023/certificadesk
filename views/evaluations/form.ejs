@@ -1,51 +1,62 @@
 <% const title = 'Nueva Evaluacion' %>
 <%- include('../partials/header', { title }) %>
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0">Nueva Evaluacion</h4>
+  <div>
+    <h4 class="mb-1">Nueva Evaluacion</h4>
+    <span class="text-muted" style="font-size:0.85rem">Procedimiento 3 — Programacion de evaluaciones D016</span>
+  </div>
   <a href="/evaluaciones" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
-<div class="card border-0 shadow-sm">
-  <div class="card-body">
-    <form method="POST" action="/evaluaciones">
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label">Candidato *</label>
-          <select name="candidate_id" class="form-select" required>
-            <option value="">Seleccionar</option>
-            <% candidates.forEach(c => { %><option value="<%= c.id %>"><%= c.name %> (<%= c.rut || 'sin RUT' %>)</option><% }) %>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Perfil</label>
-          <select name="profile_id" class="form-select">
-            <option value="">Seleccionar</option>
-            <% profiles.forEach(p => { %><option value="<%= p.id %>"><%= p.code %> - <%= p.name %></option><% }) %>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Evaluador</label>
-          <select name="evaluator_id" class="form-select">
-            <option value="">Sin asignar</option>
-            <% evaluators.forEach(ev => { %><option value="<%= ev.id %>"><%= ev.name %></option><% }) %>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Fecha programada</label>
-          <input type="date" name="scheduled_date" class="form-control" required>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Tipo</label>
-          <select name="type" class="form-select">
-            <option value="terreno">Terreno</option><option value="antecedentes">Antecedentes</option><option value="mixta">Mixta</option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Lugar</label>
-          <input type="text" name="location" class="form-control">
+<form method="POST" action="/evaluaciones">
+  <div class="row g-4">
+    <div class="col-md-7">
+      <div class="card">
+        <div class="card-header"><i class="bi bi-clipboard-data me-2" style="color:var(--coral)"></i> Datos de la Evaluacion</div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Candidato *</label>
+              <select name="candidate_id" class="form-select" required><option value="">Seleccionar...</option>
+                <% candidates.forEach(c => { %><option value="<%= c.id %>"><%= c.name %> (<%= c.rut || 'sin RUT' %>)</option><% }) %>
+              </select>
+            </div>
+            <div class="col-md-6"><label class="form-label">Perfil ocupacional</label>
+              <select name="profile_id" class="form-select"><option value="">Seleccionar...</option>
+                <% profiles.forEach(p => { %><option value="<%= p.id %>"><%= p.code %> - <%= p.name %></option><% }) %>
+              </select>
+            </div>
+            <div class="col-md-6"><label class="form-label">Evaluador asignado</label>
+              <select name="evaluator_id" class="form-select"><option value="">Sin asignar</option>
+                <% evaluators.forEach(ev => { %><option value="<%= ev.id %>"><%= ev.name %></option><% }) %>
+              </select>
+            </div>
+            <div class="col-md-6"><label class="form-label">Lugar</label>
+              <input type="text" name="location" class="form-control" placeholder="Direccion o sede">
+            </div>
+          </div>
         </div>
       </div>
-      <div class="mt-4"><button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Programar</button></div>
-    </form>
+    </div>
+    <div class="col-md-5">
+      <div class="card h-100">
+        <div class="card-header"><i class="bi bi-calendar-event me-2" style="color:var(--coral)"></i> Programacion</div>
+        <div class="card-body">
+          <div class="mb-3"><label class="form-label">Fecha programada *</label>
+            <input type="date" name="scheduled_date" class="form-control" required>
+          </div>
+          <div class="mb-0"><label class="form-label">Tipo de evaluacion</label>
+            <select name="type" class="form-select">
+              <option value="terreno">Evaluacion en terreno</option>
+              <option value="antecedentes">Evaluacion de antecedentes</option>
+              <option value="mixta">Mixta</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+  <div class="mt-4 d-flex gap-2">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Programar Evaluacion</button>
+    <a href="/evaluaciones" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
+</form>
 <%- include('../partials/footer') %>

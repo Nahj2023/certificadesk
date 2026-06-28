@@ -16,8 +16,8 @@
   </div>
 </div>
 
-<% if (req.query.error === 'elegibilidad') { %>
-<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> Debe marcar todos los requisitos de elegibilidad.</div>
+<% if (typeof req !== 'undefined' && req.query && req.query.error === 'elegibilidad') { %>
+<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> Debe marcar todos los requisitos obligatorios de elegibilidad.</div>
 <% } %>
 
 <div class="row g-3 mb-4">
@@ -43,26 +43,91 @@
       <div class="card-header bg-white"><strong><i class="bi bi-check2-square"></i> Verificacion de Elegibilidad (D016 Proc. 1.1)</strong></div>
       <div class="card-body">
         <form method="POST" action="/candidatos/<%= candidate.id %>/elegibilidad">
-          <div class="form-check mb-2">
-            <input type="checkbox" name="perfil_verificado" value="1" class="form-check-input" id="chk1">
-            <label for="chk1" class="form-check-label">Perfil ocupacional verificado</label>
+          <p class="text-muted small">Segun Manual del Candidato, complete las etapas de elegibilidad:</p>
+
+          <h6 class="mt-3 mb-2"><i class="bi bi-calendar-event"></i> Etapa Informativa</h6>
+          <div class="row mb-2">
+            <div class="col-6">
+              <label class="form-label small">Fecha Charla Informativa</label>
+              <input type="date" name="charla_informativa" class="form-control form-control-sm">
+            </div>
+            <div class="col-6">
+              <label class="form-label small">Fecha Entrevista Inicial</label>
+              <input type="date" name="entrevista_inicial" class="form-control form-control-sm">
+            </div>
           </div>
-          <div class="form-check mb-2">
-            <input type="checkbox" name="requisitos_cumplidos" value="1" class="form-check-input" id="chk2">
-            <label for="chk2" class="form-check-label">Requisitos del perfil cumplidos</label>
+          <div class="mb-3">
+            <label class="form-label small">Notas Entrevista</label>
+            <textarea name="entrevista_notas" class="form-control form-control-sm" rows="2" placeholder="Observaciones de la entrevista inicial..."></textarea>
           </div>
-          <div class="form-check mb-2">
-            <input type="checkbox" name="documentacion_ok" value="1" class="form-check-input" id="chk3">
-            <label for="chk3" class="form-check-label">Documentacion de identidad OK</label>
+
+          <h6 class="mb-2"><i class="bi bi-file-earmark-text"></i> Documentacion</h6>
+          <div class="form-check mb-1">
+            <input type="checkbox" name="cedula_identidad" value="1" class="form-check-input" id="chkCI">
+            <label for="chkCI" class="form-check-label">Copia cedula de identidad entregada</label>
+          </div>
+          <div class="form-check mb-1">
+            <input type="checkbox" name="cv_entregado" value="1" class="form-check-input" id="chkCV">
+            <label for="chkCV" class="form-check-label">CV entregado (formato CEC)</label>
+          </div>
+          <div class="form-check mb-1">
+            <input type="checkbox" name="carta_compromiso" value="1" class="form-check-input" id="chkCC">
+            <label for="chkCC" class="form-check-label">Carta de compromiso firmada</label>
+          </div>
+          <div class="form-check mb-1">
+            <input type="checkbox" name="autorizacion_chilevalora" value="1" class="form-check-input" id="chkCV2">
+            <label for="chkCV2" class="form-check-label">Autorizacion publicacion datos ChileValora</label>
           </div>
           <div class="form-check mb-3">
-            <input type="checkbox" name="sin_conflictos" value="1" class="form-check-input" id="chk4">
-            <label for="chk4" class="form-check-label">Sin conflictos de interes</label>
+            <input type="checkbox" name="autorizacion_jefe" value="1" class="form-check-input" id="chkAJ">
+            <label for="chkAJ" class="form-check-label">Autorizacion resultado a jefatura</label>
           </div>
+
+          <h6 class="mb-2"><i class="bi bi-shield-check"></i> Requisitos Obligatorios</h6>
+          <div class="form-check mb-1">
+            <input type="checkbox" name="perfil_verificado" value="1" class="form-check-input" id="chk1" required>
+            <label for="chk1" class="form-check-label">Perfil ocupacional verificado <span class="text-danger">*</span></label>
+          </div>
+          <div class="form-check mb-1">
+            <input type="checkbox" name="requisitos_cumplidos" value="1" class="form-check-input" id="chk2" required>
+            <label for="chk2" class="form-check-label">Requisitos del perfil cumplidos <span class="text-danger">*</span></label>
+          </div>
+          <div class="form-check mb-1">
+            <input type="checkbox" name="documentacion_ok" value="1" class="form-check-input" id="chk3" required>
+            <label for="chk3" class="form-check-label">Documentacion de identidad OK <span class="text-danger">*</span></label>
+          </div>
+          <div class="form-check mb-3">
+            <input type="checkbox" name="sin_conflictos" value="1" class="form-check-input" id="chk4" required>
+            <label for="chk4" class="form-check-label">Sin conflictos de interes <span class="text-danger">*</span></label>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label small">Informe de Elegibilidad (observaciones)</label>
+            <textarea name="informe_elegibilidad" class="form-control form-control-sm" rows="2" placeholder="Conclusion del informe de elegibilidad..."></textarea>
+          </div>
+
           <button type="submit" class="btn btn-info text-white" onclick="return confirm('Marcar candidato como elegible?')">
             <i class="bi bi-check-circle"></i> Marcar Elegible
           </button>
         </form>
+      </div>
+    </div>
+    <% } %>
+
+    <% if (candidate.status === 'elegible' && candidate.charla_informativa) { %>
+    <div class="card border-0 shadow-sm mt-3">
+      <div class="card-header bg-white"><strong><i class="bi bi-info-circle"></i> Datos de Elegibilidad</strong></div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <% if (candidate.charla_informativa) { %><tr><th style="width:40%">Charla Informativa</th><td><%= candidate.charla_informativa %></td></tr><% } %>
+          <% if (candidate.entrevista_inicial) { %><tr><th>Entrevista Inicial</th><td><%= candidate.entrevista_inicial %></td></tr><% } %>
+          <tr><th>Cedula Identidad</th><td><%= candidate.cedula_identidad ? 'Si' : 'No' %></td></tr>
+          <tr><th>CV Entregado</th><td><%= candidate.cv_entregado ? 'Si' : 'No' %></td></tr>
+          <tr><th>Carta Compromiso</th><td><%= candidate.carta_compromiso ? 'Si' : 'No' %></td></tr>
+          <tr><th>Aut. ChileValora</th><td><%= candidate.autorizacion_chilevalora ? 'Si' : 'No' %></td></tr>
+          <tr><th>Aut. Jefatura</th><td><%= candidate.autorizacion_jefe ? 'Si' : 'No' %></td></tr>
+          <% if (candidate.informe_elegibilidad) { %><tr><th>Informe</th><td><%= candidate.informe_elegibilidad %></td></tr><% } %>
+        </table>
       </div>
     </div>
     <% } %>
@@ -72,14 +137,15 @@
       <div class="card-header bg-white"><strong>Evaluaciones</strong></div>
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
-          <thead><tr><th>Fecha</th><th>Evaluador</th><th>Resultado</th></tr></thead>
+          <thead><tr><th>Fecha</th><th>Evaluador</th><th>Pond.</th><th>Resultado</th></tr></thead>
           <tbody>
             <% if (evaluations.length === 0) { %>
-              <tr><td colspan="3" class="text-muted text-center py-3">Sin evaluaciones</td></tr>
+              <tr><td colspan="4" class="text-muted text-center py-3">Sin evaluaciones</td></tr>
             <% } else { evaluations.forEach(e => { %>
               <tr>
-                <td><%= e.scheduled_date || '-' %></td>
+                <td><a href="/evaluaciones/<%= e.id %>"><%= e.scheduled_date || '-' %></a></td>
                 <td><%= e.evaluator_name || '-' %></td>
+                <td><%= e.score_ponderado ? e.score_ponderado.toFixed(2) : (e.score || '-') %></td>
                 <td><span class="badge bg-<%= e.result === 'competente' ? 'success' : e.result === 'aun_no_competente' ? 'danger' : 'secondary' %>"><%= e.result || e.status %></span></td>
               </tr>
             <% })} %>

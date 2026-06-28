@@ -1,23 +1,26 @@
 <% const title = 'Reclamos y Sugerencias' %>
 <%- include('../partials/header', { title }) %>
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0">Reclamos, Felicitaciones y Sugerencias</h4>
+  <div>
+    <h4 class="mb-1">Reclamos, Felicitaciones y Sugerencias</h4>
+    <span class="text-muted" style="font-size:0.85rem">Procedimiento 4 — Gestion de reclamos D016</span>
+  </div>
   <a href="/reclamos/nuevo" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nuevo</a>
 </div>
-<div class="card border-0 shadow-sm"><div class="card-body p-0">
+<div class="card"><div class="card-body p-0">
   <table class="table table-hover mb-0">
     <thead><tr><th>Tipo</th><th>De</th><th>Asunto</th><th>Prioridad</th><th>Asignado</th><th>Estado</th><th>Fecha</th><th></th></tr></thead>
     <tbody>
       <% if (complaints.length === 0) { %>
-        <tr><td colspan="8" class="text-muted text-center py-4">Sin registros</td></tr>
+        <tr><td colspan="8" class="empty-state"><i class="bi bi-chat-square-text"></i>Sin registros</td></tr>
       <% } else { complaints.forEach(c => { %>
         <tr>
           <td><span class="badge bg-<%= c.type === 'reclamo' ? 'danger' : c.type === 'felicitacion' ? 'success' : 'info' %>"><%= c.type %></span></td>
-          <td><%= c.from_name || '-' %></td><td><%= c.subject %></td>
+          <td><%= c.from_name || '-' %></td><td><strong><%= c.subject %></strong></td>
           <td><span class="badge bg-<%= c.priority === 'alta' ? 'danger' : c.priority === 'media' ? 'warning' : 'secondary' %>"><%= c.priority %></span></td>
-          <td><%= c.assigned_name || '-' %></td>
+          <td class="text-muted"><%= c.assigned_name || '-' %></td>
           <td><span class="badge bg-<%= c.status === 'resuelto' ? 'success' : 'warning' %>"><%= c.status %></span></td>
-          <td><%= c.created_at ? c.created_at.substring(0,10) : '-' %></td>
+          <td class="text-muted"><%= c.created_at ? c.created_at.substring(0,10) : '-' %></td>
           <td>
             <% if (c.status !== 'resuelto') { %>
               <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#resolve<%= c.id %>"><i class="bi bi-check-lg"></i></button>

@@ -1,88 +1,90 @@
-<% const title = 'Evaluacion de Desempeno' %>
+<% const title = 'Evaluar Desempeno' %>
 <%- include('../partials/header', { title }) %>
-
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0"><i class="bi bi-clipboard2-check"></i> Evaluacion de Desempeno — <%= evaluator.name %></h4>
+  <div>
+    <h4 class="mb-1">Evaluacion de Desempeno: <%= evaluator.name %></h4>
+    <span class="text-muted" style="font-size:0.85rem">Procedimiento 2.4 — Evaluacion periodica de evaluadores</span>
+  </div>
   <a href="/evaluadores/<%= evaluator.id %>" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
-
-<div class="row justify-content-center">
-  <div class="col-md-8">
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white">
-        <strong>Formulario D016 — Proc. 2.4 Evaluacion de Desempeno de Evaluadores</strong>
+<form method="POST" action="/evaluadores/<%= evaluator.id %>/evaluar">
+  <div class="row g-4">
+    <div class="col-md-8">
+      <div class="card mb-4">
+        <div class="card-header"><i class="bi bi-1-circle me-2" style="color:var(--coral)"></i> Cumplimiento de Plazos</div>
+        <div class="card-body">
+          <p class="text-muted mb-3">Entrega oportuna de informes, portafolios y resultados dentro de los plazos establecidos.</p>
+          <div class="d-flex gap-3 justify-content-center">
+            <% for (let i = 1; i <= 5; i++) { %>
+            <div class="form-check form-check-inline text-center">
+              <input class="form-check-input" type="radio" name="score_deadlines" id="dl<%= i %>" value="<%= i %>" required>
+              <label class="form-check-label d-block fw-bold" for="dl<%= i %>"><%= i %></label>
+            </div>
+            <% } %>
+          </div>
+          <div class="d-flex justify-content-between mt-2"><small class="text-muted">Incumple sistematicamente</small><small class="text-muted">Cumple siempre</small></div>
+        </div>
       </div>
-      <div class="card-body">
-        <form method="POST" action="/evaluadores/<%= evaluator.id %>/evaluar">
-          <div class="mb-3">
-            <label class="form-label">Periodo</label>
-            <input type="text" name="period" class="form-control" placeholder="Ej: 2026-S1" value="<%= new Date().getFullYear() %>-S<%= new Date().getMonth() < 6 ? 1 : 2 %>" required>
-            <small class="text-muted">Formato: YYYY-S1 o YYYY-S2 (semestre)</small>
+      <div class="card mb-4">
+        <div class="card-header"><i class="bi bi-2-circle me-2" style="color:var(--coral)"></i> Calidad de los Informes</div>
+        <div class="card-body">
+          <p class="text-muted mb-3">Claridad, completitud y fundamentacion de los informes de evaluacion y portafolios de evidencia.</p>
+          <div class="d-flex gap-3 justify-content-center">
+            <% for (let i = 1; i <= 5; i++) { %>
+            <div class="form-check form-check-inline text-center">
+              <input class="form-check-input" type="radio" name="score_report_quality" id="rq<%= i %>" value="<%= i %>" required>
+              <label class="form-check-label d-block fw-bold" for="rq<%= i %>"><%= i %></label>
+            </div>
+            <% } %>
           </div>
-
+          <div class="d-flex justify-content-between mt-2"><small class="text-muted">Deficiente</small><small class="text-muted">Excelente</small></div>
+        </div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-header"><i class="bi bi-3-circle me-2" style="color:var(--coral)"></i> Cumplimiento de Procedimientos</div>
+        <div class="card-body">
+          <p class="text-muted mb-3">Adherencia a los procedimientos D016 de ChileValora, declaraciones juradas, protocolo de confidencialidad.</p>
+          <div class="d-flex gap-3 justify-content-center">
+            <% for (let i = 1; i <= 5; i++) { %>
+            <div class="form-check form-check-inline text-center">
+              <input class="form-check-input" type="radio" name="score_procedure_compliance" id="pc<%= i %>" value="<%= i %>" required>
+              <label class="form-check-label d-block fw-bold" for="pc<%= i %>"><%= i %></label>
+            </div>
+            <% } %>
+          </div>
+          <div class="d-flex justify-content-between mt-2"><small class="text-muted">No cumple</small><small class="text-muted">Cumplimiento total</small></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><i class="bi bi-chat-text me-2" style="color:var(--coral)"></i> Observaciones</div>
+        <div class="card-body">
+          <div class="mb-3"><label class="form-label">Periodo evaluado *</label><input type="text" name="period" class="form-control" placeholder="Ej: 2026-S1" value="<%= new Date().getFullYear() %>-S<%= new Date().getMonth() < 6 ? 1 : 2 %>" required></div>
+          <div class="mb-0"><label class="form-label">Observaciones</label><textarea name="observations" class="form-control" rows="3" placeholder="Areas de mejora, fortalezas..."></textarea></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card" style="position:sticky;top:1rem">
+        <div class="card-header"><i class="bi bi-info-circle me-2" style="color:var(--coral)"></i> Escala de Acciones</div>
+        <div class="card-body">
+          <div class="mb-3 p-2 rounded" style="background:rgba(46,204,113,0.1);border-left:3px solid var(--green)">
+            <strong>4.0 – 5.0</strong><br><small class="text-muted">Sin accion requerida</small>
+          </div>
+          <div class="mb-3 p-2 rounded" style="background:rgba(243,156,18,0.1);border-left:3px solid var(--orange)">
+            <strong>3.0 – 3.9</strong><br><small class="text-muted">Capacitacion recomendada</small>
+          </div>
+          <div class="p-2 rounded" style="background:rgba(232,93,58,0.1);border-left:3px solid var(--coral)">
+            <strong>Bajo 3.0</strong><br><small class="text-muted">Suspension recomendada</small>
+          </div>
           <hr>
-          <h6 class="text-muted mb-3">Criterios de Evaluacion (escala 1 a 5)</h6>
-
-          <div class="mb-4">
-            <label class="form-label fw-bold">1. Cumplimiento de Plazos</label>
-            <p class="text-muted small mb-2">Entrega oportuna de informes, portafolios y resultados dentro de los plazos establecidos.</p>
-            <div class="d-flex gap-3">
-              <% for (let i = 1; i <= 5; i++) { %>
-              <div class="form-check">
-                <input type="radio" name="score_deadlines" value="<%= i %>" class="form-check-input" id="d<%= i %>" <%= i===3 ? 'checked' : '' %> required>
-                <label for="d<%= i %>" class="form-check-label"><%= i %></label>
-              </div>
-              <% } %>
-            </div>
-            <small class="text-muted">1=Deficiente, 2=Insuficiente, 3=Aceptable, 4=Bueno, 5=Excelente</small>
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label fw-bold">2. Calidad de los Informes</label>
-            <p class="text-muted small mb-2">Claridad, completitud y fundamentacion de los informes de evaluacion y portafolios de evidencia.</p>
-            <div class="d-flex gap-3">
-              <% for (let i = 1; i <= 5; i++) { %>
-              <div class="form-check">
-                <input type="radio" name="score_report_quality" value="<%= i %>" class="form-check-input" id="q<%= i %>" <%= i===3 ? 'checked' : '' %> required>
-                <label for="q<%= i %>" class="form-check-label"><%= i %></label>
-              </div>
-              <% } %>
-            </div>
-          </div>
-
-          <div class="mb-4">
-            <label class="form-label fw-bold">3. Cumplimiento de Procedimientos</label>
-            <p class="text-muted small mb-2">Adherencia a los procedimientos operacionales del CEC, declaraciones juradas, protocolo de confidencialidad.</p>
-            <div class="d-flex gap-3">
-              <% for (let i = 1; i <= 5; i++) { %>
-              <div class="form-check">
-                <input type="radio" name="score_procedure_compliance" value="<%= i %>" class="form-check-input" id="p<%= i %>" <%= i===3 ? 'checked' : '' %> required>
-                <label for="p<%= i %>" class="form-check-label"><%= i %></label>
-              </div>
-              <% } %>
-            </div>
-          </div>
-
-          <hr>
-          <div class="mb-3">
-            <label class="form-label">Observaciones</label>
-            <textarea name="observations" class="form-control" rows="3" placeholder="Observaciones adicionales, areas de mejora, fortalezas..."></textarea>
-          </div>
-
-          <div class="alert alert-info small">
-            <i class="bi bi-info-circle"></i> <strong>Escala de acciones:</strong><br>
-            Promedio ≥ 4.0 → Sin accion requerida<br>
-            Promedio 3.0-3.9 → Capacitacion recomendada<br>
-            Promedio &lt; 3.0 → Suspension recomendada
-          </div>
-
-          <button type="submit" class="btn btn-primary" onclick="return confirm('Registrar evaluacion de desempeno?')">
-            <i class="bi bi-check-circle"></i> Registrar Evaluacion
-          </button>
-        </form>
+          <p class="text-muted small mb-0">El promedio se calcula como media aritmetica de los 3 criterios y actualiza el score del evaluador.</p>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
+  <div class="mt-4 d-flex gap-2">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Registrar Evaluacion</button>
+    <a href="/evaluadores/<%= evaluator.id %>" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
+</form>
 <%- include('../partials/footer') %>

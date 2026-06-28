@@ -1,26 +1,35 @@
 <% const title = 'Subir Documento' %>
 <%- include('../partials/header', { title }) %>
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0">Subir Documento</h4>
+  <div>
+    <h4 class="mb-1">Subir Documento</h4>
+    <span class="text-muted" style="font-size:0.85rem">Procedimiento 6 — Registro documental</span>
+  </div>
   <a href="/documentos" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
-<div class="card border-0 shadow-sm"><div class="card-body">
-  <form method="POST" action="/documentos" enctype="multipart/form-data">
-    <div class="row g-3">
-      <div class="col-md-6"><label class="form-label">Nombre *</label><input type="text" name="name" class="form-control" required></div>
-      <div class="col-md-3"><label class="form-label">Categoria *</label>
-        <select name="category" class="form-select">
-          <option value="procedimiento">Procedimiento</option><option value="manual">Manual</option>
-          <option value="djs">DJS</option><option value="contrato">Contrato</option>
-          <option value="politica">Politica</option><option value="formulario">Formulario</option>
-          <option value="otro">Otro</option>
-        </select>
+<div class="card">
+  <div class="card-header"><i class="bi bi-cloud-upload me-2" style="color:var(--coral)"></i> Datos del Documento</div>
+  <div class="card-body">
+    <form method="POST" action="/documentos" enctype="multipart/form-data">
+      <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Nombre *</label><input type="text" name="name" class="form-control" required></div>
+        <div class="col-md-3"><label class="form-label">Categoria *</label>
+          <select name="category" class="form-select">
+            <option value="procedimiento">Procedimiento</option><option value="manual">Manual</option>
+            <option value="djs">DJS</option><option value="contrato">Contrato</option>
+            <option value="politica">Politica</option><option value="formulario">Formulario</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="col-md-1"><label class="form-label">Version</label><input type="text" name="version" class="form-control" value="1.0"></div>
+        <div class="col-md-2"><label class="form-label">Vencimiento</label><input type="date" name="expiry_date" class="form-control"></div>
+        <div class="col-md-6"><label class="form-label">Archivo (max 20MB)</label><input type="file" name="file" class="form-control"></div>
       </div>
-      <div class="col-md-1"><label class="form-label">Version</label><input type="text" name="version" class="form-control" value="1.0"></div>
-      <div class="col-md-2"><label class="form-label">Vencimiento</label><input type="date" name="expiry_date" class="form-control"></div>
-      <div class="col-md-6"><label class="form-label">Archivo (max 20MB)</label><input type="file" name="file" class="form-control"></div>
-    </div>
-    <div class="mt-4"><button type="submit" class="btn btn-primary"><i class="bi bi-upload"></i> Subir</button></div>
-  </form>
-</div></div>
+      <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-upload"></i> Subir Documento</button>
+        <a href="/documentos" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
 <%- include('../partials/footer') %>

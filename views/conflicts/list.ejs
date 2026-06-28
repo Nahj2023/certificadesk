@@ -1,23 +1,26 @@
 <% const title = 'Conflictos de Interes' %>
 <%- include('../partials/header', { title }) %>
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0">Declaraciones de Conflicto de Interes</h4>
+  <div>
+    <h4 class="mb-1">Declaraciones de Conflicto de Interes</h4>
+    <span class="text-muted" style="font-size:0.85rem">Procedimiento 5 — Gestion de conflictos D016</span>
+  </div>
   <a href="/conflictos/nuevo" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva Declaracion</a>
 </div>
-<div class="card border-0 shadow-sm"><div class="card-body p-0">
+<div class="card"><div class="card-body p-0">
   <table class="table table-hover mb-0">
     <thead><tr><th>Evaluador</th><th>Candidato</th><th>Tipo</th><th>Fecha Decl.</th><th>Estado</th><th>Accion Tomada</th><th></th></tr></thead>
     <tbody>
       <% if (conflicts.length === 0) { %>
-        <tr><td colspan="7" class="text-muted text-center py-4">Sin declaraciones registradas</td></tr>
+        <tr><td colspan="7" class="empty-state"><i class="bi bi-shield-check"></i>Sin declaraciones registradas</td></tr>
       <% } else { conflicts.forEach(c => { %>
         <tr>
-          <td><%= c.evaluator_name %></td>
-          <td><%= c.candidate_name || '-' %></td>
+          <td><strong><%= c.evaluator_name %></strong></td>
+          <td class="text-muted"><%= c.candidate_name || '-' %></td>
           <td><span class="badge bg-<%= c.type === 'parentesco' ? 'danger' : c.type === 'laboral' ? 'warning' : c.type === 'comercial' ? 'info' : 'secondary' %>"><%= c.type %></span></td>
           <td><%= c.declaration_date || '-' %></td>
           <td><span class="badge bg-<%= c.status === 'resuelto' ? 'success' : c.status === 'rechazado' ? 'danger' : 'warning' %>"><%= c.status %></span></td>
-          <td><%= c.action_taken || '-' %></td>
+          <td class="text-muted"><%= c.action_taken || '-' %></td>
           <td class="text-end">
             <a href="/conflictos/<%= c.id %>/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
             <% if (c.status === 'declarado') { %>

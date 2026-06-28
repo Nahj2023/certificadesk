@@ -43,19 +43,38 @@ router.post("/", (req, res) => {
   }
 });
 
-// Resultado de evaluacion — ahora va a pendiente_comite
+// Resultado con 4 instrumentos ponderados (Manual del Candidato D016)
 router.post("/:id/resultado", (req, res) => {
   const db = getDb();
-  const { result, score, observations } = req.body;
-  db.prepare(
-    "UPDATE evaluations SET result=?, score=?, observations=?, status='completada', completed_at=CURRENT_TIMESTAMP WHERE id=? AND org_id=?"
-  ).run(result, parseFloat(score)||null, observations, req.params.id, req.user.org_id);
+  const oid = req.user.org_id;
+  const { score_conocimientos, score_jefe_directo, score_terreno, score_evidencias,
+          tipo_jefe, tipo_terreno, plan_trabajo, observations, informe_brechas } = req.body;
+
+  const sc = parseFloat(score_conocimientos) || 0;
+  const sj = parseFloat(score_jefe_directo) || 0;
+  const st = parseFloat(score_terreno) || 0;
+  const se = parseFloat(score_evidencias) || 0;
+
+  // Ponderacion: Conocimientos 20%, Jefe/Caso 10%, Terreno/Sim 60%, Evidencias 10%
+  const ponderado = (sc * 0.20) + (sj * 0.10) + (st * 0.60) + (se * 0.10);
+  const result = ponderado >= 3.0 ? 'competente' : 'aun_no_competente';
+
+  db.prepare(`UPDATE evaluations SET
+    result=?, score=?, score_conocimientos=?, score_jefe_directo=?, score_terreno=?, score_evidencias=?,
+    score_ponderado=?, tipo_jefe=?, tipo_terreno=?, plan_trabajo=?, observations=?, informe_brechas=?,
+    status='completada', completed_at=CURRENT_TIMESTAMP
+    WHERE id=? AND org_id=?`
+  ).run(result, ponderado, sc, sj, st, se, ponderado,
+        tipo_jefe || 'jefe_directo', tipo_terreno || 'terreno',
+        plan_trabajo, observations,
+        result === 'aun_no_competente' ? (informe_brechas || null) : null,
+        req.params.id, oid);
 
   const ev = db.prepare("SELECT candidate_id FROM evaluations WHERE id=?").get(req.params.id);
   if (ev) {
     db.prepare("UPDATE candidates SET status='pendiente_comite' WHERE id=?").run(ev.candidate_id);
   }
-  logActivity(req.user.org_id, req.user.id, "resultado", "evaluacion", req.params.id, result);
+  logActivity(oid, req.user.id, "resultado", "evaluacion", req.params.id, `${result} (${ponderado.toFixed(2)})`);
   res.redirect("/evaluaciones");
 });
 
@@ -95,6 +114,23 @@ router.post("/:id/comite", (req, res) => {
 
   logActivity(oid, req.user.id, "comite_decision", "evaluacion", req.params.id, `Decision: ${decision}`);
   res.redirect("/evaluaciones");
+});
+
+// Detalle de evaluacion — vista con instrumentos
+router.get("/:id", (req, res) => {
+  const db = getDb();
+  const oid = req.user.org_id;
+  const evaluation = db.prepare(
+    `SELECT e.*, c.name as candidate_name, c.rut as candidate_rut, c.status as candidate_status,
+     p.name as profile_name, p.code as profile_code, ev.name as evaluator_name
+     FROM evaluations e
+     LEFT JOIN candidates c ON e.candidate_id=c.id
+     LEFT JOIN profiles p ON e.profile_id=p.id
+     LEFT JOIN evaluators ev ON e.evaluator_id=ev.id
+     WHERE e.id=? AND e.org_id=?`
+  ).get(req.params.id, oid);
+  if (!evaluation) return res.redirect("/evaluaciones");
+  res.render("evaluations/detail", { evaluation });
 });
 
 module.exports = router;

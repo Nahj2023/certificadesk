@@ -5,44 +5,124 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ingresar | CertificaDesk</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { background: #1a1d23; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .login-card { max-width: 400px; width: 100%; background: #fff; border-radius: 12px; padding: 2.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-    .login-card h2 { color: #1a1d23; font-weight: 700; }
-    .login-card .subtitle { color: #6c757d; font-size: 0.9rem; }
-    .btn-primary { background: #2563eb; border-color: #2563eb; }
-    .btn-primary:hover { background: #1d4ed8; }
-    .brand { color: #fff; text-align: center; margin-bottom: 2rem; }
-    .brand h1 { font-size: 2rem; font-weight: 800; letter-spacing: -1px; }
-    .brand small { opacity: 0.6; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F3EDE4;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-font-smoothing: antialiased;
+    }
+    .login-wrapper { max-width: 420px; width: 100%; padding: 1rem; }
+    .brand {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .brand-logo {
+      width: 56px; height: 56px;
+      background: #E85D3A;
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      box-shadow: 0 8px 24px rgba(232,93,58,0.25);
+    }
+    .brand-logo svg { width: 28px; height: 28px; fill: #fff; }
+    .brand h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #2D3436;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.25rem;
+    }
+    .brand p { color: #636E72; font-size: 0.85rem; font-weight: 400; }
+    .login-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .login-card h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #2D3436;
+      margin-bottom: 0.25rem;
+    }
+    .login-card .subtitle { color: #636E72; font-size: 0.85rem; margin-bottom: 1.75rem; }
+    .form-label { font-size: 0.78rem; font-weight: 600; color: #636E72; text-transform: uppercase; letter-spacing: 0.04em; }
+    .form-control {
+      border: 1.5px solid #DFE6E9;
+      border-radius: 10px;
+      padding: 0.65rem 1rem;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    .form-control:focus {
+      border-color: #E85D3A;
+      box-shadow: 0 0 0 3px rgba(232,93,58,0.08);
+    }
+    .btn-login {
+      background: #E85D3A;
+      border: none;
+      color: #fff;
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    .btn-login:hover {
+      background: #D14E2E;
+      box-shadow: 0 6px 20px rgba(232,93,58,0.35);
+      transform: translateY(-1px);
+      color: #fff;
+    }
+    .alert-danger {
+      background: rgba(231,76,60,0.08);
+      border: none;
+      color: #E74C3C;
+      border-radius: 10px;
+      font-size: 0.85rem;
+    }
+    .footer-text { text-align: center; margin-top: 2rem; font-size: 0.75rem; color: #B2BEC3; }
+    .footer-text a { color: #E85D3A; text-decoration: none; }
   </style>
 </head>
 <body>
-  <div>
+  <div class="login-wrapper">
     <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+      </div>
       <h1>CertificaDesk</h1>
-      <small>Gestion para Centros de Evaluacion y Certificacion</small>
+      <p>Gestion para Centros de Evaluacion y Certificacion</p>
     </div>
     <div class="login-card">
-      <h2 class="mb-1">Ingresar</h2>
-      <p class="subtitle mb-4">Accede a tu centro de certificacion</p>
+      <h2>Bienvenido</h2>
+      <p class="subtitle">Ingresa tus credenciales para acceder</p>
       <% if (error) { %>
-        <div class="alert alert-danger py-2"><%= error %></div>
+        <div class="alert alert-danger py-2 mb-3"><%= error %></div>
       <% } %>
       <form method="POST" action="/login">
         <div class="mb-3">
           <label class="form-label">Usuario</label>
-          <input type="text" name="username" class="form-control" required autofocus>
+          <input type="text" name="username" class="form-control" required autofocus placeholder="Tu usuario">
         </div>
-        <div class="mb-3">
+        <div class="mb-4">
           <label class="form-label">Contrasena</label>
-          <input type="password" name="password" class="form-control" required>
+          <input type="password" name="password" class="form-control" required placeholder="Tu contrasena">
         </div>
-        <button type="submit" class="btn btn-primary w-100 py-2">Ingresar</button>
+        <button type="submit" class="btn btn-login">Ingresar</button>
       </form>
-      <div class="text-center mt-4">
-        <small class="text-muted">JVH Labs &middot; ChileValora</small>
-      </div>
+    </div>
+    <div class="footer-text">
+      <a href="/">CertificaDesk</a> por <a href="https://jvh-labs.cl">JVH Labs</a> &middot; ChileValora D016
     </div>
   </div>
 </body>

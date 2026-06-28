@@ -1,30 +1,48 @@
-<% const title = evaluator && evaluator.id ? 'Editar Evaluador' : 'Nuevo Evaluador' %>
+<% const title = evaluator ? 'Editar Evaluador' : 'Nuevo Evaluador' %>
 <%- include('../partials/header', { title }) %>
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0"><%= title %></h4>
+  <div>
+    <h4 class="mb-1"><%= title %></h4>
+    <span class="text-muted" style="font-size:0.85rem">Procedimiento 2 — Registro de evaluadores</span>
+  </div>
   <a href="/evaluadores" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
-<div class="card border-0 shadow-sm"><div class="card-body">
-  <form method="POST" action="<%= evaluator && evaluator.id ? '/evaluadores/' + evaluator.id : '/evaluadores' %>">
-    <div class="row g-3">
-      <div class="col-md-6"><label class="form-label">Nombre *</label><input type="text" name="name" class="form-control" value="<%= evaluator ? evaluator.name || '' : '' %>" required></div>
-      <div class="col-md-3"><label class="form-label">RUT</label><input type="text" name="rut" class="form-control" value="<%= evaluator ? evaluator.rut || '' : '' %>"></div>
-      <div class="col-md-3"><label class="form-label">Telefono</label><input type="text" name="phone" class="form-control" value="<%= evaluator ? evaluator.phone || '' : '' %>"></div>
-      <div class="col-md-4"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="<%= evaluator ? evaluator.email || '' : '' %>"></div>
-      <div class="col-md-4"><label class="form-label">Especialidades</label><input type="text" name="specialties" class="form-control" value="<%= evaluator ? evaluator.specialties || '' : '' %>"></div>
-      <div class="col-md-2"><label class="form-label">Tipo contrato</label>
-        <select name="contract_type" class="form-select">
-          <% ['honorarios','plazo_fijo','indefinido','boleta'].forEach(t => { %>
-            <option value="<%= t %>" <%= evaluator && evaluator.contract_type === t ? 'selected' : '' %>><%= t.replace('_',' ') %></option>
-          <% }) %>
-        </select>
+<form method="POST" action="/evaluadores<%= evaluator ? '/'+evaluator.id : '' %>">
+  <div class="row g-4">
+    <div class="col-md-7">
+      <div class="card">
+        <div class="card-header"><i class="bi bi-person-vcard me-2" style="color:var(--coral)"></i> Datos Personales</div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Nombre completo *</label><input type="text" name="name" class="form-control" value="<%= evaluator ? evaluator.name : '' %>" required></div>
+            <div class="col-md-6"><label class="form-label">RUT</label><input type="text" name="rut" class="form-control" value="<%= evaluator ? evaluator.rut || '' : '' %>" placeholder="12.345.678-9"></div>
+            <div class="col-md-6"><label class="form-label">Telefono</label><input type="text" name="phone" class="form-control" value="<%= evaluator ? evaluator.phone || '' : '' %>"></div>
+            <div class="col-md-6"><label class="form-label">Email</label><input type="email" name="email" class="form-control" value="<%= evaluator ? evaluator.email || '' : '' %>"></div>
+          </div>
+        </div>
       </div>
-      <div class="col-md-2"><label class="form-label">DJS vence</label><input type="date" name="djs_expiry" class="form-control" value="<%= evaluator ? evaluator.djs_expiry || '' : '' %>"></div>
-      <% if (evaluator && evaluator.id) { %>
-      <div class="col-md-2"><label class="form-label">Activo</label><div class="form-check mt-2"><input type="checkbox" name="active" class="form-check-input" value="1" <%= evaluator.active ? 'checked' : '' %>><label class="form-check-label">Si</label></div></div>
-      <% } %>
     </div>
-    <div class="mt-4"><button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar</button></div>
-  </form>
-</div></div>
+    <div class="col-md-5">
+      <div class="card h-100">
+        <div class="card-header"><i class="bi bi-briefcase me-2" style="color:var(--coral)"></i> Profesional</div>
+        <div class="card-body">
+          <div class="mb-3"><label class="form-label">Especialidades</label><input type="text" name="specialties" class="form-control" value="<%= evaluator ? evaluator.specialties || '' : '' %>" placeholder="Ej: Electromecanica, Soldadura"></div>
+          <div class="mb-3"><label class="form-label">Tipo de contrato</label>
+            <select name="contract_type" class="form-select">
+              <option value="honorarios" <%= evaluator && evaluator.contract_type==='honorarios' ? 'selected' : '' %>>Honorarios</option>
+              <option value="planta" <%= evaluator && evaluator.contract_type==='planta' ? 'selected' : '' %>>Planta</option>
+              <option value="contrata" <%= evaluator && evaluator.contract_type==='contrata' ? 'selected' : '' %>>Contrata</option>
+            </select>
+          </div>
+          <div class="mb-3"><label class="form-label">Vencimiento DJS</label><input type="date" name="djs_expiry" class="form-control" value="<%= evaluator ? evaluator.djs_expiry || '' : '' %>"></div>
+          <div class="form-check"><input type="checkbox" name="active" class="form-check-input" id="ckActive" value="1" <%= !evaluator || evaluator.active ? 'checked' : '' %>><label class="form-check-label" for="ckActive">Evaluador activo</label></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mt-4 d-flex gap-2">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> <%= evaluator ? 'Actualizar' : 'Registrar Evaluador' %></button>
+    <a href="/evaluadores" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
+</form>
 <%- include('../partials/footer') %>

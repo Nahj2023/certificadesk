@@ -1,39 +1,45 @@
 <% const title = 'Satisfaccion' %>
 <%- include('../partials/header', { title }) %>
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0">Medicion de Satisfaccion</h4>
+  <div>
+    <h4 class="mb-1">Medicion de Satisfaccion</h4>
+    <span class="text-muted" style="font-size:0.85rem">Procedimiento 7 — Encuestas de satisfaccion D016</span>
+  </div>
   <a href="/satisfaccion/nueva" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva Encuesta</a>
 </div>
 <% if (avg.total > 0) { %>
 <div class="row g-3 mb-4">
   <div class="col-md-3">
-    <div class="card border-0 shadow-sm text-center"><div class="card-body">
-      <div class="stat-label">Promedio General</div>
-      <div class="stat-value"><%= avg.avg ? Number(avg.avg).toFixed(1) : '-' %>/5</div>
+    <div class="card text-center"><div class="card-body">
+      <div class="stat-icon coral"><i class="bi bi-star-fill"></i></div>
+      <div class="fs-3 fw-bold mt-2"><%= avg.avg ? Number(avg.avg).toFixed(1) : '-' %>/5</div>
+      <div class="text-muted small">Promedio General</div>
     </div></div>
   </div>
   <div class="col-md-3">
-    <div class="card border-0 shadow-sm text-center"><div class="card-body">
-      <div class="stat-label">Total Encuestas</div>
-      <div class="stat-value"><%= avg.total %></div>
+    <div class="card text-center"><div class="card-body">
+      <div class="stat-icon green"><i class="bi bi-clipboard-check"></i></div>
+      <div class="fs-3 fw-bold mt-2"><%= avg.total %></div>
+      <div class="text-muted small">Total Encuestas</div>
     </div></div>
   </div>
 </div>
 <% } %>
-<div class="card border-0 shadow-sm"><div class="card-body p-0">
+<div class="card"><div class="card-body p-0">
   <table class="table table-hover mb-0">
-    <thead><tr><th>Candidato</th><th>General</th><th>Evaluador</th><th>Proceso</th><th>Infraestructura</th><th>Fecha</th></tr></thead>
+    <thead><tr><th>Candidato</th><th>General</th><th>Evaluador</th><th>Proceso</th><th>Infraestructura</th><th>Comunicacion</th><th>Fecha</th></tr></thead>
     <tbody>
       <% if (surveys.length === 0) { %>
-        <tr><td colspan="6" class="text-muted text-center py-4">Sin encuestas</td></tr>
+        <tr><td colspan="7" class="empty-state"><i class="bi bi-emoji-smile"></i>Sin encuestas registradas</td></tr>
       <% } else { surveys.forEach(s => { %>
         <tr>
-          <td><%= s.candidate_name || '-' %></td>
-          <td><strong><%= s.score_overall %>/5</strong></td>
-          <td><%= s.score_evaluator || '-' %>/5</td>
-          <td><%= s.score_process || '-' %>/5</td>
-          <td><%= s.score_infrastructure || '-' %>/5</td>
-          <td><%= s.created_at ? s.created_at.substring(0,10) : '-' %></td>
+          <td class="fw-bold"><%= s.candidate_name || '-' %></td>
+          <td><span class="badge bg-<%= s.score_overall >= 4 ? 'success' : s.score_overall >= 3 ? 'warning' : 'danger' %>"><%= s.score_overall %>/5</span></td>
+          <td class="text-muted"><%= s.score_evaluator || '-' %>/5</td>
+          <td class="text-muted"><%= s.score_process || '-' %>/5</td>
+          <td class="text-muted"><%= s.score_infrastructure || '-' %>/5</td>
+          <td class="text-muted"><%= s.score_communication || '-' %>/5</td>
+          <td class="text-muted"><%= s.created_at ? s.created_at.substring(0,10) : '-' %></td>
         </tr>
       <% })} %>
     </tbody>

@@ -1,23 +1,26 @@
 <% const title = 'Control de Documentos' %>
 <%- include('../partials/header', { title }) %>
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0">Control de Documentos</h4>
+  <div>
+    <h4 class="mb-1">Control de Documentos</h4>
+    <span class="text-muted" style="font-size:0.85rem">Procedimiento 6 — Gestion documental D016</span>
+  </div>
   <a href="/documentos/nuevo" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Subir Documento</a>
 </div>
-<div class="card border-0 shadow-sm"><div class="card-body p-0">
+<div class="card"><div class="card-body p-0">
   <table class="table table-hover mb-0">
     <thead><tr><th>Nombre</th><th>Categoria</th><th>Version</th><th>Vence</th><th>Subido por</th><th>Fecha</th></tr></thead>
     <tbody>
       <% if (documents.length === 0) { %>
-        <tr><td colspan="6" class="text-muted text-center py-4">Sin documentos</td></tr>
+        <tr><td colspan="6" class="empty-state"><i class="bi bi-folder2-open"></i>Sin documentos</td></tr>
       <% } else { documents.forEach(d => { %>
         <tr>
-          <td><%= d.file_path ? '<a href="/uploads/' + d.file_name + '" target="_blank">' + d.name + '</a>' : d.name %></td>
-          <td><span class="badge bg-secondary"><%= d.category %></span></td>
+          <td><%= d.file_path ? '<a href="/uploads/' + d.file_name + '" target="_blank"><strong>' + d.name + '</strong></a>' : '<strong>' + d.name + '</strong>' %></td>
+          <td><span class="badge bg-<%= d.category === 'manual' ? 'primary' : d.category === 'procedimiento' ? 'info' : d.category === 'manual_chilevalora' ? 'success' : 'secondary' %>"><%= d.category %></span></td>
           <td>v<%= d.version %></td>
-          <td class="<%= d.expiry_date && new Date(d.expiry_date) < new Date() ? 'text-danger fw-bold' : '' %>"><%= d.expiry_date || '-' %></td>
-          <td><%= d.uploaded_by_name || '-' %></td>
-          <td><%= d.uploaded_at ? d.uploaded_at.substring(0,10) : '-' %></td>
+          <td class="<%= d.expiry_date && new Date(d.expiry_date) < new Date() ? 'text-danger fw-bold' : 'text-muted' %>"><%= d.expiry_date || '-' %></td>
+          <td class="text-muted"><%= d.uploaded_by_name || '-' %></td>
+          <td class="text-muted"><%= d.uploaded_at ? d.uploaded_at.substring(0,10) : '-' %></td>
         </tr>
       <% })} %>
     </tbody>

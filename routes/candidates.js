@@ -71,19 +71,37 @@ router.get("/:id/editar", (req, res) => {
   res.render("candidates/form", { candidate, profiles, error: null });
 });
 
-// Elegibilidad — D016 Proc 1.1
+// Elegibilidad mejorada — Manual del Candidato D016 Proc 1.1
 router.post("/:id/elegibilidad", (req, res) => {
   const db = getDb();
   const oid = req.user.org_id;
   const candidate = db.prepare("SELECT * FROM candidates WHERE id=? AND org_id=?").get(req.params.id, oid);
   if (!candidate || candidate.status !== 'registrado') return res.redirect(`/candidatos/${req.params.id}`);
 
-  const { perfil_verificado, requisitos_cumplidos, documentacion_ok, sin_conflictos } = req.body;
+  const { charla_informativa, entrevista_inicial, entrevista_notas,
+          carta_compromiso, autorizacion_chilevalora, autorizacion_jefe,
+          cedula_identidad, cv_entregado, informe_elegibilidad,
+          perfil_verificado, requisitos_cumplidos, documentacion_ok, sin_conflictos } = req.body;
+
+  // Validar requisitos minimos
   if (!perfil_verificado || !requisitos_cumplidos || !documentacion_ok || !sin_conflictos) {
     return res.redirect(`/candidatos/${req.params.id}?error=elegibilidad`);
   }
 
-  db.prepare("UPDATE candidates SET status='elegible', updated_at=CURRENT_TIMESTAMP WHERE id=? AND org_id=?").run(req.params.id, oid);
+  db.prepare(`UPDATE candidates SET
+    status='elegible',
+    charla_informativa=?, entrevista_inicial=?, entrevista_notas=?,
+    carta_compromiso=?, autorizacion_chilevalora=?, autorizacion_jefe=?,
+    cedula_identidad=?, cv_entregado=?, informe_elegibilidad=?,
+    updated_at=CURRENT_TIMESTAMP
+    WHERE id=? AND org_id=?`
+  ).run(
+    charla_informativa || null, entrevista_inicial || null, entrevista_notas || null,
+    carta_compromiso ? 1 : 0, autorizacion_chilevalora ? 1 : 0, autorizacion_jefe ? 1 : 0,
+    cedula_identidad ? 1 : 0, cv_entregado ? 1 : 0, informe_elegibilidad || null,
+    req.params.id, oid
+  );
+
   logActivity(oid, req.user.id, "elegibilidad", "candidato", req.params.id, `${candidate.name} marcado elegible`);
   res.redirect(`/candidatos/${req.params.id}`);
 });

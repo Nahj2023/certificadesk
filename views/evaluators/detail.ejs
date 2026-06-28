@@ -1,56 +1,52 @@
 <% const title = evaluator.name %>
 <%- include('../partials/header', { title }) %>
-
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
-    <h4 class="mb-0"><%= evaluator.name %></h4>
-    <span class="badge bg-<%= evaluator.active ? 'success' : 'secondary' %> mt-1"><%= evaluator.active ? 'Activo' : 'Inactivo' %></span>
-    <% if (evaluator.performance_score > 0) { %>
-      <span class="badge bg-<%= evaluator.performance_score >= 4 ? 'success' : evaluator.performance_score >= 3 ? 'warning' : 'danger' %> mt-1">
-        Score: <%= evaluator.performance_score.toFixed(1) %>
-      </span>
-    <% } %>
+    <h4 class="mb-1"><%= evaluator.name %></h4>
+    <span class="text-muted" style="font-size:0.85rem">Ficha del evaluador — RUT: <%= evaluator.rut || 'No registrado' %></span>
   </div>
-  <div>
-    <a href="/evaluadores/<%= evaluator.id %>/evaluar" class="btn btn-primary"><i class="bi bi-clipboard2-check"></i> Evaluar Desempeno</a>
+  <div class="d-flex gap-2">
+    <a href="/evaluadores/<%= evaluator.id %>/evaluar" class="btn btn-primary"><i class="bi bi-clipboard-check"></i> Evaluar</a>
     <a href="/evaluadores/<%= evaluator.id %>/editar" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
     <a href="/evaluadores" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
   </div>
 </div>
-
-<div class="row g-3 mb-4">
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white"><strong>Datos del Evaluador</strong></div>
-      <div class="card-body">
+<div class="row g-4">
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-person-vcard me-2" style="color:var(--coral)"></i> Datos del Evaluador</div>
+      <div class="card-body p-0">
         <table class="table table-sm mb-0">
-          <tr><th style="width:35%">RUT</th><td><%= evaluator.rut || '-' %></td></tr>
-          <tr><th>Email</th><td><%= evaluator.email || '-' %></td></tr>
-          <tr><th>Telefono</th><td><%= evaluator.phone || '-' %></td></tr>
-          <tr><th>Especialidades</th><td><%= evaluator.specialties || '-' %></td></tr>
-          <tr><th>Tipo Contrato</th><td><%= evaluator.contract_type || '-' %></td></tr>
-          <tr><th>DJS Vencimiento</th><td><%= evaluator.djs_expiry || '-' %></td></tr>
-          <tr><th>Habilitacion CV</th><td><%= evaluator.habilitacion_cv || '-' %></td></tr>
-          <tr><th>Evaluaciones</th><td><%= evalCompleted %>/<%= evalCount %> completadas</td></tr>
+          <tr><td class="text-muted" style="width:40%">Nombre</td><td class="fw-bold"><%= evaluator.name %></td></tr>
+          <tr><td class="text-muted">RUT</td><td><%= evaluator.rut || '-' %></td></tr>
+          <tr><td class="text-muted">Email</td><td><%= evaluator.email || '-' %></td></tr>
+          <tr><td class="text-muted">Telefono</td><td><%= evaluator.phone || '-' %></td></tr>
+          <tr><td class="text-muted">Especialidades</td><td><%= evaluator.specialties || '-' %></td></tr>
+          <tr><td class="text-muted">Contrato</td><td><span class="badge bg-info"><%= evaluator.contract_type || '-' %></span></td></tr>
+          <tr><td class="text-muted">DJS Vence</td><td class="<%= evaluator.djs_expiry && new Date(evaluator.djs_expiry) < new Date() ? 'text-danger fw-bold' : '' %>"><%= evaluator.djs_expiry || '-' %></td></tr>
+          <tr><td class="text-muted">Habilitacion CV</td><td><%= evaluator.habilitacion_cv || '-' %></td></tr>
+          <tr><td class="text-muted">Evaluaciones</td><td><%= evalCompleted %>/<%= evalCount %> completadas</td></tr>
+          <tr><td class="text-muted">Score</td><td><% if (evaluator.performance_score > 0) { %><span class="badge bg-<%= evaluator.performance_score >= 4 ? 'success' : evaluator.performance_score >= 3 ? 'warning' : 'danger' %> fs-6"><%= evaluator.performance_score.toFixed(1) %>/5.0</span><% } else { %>Sin evaluar<% } %></td></tr>
+          <tr><td class="text-muted">Estado</td><td><span class="badge bg-<%= evaluator.active ? 'success' : 'secondary' %>"><%= evaluator.active ? 'Activo' : 'Inactivo' %></span></td></tr>
         </table>
       </div>
     </div>
   </div>
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white"><strong>Historial Evaluaciones de Desempeno</strong></div>
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-graph-up me-2" style="color:var(--coral)"></i> Historial de Evaluaciones de Desempeno</div>
       <div class="card-body p-0">
-        <table class="table table-sm mb-0">
-          <thead><tr><th>Periodo</th><th>Plazos</th><th>Informes</th><th>Proc.</th><th>Prom.</th><th>Accion</th></tr></thead>
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Periodo</th><th>Plazos</th><th>Informes</th><th>Procedim.</th><th>Promedio</th><th>Accion</th></tr></thead>
           <tbody>
             <% if (reviews.length === 0) { %>
-              <tr><td colspan="6" class="text-muted text-center py-3">Sin evaluaciones de desempeno</td></tr>
+              <tr><td colspan="6" class="empty-state"><i class="bi bi-clipboard"></i>Sin evaluaciones de desempeno</td></tr>
             <% } else { reviews.forEach(r => { %>
               <tr>
-                <td><%= r.period %></td>
-                <td><%= r.score_deadlines %></td>
-                <td><%= r.score_report_quality %></td>
-                <td><%= r.score_procedure_compliance %></td>
+                <td class="fw-bold"><%= r.period %></td>
+                <td><%= r.score_deadlines %>/5</td>
+                <td><%= r.score_report_quality %>/5</td>
+                <td><%= r.score_procedure_compliance %>/5</td>
                 <td><span class="badge bg-<%= r.overall_score >= 4 ? 'success' : r.overall_score >= 3 ? 'warning' : 'danger' %>"><%= r.overall_score.toFixed(1) %></span></td>
                 <td><span class="badge bg-<%= r.action_required === 'ninguna' ? 'success' : r.action_required === 'capacitacion' ? 'warning' : 'danger' %>"><%= r.action_required %></span></td>
               </tr>
@@ -61,5 +57,4 @@
     </div>
   </div>
 </div>
-
 <%- include('../partials/footer') %>

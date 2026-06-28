@@ -1,49 +1,65 @@
 <% const title = 'Reportes' %>
 <%- include('../partials/header', { title }) %>
-<h4 class="mb-4">Reportes para ChileValora</h4>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-1">Reportes para ChileValora</h4>
+    <span class="text-muted" style="font-size:0.85rem">Indicadores consolidados del CEC</span>
+  </div>
+  <a href="/reportes/chilevalora" class="btn btn-primary"><i class="bi bi-file-earmark-bar-graph"></i> Reporte Mensual</a>
+</div>
 <div class="row g-3 mb-4">
   <div class="col-md-3">
-    <div class="card border-0 shadow-sm text-center"><div class="card-body">
-      <div class="stat-label">Candidatos Totales</div><div class="stat-value"><%= summary.candidates_total %></div>
+    <div class="card text-center"><div class="card-body">
+      <div class="stat-icon coral"><i class="bi bi-people"></i></div>
+      <div class="fs-3 fw-bold mt-2"><%= summary.candidates_total %></div>
+      <div class="text-muted small">Candidatos Totales</div>
     </div></div>
   </div>
   <div class="col-md-3">
-    <div class="card border-0 shadow-sm text-center"><div class="card-body">
-      <div class="stat-label">Tasa Certificacion</div><div class="stat-value"><%= rate %>%</div>
+    <div class="card text-center"><div class="card-body">
+      <div class="stat-icon green"><i class="bi bi-award"></i></div>
+      <div class="fs-3 fw-bold mt-2"><%= rate %>%</div>
+      <div class="text-muted small">Tasa Certificacion</div>
     </div></div>
   </div>
   <div class="col-md-3">
-    <div class="card border-0 shadow-sm text-center"><div class="card-body">
-      <div class="stat-label">Satisfaccion Prom.</div><div class="stat-value"><%= summary.satisfaction_avg ? Number(summary.satisfaction_avg).toFixed(1) : '-' %>/5</div>
+    <div class="card text-center"><div class="card-body">
+      <div class="stat-icon orange"><i class="bi bi-star"></i></div>
+      <div class="fs-3 fw-bold mt-2"><%= summary.satisfaction_avg ? Number(summary.satisfaction_avg).toFixed(1) : '-' %>/5</div>
+      <div class="text-muted small">Satisfaccion Prom.</div>
     </div></div>
   </div>
   <div class="col-md-3">
-    <div class="card border-0 shadow-sm text-center"><div class="card-body">
-      <div class="stat-label">Auditorias</div><div class="stat-value"><%= summary.audits_done %></div>
+    <div class="card text-center"><div class="card-body">
+      <div class="stat-icon blue"><i class="bi bi-search"></i></div>
+      <div class="fs-3 fw-bold mt-2"><%= summary.audits_done %></div>
+      <div class="text-muted small">Auditorias</div>
     </div></div>
   </div>
 </div>
-<div class="row g-3">
+<div class="row g-4">
   <div class="col-md-6">
-    <div class="card border-0 shadow-sm"><div class="card-header bg-white"><strong>Resumen Certificaciones</strong></div>
-      <div class="card-body">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-award me-2" style="color:var(--coral)"></i> Resumen Certificaciones</div>
+      <div class="card-body p-0">
         <table class="table table-sm mb-0">
-          <tr><th>Certificados (Competente)</th><td class="text-success fw-bold"><%= summary.certified %></td></tr>
-          <tr><th>No Certificados</th><td class="text-danger"><%= summary.not_certified %></td></tr>
-          <tr><th>Evaluaciones Completadas</th><td><%= summary.evaluations_done %></td></tr>
-          <tr><th>Tasa de Certificacion</th><td><%= rate %>%</td></tr>
+          <tr><td class="text-muted">Certificados (Competente)</td><td class="fw-bold" style="color:var(--green)"><%= summary.certified %></td></tr>
+          <tr><td class="text-muted">No Certificados</td><td class="text-danger"><%= summary.not_certified %></td></tr>
+          <tr><td class="text-muted">Evaluaciones Completadas</td><td><%= summary.evaluations_done %></td></tr>
+          <tr><td class="text-muted">Tasa de Certificacion</td><td class="fw-bold"><%= rate %>%</td></tr>
         </table>
       </div>
     </div>
   </div>
   <div class="col-md-6">
-    <div class="card border-0 shadow-sm"><div class="card-header bg-white"><strong>Gestion de Calidad</strong></div>
-      <div class="card-body">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-shield-check me-2" style="color:var(--coral)"></i> Gestion de Calidad</div>
+      <div class="card-body p-0">
         <table class="table table-sm mb-0">
-          <tr><th>Reclamos Totales</th><td><%= summary.complaints_total %></td></tr>
-          <tr><th>Reclamos Resueltos</th><td class="text-success"><%= summary.complaints_resolved %></td></tr>
-          <tr><th>Tasa Resolucion</th><td><%= summary.complaints_total > 0 ? ((summary.complaints_resolved / summary.complaints_total) * 100).toFixed(0) : 0 %>%</td></tr>
-          <tr><th>Auditorias Completadas</th><td><%= summary.audits_done %></td></tr>
+          <tr><td class="text-muted">Reclamos Totales</td><td><%= summary.complaints_total %></td></tr>
+          <tr><td class="text-muted">Reclamos Resueltos</td><td class="fw-bold" style="color:var(--green)"><%= summary.complaints_resolved %></td></tr>
+          <tr><td class="text-muted">Tasa Resolucion</td><td><%= summary.complaints_total > 0 ? ((summary.complaints_resolved / summary.complaints_total) * 100).toFixed(0) : 0 %>%</td></tr>
+          <tr><td class="text-muted">Auditorias Completadas</td><td><%= summary.audits_done %></td></tr>
         </table>
       </div>
     </div>

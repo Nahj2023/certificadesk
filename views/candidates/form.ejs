@@ -2,81 +2,107 @@
 <%- include('../partials/header', { title }) %>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0"><%= title %></h4>
+  <div>
+    <h4 class="mb-1"><%= title %></h4>
+    <span class="text-muted" style="font-size:0.85rem">Procedimiento 1 — Proceso de Certificacion D016</span>
+  </div>
   <a href="/candidatos" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 
 <% if (error) { %>
-  <div class="alert alert-danger"><%= error %></div>
+  <div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i><%= error %></div>
 <% } %>
 
-<div class="card border-0 shadow-sm">
-  <div class="card-body">
-    <form method="POST" action="<%= candidate && candidate.id ? '/candidatos/' + candidate.id : '/candidatos' %>">
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label">Nombre completo *</label>
-          <input type="text" name="name" class="form-control" value="<%= candidate ? candidate.name || '' : '' %>" required>
+<form method="POST" action="<%= candidate && candidate.id ? '/candidatos/' + candidate.id : '/candidatos' %>">
+  <div class="row g-4">
+
+    <!-- Datos Personales -->
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <i class="bi bi-person me-2" style="color:var(--coral)"></i> Datos Personales
         </div>
-        <div class="col-md-3">
-          <label class="form-label">RUT</label>
-          <input type="text" name="rut" class="form-control" value="<%= candidate ? candidate.rut || '' : '' %>" placeholder="12.345.678-9">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Telefono</label>
-          <input type="text" name="phone" class="form-control" value="<%= candidate ? candidate.phone || '' : '' %>">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Email</label>
-          <input type="email" name="email" class="form-control" value="<%= candidate ? candidate.email || '' : '' %>">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Region</label>
-          <input type="text" name="region" class="form-control" value="<%= candidate ? candidate.region || '' : '' %>">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Nivel educacional</label>
-          <select name="education_level" class="form-select">
-            <option value="">Seleccionar</option>
-            <% ['Basica', 'Media', 'Tecnica', 'Universitaria', 'Postgrado'].forEach(l => { %>
-              <option value="<%= l %>" <%= candidate && candidate.education_level === l ? 'selected' : '' %>><%= l %></option>
-            <% }) %>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label">Perfil ocupacional</label>
-          <select name="profile_id" class="form-select">
-            <option value="">Seleccionar perfil</option>
-            <% profiles.forEach(p => { %>
-              <option value="<%= p.id %>" <%= candidate && String(candidate.profile_id) === String(p.id) ? 'selected' : '' %>><%= p.code %> - <%= p.name %></option>
-            <% }) %>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <label class="form-label">Anos experiencia</label>
-          <input type="number" name="work_experience_years" class="form-control" min="0" value="<%= candidate ? candidate.work_experience_years || 0 : 0 %>">
-        </div>
-        <% if (candidate && candidate.id) { %>
-        <div class="col-md-3">
-          <label class="form-label">Estado</label>
-          <select name="status" class="form-select">
-            <% ['registrado','evaluando','certificado','no_certificado','apelacion'].forEach(s => { %>
-              <option value="<%= s %>" <%= candidate.status === s ? 'selected' : '' %>><%= s.replace('_',' ') %></option>
-            <% }) %>
-          </select>
-        </div>
-        <% } %>
-        <div class="col-12">
-          <label class="form-label">Notas</label>
-          <textarea name="notes" class="form-control" rows="2"><%= candidate ? candidate.notes || '' : '' %></textarea>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Nombre completo *</label>
+              <input type="text" name="name" class="form-control" value="<%= candidate ? candidate.name || '' : '' %>" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">RUT</label>
+              <input type="text" name="rut" class="form-control" value="<%= candidate ? candidate.rut || '' : '' %>" placeholder="12.345.678-9">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Telefono</label>
+              <input type="text" name="phone" class="form-control" value="<%= candidate ? candidate.phone || '' : '' %>">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" value="<%= candidate ? candidate.email || '' : '' %>">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Region</label>
+              <input type="text" name="region" class="form-control" value="<%= candidate ? candidate.region || '' : '' %>">
+            </div>
+          </div>
         </div>
       </div>
-      <div class="mt-4">
-        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar</button>
-        <a href="/candidatos" class="btn btn-outline-secondary ms-2">Cancelar</a>
+    </div>
+
+    <!-- Perfil Profesional -->
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <i class="bi bi-briefcase me-2" style="color:var(--coral)"></i> Perfil Profesional
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nivel educacional</label>
+              <select name="education_level" class="form-select">
+                <option value="">Seleccionar</option>
+                <% ['Basica', 'Media', 'Tecnica', 'Universitaria', 'Postgrado'].forEach(l => { %>
+                  <option value="<%= l %>" <%= candidate && candidate.education_level === l ? 'selected' : '' %>><%= l %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Anos experiencia</label>
+              <input type="number" name="work_experience_years" class="form-control" min="0" value="<%= candidate ? candidate.work_experience_years || 0 : 0 %>">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Perfil ocupacional</label>
+              <select name="profile_id" class="form-select">
+                <option value="">Seleccionar perfil</option>
+                <% profiles.forEach(p => { %>
+                  <option value="<%= p.id %>" <%= candidate && String(candidate.profile_id) === String(p.id) ? 'selected' : '' %>><%= p.code %> — <%= p.name %></option>
+                <% }) %>
+              </select>
+            </div>
+            <% if (candidate && candidate.id) { %>
+            <div class="col-12">
+              <label class="form-label">Estado</label>
+              <select name="status" class="form-select">
+                <% ['registrado','evaluando','certificado','no_certificado','apelacion'].forEach(s => { %>
+                  <option value="<%= s %>" <%= candidate.status === s ? 'selected' : '' %>><%= s.replace('_',' ') %></option>
+                <% }) %>
+              </select>
+            </div>
+            <% } %>
+            <div class="col-12">
+              <label class="form-label">Notas</label>
+              <textarea name="notes" class="form-control" rows="2"><%= candidate ? candidate.notes || '' : '' %></textarea>
+            </div>
+          </div>
+        </div>
       </div>
-    </form>
+    </div>
   </div>
-</div>
+
+  <div class="mt-4 d-flex gap-2">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar Candidato</button>
+    <a href="/candidatos" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
+</form>
 
 <%- include('../partials/footer') %>

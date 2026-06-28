@@ -1,24 +1,33 @@
 <% const title = 'Nueva Auditoria' %>
 <%- include('../partials/header', { title }) %>
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h4 class="mb-0">Nueva Auditoria</h4>
+  <div>
+    <h4 class="mb-1">Nueva Auditoria</h4>
+    <span class="text-muted" style="font-size:0.85rem">Procedimiento 2 — Programar auditoria interna</span>
+  </div>
   <a href="/auditorias" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
-<div class="card border-0 shadow-sm"><div class="card-body">
-  <form method="POST" action="/auditorias">
-    <div class="row g-3">
-      <div class="col-md-4"><label class="form-label">Tipo</label>
-        <select name="type" class="form-select"><option value="interna">Interna</option><option value="seguimiento">Seguimiento</option><option value="chilevalora">ChileValora</option></select>
+<div class="card">
+  <div class="card-header"><i class="bi bi-search me-2" style="color:var(--coral)"></i> Datos de la Auditoria</div>
+  <div class="card-body">
+    <form method="POST" action="/auditorias">
+      <div class="row g-3">
+        <div class="col-md-4"><label class="form-label">Tipo</label>
+          <select name="type" class="form-select"><option value="interna">Interna</option><option value="seguimiento">Seguimiento</option><option value="chilevalora">ChileValora</option></select>
+        </div>
+        <div class="col-md-4"><label class="form-label">Auditor</label>
+          <select name="auditor_id" class="form-select"><option value="">Seleccionar</option>
+            <% auditors.forEach(a => { %><option value="<%= a.id %>"><%= a.display_name %></option><% }) %>
+          </select>
+        </div>
+        <div class="col-md-4"><label class="form-label">Fecha</label><input type="date" name="scheduled_date" class="form-control" required></div>
+        <div class="col-12"><label class="form-label">Alcance</label><textarea name="scope" class="form-control" rows="2" placeholder="Procedimientos a auditar..."></textarea></div>
       </div>
-      <div class="col-md-4"><label class="form-label">Auditor</label>
-        <select name="auditor_id" class="form-select"><option value="">Seleccionar</option>
-          <% auditors.forEach(a => { %><option value="<%= a.id %>"><%= a.display_name %></option><% }) %>
-        </select>
+      <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Programar Auditoria</button>
+        <a href="/auditorias" class="btn btn-outline-secondary">Cancelar</a>
       </div>
-      <div class="col-md-4"><label class="form-label">Fecha</label><input type="date" name="scheduled_date" class="form-control" required></div>
-      <div class="col-12"><label class="form-label">Alcance</label><textarea name="scope" class="form-control" rows="2" placeholder="Procedimientos a auditar..."></textarea></div>
-    </div>
-    <div class="mt-4"><button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Programar</button></div>
-  </form>
-</div></div>
+    </form>
+  </div>
+</div>
 <%- include('../partials/footer') %>
