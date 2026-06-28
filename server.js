@@ -38,6 +38,7 @@ app.use("/reportes", require("./routes/reports"));
 app.use("/conflictos", require("./routes/conflicts"));
 app.use("/registros", require("./routes/records"));
 app.use("/evidencias", require("./routes/evidence"));
+app.use("/franquicia", require("./routes/franquicia"));
 
 app.use((req, res) => {
   res.status(404).render("error", { title: "No encontrado", message: "Página no encontrada" });

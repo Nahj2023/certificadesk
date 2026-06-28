@@ -1,0 +1,140 @@
+<% const title = accion && accion.id ? 'Editar Accion' : 'Nueva Accion EyCCL' %>
+<%- include('../partials/header', { title }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0"><i class="bi bi-bank"></i> <%= title %></h4>
+  <a href="/franquicia" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+
+<% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
+
+<form method="POST" action="<%= accion && accion.id ? '/franquicia/' + accion.id : '/franquicia' %>">
+  <div class="row g-3">
+    <!-- Empresa -->
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Datos de la Empresa</strong></div>
+        <div class="card-body">
+          <div class="mb-2">
+            <label class="form-label">RUT Empresa *</label>
+            <input type="text" name="empresa_rut" class="form-control" value="<%= accion?.empresa_rut || '' %>" required placeholder="76.000.000-0">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Razon Social *</label>
+            <input type="text" name="empresa_nombre" class="form-control" value="<%= accion?.empresa_nombre || '' %>" required>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Direccion</label>
+            <input type="text" name="empresa_direccion" class="form-control" value="<%= accion?.empresa_direccion || '' %>">
+          </div>
+          <div class="row">
+            <div class="col-6 mb-2">
+              <label class="form-label">Region</label>
+              <input type="text" name="empresa_region" class="form-control" value="<%= accion?.empresa_region || '' %>">
+            </div>
+            <div class="col-6 mb-2">
+              <label class="form-label">Comuna</label>
+              <input type="text" name="empresa_comuna" class="form-control" value="<%= accion?.empresa_comuna || '' %>">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Responsable -->
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Responsable de Comunicar</strong></div>
+        <div class="card-body">
+          <div class="mb-2">
+            <label class="form-label">RUT Responsable</label>
+            <input type="text" name="responsable_rut" class="form-control" value="<%= accion?.responsable_rut || '' %>">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Nombre</label>
+            <input type="text" name="responsable_nombre" class="form-control" value="<%= accion?.responsable_nombre || '' %>">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Email</label>
+            <input type="email" name="responsable_email" class="form-control" value="<%= accion?.responsable_email || '' %>">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Telefono</label>
+            <input type="text" name="responsable_telefono" class="form-control" value="<%= accion?.responsable_telefono || '' %>">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Datos Accion -->
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Datos de la Accion</strong></div>
+        <div class="card-body">
+          <div class="mb-2">
+            <label class="form-label">Tipo de Actividad *</label>
+            <select name="tipo" class="form-select" required>
+              <option value="contrato" <%= accion?.tipo === 'contrato' ? 'selected' : '' %>>Contrato</option>
+              <option value="pre_contrato" <%= accion?.tipo === 'pre_contrato' ? 'selected' : '' %>>Pre Contrato</option>
+              <option value="post_contrato" <%= accion?.tipo === 'post_contrato' ? 'selected' : '' %>>Post Contrato</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Perfil Ocupacional</label>
+            <select name="profile_id" class="form-select">
+              <option value="">Seleccionar perfil</option>
+              <% profiles.forEach(p => { %>
+              <option value="<%= p.id %>" <%= accion?.profile_id == p.id ? 'selected' : '' %>><%= p.code %> — <%= p.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="row">
+            <div class="col-6 mb-2">
+              <label class="form-label">Fecha Inicio</label>
+              <input type="date" name="fecha_inicio" class="form-control" value="<%= accion?.fecha_inicio || '' %>">
+            </div>
+            <div class="col-6 mb-2">
+              <label class="form-label">Fecha Termino</label>
+              <input type="date" name="fecha_termino" class="form-control" value="<%= accion?.fecha_termino || '' %>">
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Valor por UCL ($CLP)</label>
+            <input type="number" name="valor_ucl" class="form-control" value="<%= accion?.valor_ucl || '' %>" min="0" step="1000">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comite Bipartito -->
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white"><strong>Comite Bipartito</strong></div>
+        <div class="card-body">
+          <div class="form-check mb-3">
+            <input type="checkbox" name="tiene_comite_bipartito" value="1" class="form-check-input" id="cb" <%= accion?.tiene_comite_bipartito ? 'checked' : '' %>>
+            <label for="cb" class="form-check-label">Empresa cuenta con Comite Bipartito aprobado por SENCE</label>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Programa asociado</label>
+            <input type="text" name="comite_programa" class="form-control" value="<%= accion?.comite_programa || '' %>" placeholder="Nombre del programa CB">
+          </div>
+          <div class="alert alert-info small mt-2 mb-0">
+            <i class="bi bi-info-circle"></i> Solo acciones tipo <strong>Contrato</strong> aplican para beneficio de Comite Bipartito.
+          </div>
+          <hr>
+          <div class="mb-2">
+            <label class="form-label">Observaciones</label>
+            <textarea name="observaciones" class="form-control" rows="3"><%= accion?.observaciones || '' %></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> <%= accion && accion.id ? 'Guardar Cambios' : 'Crear Accion' %></button>
+  </div>
+</form>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,207 @@
+<% const title = 'Accion #' + accion.id + ' — ' + accion.empresa_nombre %>
+<%- include('../partials/header', { title }) %>
+
+<%
+  const colors = { borrador:'secondary', comunicada:'info', autorizada:'primary', evaluada:'warning', pre_liquidada:'info', liquidada:'success', rechazada:'danger' };
+  const estadoColor = colors[accion.estado] || 'secondary';
+%>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-0"><%= accion.empresa_nombre %></h4>
+    <span class="badge bg-<%= estadoColor %> mt-1"><%= accion.estado %></span>
+    <% if (accion.sence_id) { %><span class="badge bg-dark mt-1">SENCE #<%= accion.sence_id %></span><% } %>
+    <% if (accion.tiene_comite_bipartito) { %><span class="badge bg-info mt-1">CB</span><% } %>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="/franquicia/<%= accion.id %>/ft001" class="btn btn-sm btn-success" target="_blank"><i class="bi bi-file-earmark-text"></i> FT001</a>
+    <a href="/franquicia/<%= accion.id %>/export-csv" class="btn btn-sm btn-outline-success"><i class="bi bi-download"></i> CSV</a>
+    <a href="/franquicia/<%= accion.id %>/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
+    <a href="/franquicia" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+  </div>
+</div>
+
+<% if (diasRestantes !== null && diasRestantes <= 15 && diasRestantes > 0 && ['autorizada','comunicada'].includes(accion.estado)) { %>
+<div class="alert alert-warning"><i class="bi bi-clock-fill"></i> <strong>Atencion:</strong> Quedan <strong><%= diasRestantes %> dias</strong> para evaluar y pre-liquidar esta accion (plazo 60 dias SENCE).</div>
+<% } else if (diasRestantes !== null && diasRestantes <= 0 && !['liquidada','rechazada'].includes(accion.estado)) { %>
+<div class="alert alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> <strong>Plazo vencido.</strong> Se requiere solicitud fuera de plazo ante SENCE.</div>
+<% } %>
+
+<div class="row g-3 mb-4">
+  <!-- Datos Empresa -->
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-white"><strong>Empresa</strong></div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tr><th style="width:40%">RUT</th><td><%= accion.empresa_rut %></td></tr>
+          <tr><th>Razon Social</th><td><%= accion.empresa_nombre %></td></tr>
+          <tr><th>Direccion</th><td><%= accion.empresa_direccion || '-' %></td></tr>
+          <tr><th>Region</th><td><%= accion.empresa_region || '-' %></td></tr>
+          <tr><th>Comuna</th><td><%= accion.empresa_comuna || '-' %></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Datos Accion -->
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-white"><strong>Datos de Accion</strong></div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tr><th style="width:40%">Tipo</th><td><%= accion.tipo %></td></tr>
+          <tr><th>Perfil</th><td><%= accion.profile_code || '' %> <%= accion.profile_name || '-' %></td></tr>
+          <tr><th>Sector</th><td><%= accion.profile_sector || '-' %></td></tr>
+          <tr><th>Fecha Inicio</th><td><%= accion.fecha_inicio || '-' %></td></tr>
+          <tr><th>Fecha Termino</th><td><%= accion.fecha_termino || '-' %></td></tr>
+          <tr><th>Valor UCL</th><td>$<%= (accion.valor_ucl || 0).toLocaleString('es-CL') %></td></tr>
+          <tr><th>ID SENCE</th><td><%= accion.sence_id || 'No asignado' %></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Costos -->
+  <div class="col-md-4">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-white"><strong>Resumen Costos</strong></div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tr><th style="width:50%">Participantes</th><td><%= costos.participantes %></td></tr>
+          <tr><th>Valor UCL</th><td>$<%= costos.valorUcl.toLocaleString('es-CL') %></td></tr>
+          <tr><th>Total Bruto</th><td>$<%= costos.totalBruto.toLocaleString('es-CL') %></td></tr>
+          <tr><th>Franquicia SENCE</th><td class="text-success fw-bold">$<%= costos.totalFranquicia.toLocaleString('es-CL') %></td></tr>
+          <tr><th>Copago Trabajadores</th><td>$<%= costos.totalCopago.toLocaleString('es-CL') %></td></tr>
+          <tr><th>Costo Empresa</th><td class="fw-bold">$<%= costos.costoEmpresa.toLocaleString('es-CL') %></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cambiar Estado -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white"><strong>Avanzar Estado</strong></div>
+  <div class="card-body">
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+      <% ESTADOS.forEach(e => { %>
+        <form method="POST" action="/franquicia/<%= accion.id %>/estado" class="d-inline">
+          <input type="hidden" name="estado" value="<%= e %>">
+          <button type="submit" class="btn btn-sm btn-<%= e === accion.estado ? '' : 'outline-' %><%= colors[e] || 'secondary' %>"
+            <%= e === accion.estado ? 'disabled' : '' %>
+            onclick="return confirm('Cambiar estado a <%= e %>?')"><%= e %></button>
+        </form>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<!-- Participantes -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <strong>Participantes (<%= participantes.length %>)</strong>
+    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addParticipante"><i class="bi bi-plus-lg"></i> Agregar</button>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-sm table-hover mb-0">
+      <thead><tr><th>RUT</th><th>Nombre</th><th>Tramo</th><th>% Franq.</th><th>Copago</th><th>Resultado</th><th></th></tr></thead>
+      <tbody>
+        <% if (participantes.length === 0) { %>
+          <tr><td colspan="7" class="text-muted text-center py-3">Sin participantes</td></tr>
+        <% } else { participantes.forEach(p => { %>
+          <tr>
+            <td><%= p.rut %></td>
+            <td><%= p.nombre %></td>
+            <td><%= p.tramo_franquicia %></td>
+            <td><%= p.porcentaje_franquicia %>%</td>
+            <td>$<%= (p.copago || 0).toLocaleString('es-CL') %></td>
+            <td>
+              <form method="POST" action="/franquicia/<%= accion.id %>/participante/<%= p.id %>/resultado" class="d-inline">
+                <select name="resultado" class="form-select form-select-sm d-inline" style="width:auto" onchange="this.form.submit()">
+                  <option value="pendiente" <%= p.resultado === 'pendiente' ? 'selected' : '' %>>Pendiente</option>
+                  <option value="competente" <%= p.resultado === 'competente' ? 'selected' : '' %>>Competente</option>
+                  <option value="aun_no_competente" <%= p.resultado === 'aun_no_competente' ? 'selected' : '' %>>Aun no competente</option>
+                  <option value="no_evaluado" <%= p.resultado === 'no_evaluado' ? 'selected' : '' %>>No evaluado</option>
+                  <option value="desertor" <%= p.resultado === 'desertor' ? 'selected' : '' %>>Desertor</option>
+                </select>
+              </form>
+            </td>
+            <td>
+              <form method="POST" action="/franquicia/<%= accion.id %>/participante/<%= p.id %>/eliminar" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Eliminar participante?')"><i class="bi bi-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+        <% })} %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<% if (accion.observaciones) { %>
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white"><strong>Observaciones</strong></div>
+  <div class="card-body"><%= accion.observaciones %></div>
+</div>
+<% } %>
+
+<!-- Modal Agregar Participante -->
+<div class="modal fade" id="addParticipante" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="/franquicia/<%= accion.id %>/participante">
+        <div class="modal-header"><h5 class="modal-title">Agregar Participante</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <div class="mb-2">
+            <label class="form-label">RUT *</label>
+            <input type="text" name="rut" class="form-control" required placeholder="12.345.678-9">
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Nombre *</label>
+            <input type="text" name="nombre" class="form-control" required>
+          </div>
+          <div class="row">
+            <div class="col-6 mb-2">
+              <label class="form-label">Nivel Ocupacional</label>
+              <input type="text" name="nivel_ocupacional" class="form-control">
+            </div>
+            <div class="col-6 mb-2">
+              <label class="form-label">Nivel Educacional</label>
+              <input type="text" name="nivel_educacional" class="form-control">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6 mb-2">
+              <label class="form-label">Tramo Franquicia</label>
+              <select name="tramo_franquicia" class="form-select">
+                <option value="1">1 — 90% (0-10 UTM)</option>
+                <option value="2">2 — 70% (10-25 UTM)</option>
+                <option value="3">3 — 50% (25-50 UTM)</option>
+                <option value="4">4 — 0% (>50 UTM)</option>
+                <option value="5">5 — 100% (Pre Contrato)</option>
+              </select>
+            </div>
+            <div class="col-6 mb-2">
+              <label class="form-label">Copago ($CLP)</label>
+              <input type="number" name="copago" class="form-control" value="0" min="0">
+            </div>
+          </div>
+          <% if (['pre_contrato','post_contrato'].includes(accion.tipo)) { %>
+          <div class="row">
+            <div class="col-6 mb-2">
+              <label class="form-label">Fecha Contrato</label>
+              <input type="date" name="fecha_contrato" class="form-control">
+            </div>
+            <div class="col-6 mb-2">
+              <label class="form-label">Fecha Finiquito</label>
+              <input type="date" name="fecha_finiquito" class="form-control">
+            </div>
+          </div>
+          <% } %>
+        </div>
+        <div class="modal-footer"><button type="submit" class="btn btn-primary">Agregar</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
