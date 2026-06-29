@@ -170,6 +170,34 @@
   </div>
 </div>
 
+<!-- Charts row -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><strong><i class="bi bi-pie-chart"></i> Candidatos por Estado</strong></div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:260px">
+        <canvas id="chartPipeline"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><strong><i class="bi bi-bar-chart"></i> Candidatos por Perfil</strong></div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:260px">
+        <canvas id="chartProfiles"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><strong><i class="bi bi-graph-up"></i> Evaluaciones por Mes</strong></div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:260px">
+        <canvas id="chartMonthly"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- D016 Compliance -->
 <div class="row g-3 mb-4">
   <div class="col-md-4">
@@ -254,5 +282,78 @@
     </div>
   </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  const coral = '#E85D3A', green = '#2ECC71', blue = '#3498DB', orange = '#F39C12', purple = '#9B59B6',
+        red = '#E74C3C', teal = '#00B894', gray = '#636E72';
+  const chartFont = { family: "'Inter', sans-serif", size: 11 };
+  Chart.defaults.font = chartFont;
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+  Chart.defaults.plugins.legend.labels.padding = 12;
+
+  // Donut: candidatos por estado
+  const pipeData = <%- JSON.stringify(charts.pipeline) %>;
+  new Chart(document.getElementById('chartPipeline'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Registrados', 'Elegibles', 'Evaluando', 'Pend. Comite', 'Certificados'],
+      datasets: [{
+        data: pipeData,
+        backgroundColor: [gray, blue, orange, coral, green],
+        borderWidth: 0, hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } }
+    }
+  });
+
+  // Bar: candidatos por perfil
+  const profData = <%- JSON.stringify(charts.byProfile) %>;
+  new Chart(document.getElementById('chartProfiles'), {
+    type: 'bar',
+    data: {
+      labels: profData.map(d => d.label ? (d.label.length > 18 ? d.label.substring(0,18)+'...' : d.label) : 'N/A'),
+      datasets: [{
+        label: 'Candidatos',
+        data: profData.map(d => d.value),
+        backgroundColor: coral + 'CC',
+        borderRadius: 6, barThickness: 28
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      scales: { x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } }, grid: { display: false } }, y: { ticks: { font: { size: 10 } }, grid: { display: false } } },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // Line: evaluaciones por mes
+  const monthData = <%- JSON.stringify(charts.byMonth) %>;
+  if (monthData.length > 0) {
+    new Chart(document.getElementById('chartMonthly'), {
+      type: 'line',
+      data: {
+        labels: monthData.map(d => d.month),
+        datasets: [
+          { label: 'Competentes', data: monthData.map(d => d.competentes), borderColor: green, backgroundColor: green+'33', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: green },
+          { label: 'No Competentes', data: monthData.map(d => d.no_competentes), borderColor: red, backgroundColor: red+'22', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: red }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.04)' } }, x: { grid: { display: false } } },
+        plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } }
+      }
+    });
+  } else {
+    document.getElementById('chartMonthly').parentElement.innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-graph-up" style="font-size:2rem"></i><br>Sin datos aun</div>';
+  }
+})();
+</script>
 
 <%- include('partials/footer') %>
