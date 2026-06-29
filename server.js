@@ -73,6 +73,7 @@ app.use("/evidencias", requireWriteRole("evidencias"), require("./routes/evidenc
 app.use("/franquicia", requireWriteRole("franquicia"), require("./routes/franquicia"));
 app.use("/docs", require("./routes/docs"));
 app.use("/busqueda", require("./routes/search"));
+app.use("/agentes", require("./routes/agents"));
 app.use("/admin", requireAdmin, require("./routes/admin"));
 
 app.use((req, res) => {

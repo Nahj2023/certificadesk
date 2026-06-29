@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 
 function csrfProtection(req, res, next) {
-  if (req.path.startsWith("/api/")) return next();
+  if (req.path.startsWith("/api/") || req.path.startsWith("/agentes/api/")) return next();
 
   if (req.method === "GET" || req.method === "HEAD") {
     let token = req.cookies?._csrf;

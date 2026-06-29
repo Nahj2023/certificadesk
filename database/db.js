@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const bcrypt = require("bcryptjs");
 const { FORM_TEMPLATES } = require("./forms-seed");
+const { AGENT_TEMPLATES } = require("./agents-seed");
 
 const DB_PATH = path.join(__dirname, "..", "certificadesk.db");
 const SCHEMA_PATH = path.join(__dirname, "schema.sql");
@@ -31,6 +32,7 @@ function initSchema() {
   }
   seedManuals();
   seedFormTemplates();
+  seedAgentTemplates();
   migrateColumns();
 }
 
@@ -186,4 +188,17 @@ function seedFormTemplates() {
     }
   }
   console.log("[DB] Formularios ChileValora verificados");
+}
+
+function seedAgentTemplates() {
+  const count = db.prepare("SELECT COUNT(*) as c FROM ai_agents WHERE org_id IS NULL").get().c;
+  if (count >= 5) return;
+  const stmt = db.prepare("INSERT OR IGNORE INTO ai_agents (org_id, code, name, avatar, description, system_prompt, tools_enabled, model, temperature, max_tokens, is_public) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+  for (const a of AGENT_TEMPLATES) {
+    const exists = db.prepare("SELECT id FROM ai_agents WHERE code=?").get(a.code);
+    if (!exists) {
+      stmt.run(null, a.code, a.name, a.avatar, a.description, a.system_prompt, a.tools_enabled, a.model || "llama-3.3-70b-versatile", a.temperature || 0.3, a.max_tokens || 2048, a.is_public || 0);
+    }
+  }
+  console.log("[DB] Agentes IA verificados");
 }

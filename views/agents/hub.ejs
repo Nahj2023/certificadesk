@@ -1,0 +1,85 @@
+<% const title = 'Agentes IA' %>
+<%- include('../partials/header', { title }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-1">Agentes IA</h4>
+    <span class="text-muted" style="font-size:0.85rem">Co-pilotos especializados en normativa ChileValora</span>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <% agents.forEach(agent => { %>
+  <div class="col-md-6 col-lg-4">
+    <a href="/agentes/<%= agent.id %>/chat" class="text-decoration-none">
+      <div class="card h-100 agent-card">
+        <div class="card-body">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="agent-avatar"><%= agent.avatar || '🤖' %></div>
+            <div>
+              <h6 class="mb-0 text-dark"><%= agent.name %></h6>
+              <small class="text-muted"><%= agent.model || 'llama-3.3-70b' %></small>
+            </div>
+          </div>
+          <p class="small text-muted mb-3"><%= agent.description %></p>
+          <div class="d-flex justify-content-between align-items-center">
+            <% const toolCount = agent.tools_enabled ? JSON.parse(agent.tools_enabled).length : 0; %>
+            <% if (toolCount > 0) { %>
+              <span class="badge bg-light text-dark"><i class="bi bi-tools"></i> <%= toolCount %> herramientas</span>
+            <% } else { %>
+              <span class="badge bg-light text-dark">Solo conversacion</span>
+            <% } %>
+            <span class="btn btn-sm btn-outline-primary"><i class="bi bi-chat-dots"></i> Conversar</span>
+          </div>
+        </div>
+      </div>
+    </a>
+  </div>
+  <% }) %>
+</div>
+
+<% if (conversations.length > 0) { %>
+<h6 class="text-muted mb-3"><i class="bi bi-clock-history me-1"></i> Conversaciones Recientes</h6>
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead><tr><th>Agente</th><th>Tema</th><th>Fecha</th><th></th></tr></thead>
+      <tbody>
+        <% conversations.forEach(c => { %>
+        <tr>
+          <td><%= c.avatar %> <%= c.agent_name %></td>
+          <td><a href="/agentes/<%= c.agent_id %>/chat/<%= c.id %>"><%= c.title || 'Sin titulo' %></a></td>
+          <td><small class="text-muted"><%= c.created_at ? c.created_at.substring(0,16).replace('T',' ') : '' %></small></td>
+          <td><a href="/agentes/<%= c.agent_id %>/chat/<%= c.id %>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-right"></i></a></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<% } %>
+
+<style>
+.agent-card {
+  transition: all 0.2s ease;
+  border: 1.5px solid #DFE6E9;
+}
+.agent-card:hover {
+  border-color: var(--coral);
+  box-shadow: 0 6px 20px rgba(232,93,58,0.12);
+  transform: translateY(-2px);
+}
+.agent-avatar {
+  font-size: 2rem;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(232,93,58,0.08);
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+</style>
+
+<%- include('../partials/footer') %>

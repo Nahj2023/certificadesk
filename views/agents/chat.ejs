@@ -1,0 +1,464 @@
+<% const title = agent.name %>
+<%- include('../partials/header', { title }) %>
+
+<div class="chat-layout">
+  <!-- Sidebar conversaciones -->
+  <div class="chat-sidebar">
+    <a href="/agentes/<%= agent.id %>/chat" class="btn btn-primary btn-sm w-100 mb-3">
+      <i class="bi bi-plus-lg"></i> Nueva conversacion
+    </a>
+    <div class="conv-list">
+      <% conversations.forEach(c => { %>
+      <a href="/agentes/<%= agent.id %>/chat/<%= c.id %>"
+         class="conv-item <%= conversation && conversation.id === c.id ? 'active' : '' %>">
+        <div class="conv-title"><%= c.title || 'Sin titulo' %></div>
+        <small class="text-muted"><%= c.created_at ? c.created_at.substring(0,10) : '' %></small>
+      </a>
+      <% }) %>
+      <% if (conversations.length === 0) { %>
+      <div class="text-center text-muted small py-3">Sin conversaciones</div>
+      <% } %>
+    </div>
+    <div class="mt-auto pt-2">
+      <a href="/agentes" class="btn btn-outline-secondary btn-sm w-100"><i class="bi bi-arrow-left"></i> Todos los agentes</a>
+    </div>
+  </div>
+
+  <!-- Area de chat -->
+  <div class="chat-main">
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="d-flex align-items-center gap-2">
+        <span class="agent-avatar-sm"><%= agent.avatar || '🤖' %></span>
+        <div>
+          <strong><%= agent.name %></strong>
+          <small class="d-block text-muted" style="font-size:0.75rem"><%= agent.description.substring(0, 80) %></small>
+        </div>
+      </div>
+      <% if (conversation) { %>
+      <button class="btn btn-sm btn-outline-danger" onclick="deleteConversation(<%= conversation.id %>)" title="Eliminar conversacion">
+        <i class="bi bi-trash"></i>
+      </button>
+      <% } %>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chatMessages">
+      <% if (messages.length === 0) { %>
+      <div class="welcome-msg">
+        <div class="welcome-avatar"><%= agent.avatar || '🤖' %></div>
+        <h5><%= agent.name %></h5>
+        <p class="text-muted"><%= agent.description %></p>
+        <div class="welcome-suggestions">
+          <% if (agent.code === 'norma') { %>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">¿Cuantos instrumentos necesita una evaluacion?</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">¿Cual es el umbral para ser competente?</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">¿Que debe contener el portafolio del candidato?</button>
+          <% } else if (agent.code === 'eva') { %>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">¿Como aplico correctamente la rubrica 1-4?</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">Ayudame a redactar un informe de brechas</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">¿Que evaluaciones tengo pendientes?</button>
+          <% } else if (agent.code === 'auditor') { %>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">¿Estamos listos para una auditoria?</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">Verifica el compliance del CEC</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">¿Que acciones tenemos pendientes?</button>
+          <% } else if (agent.code === 'legal') { %>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">¿Que datos personales debemos proteger?</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">¿Como manejar una solicitud ARCO?</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">Verifica nuestro estado de compliance</button>
+          <% } else { %>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">¿Como funciona el proceso de certificacion?</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)">¿Que necesito para inscribirme?</button>
+          <% } %>
+        </div>
+      </div>
+      <% } else { %>
+        <% messages.forEach(m => { %>
+          <% if (m.role === 'user') { %>
+          <div class="msg msg-user">
+            <div class="msg-bubble msg-bubble-user"><%= m.content %></div>
+          </div>
+          <% } else if (m.role === 'assistant') { %>
+          <div class="msg msg-assistant">
+            <span class="msg-avatar-sm"><%= agent.avatar || '🤖' %></span>
+            <div>
+              <% if (m.tool_calls) { try { const tools = JSON.parse(m.tool_calls); %>
+              <div class="tool-results mb-2">
+                <% tools.forEach(t => { %>
+                <details class="tool-card">
+                  <summary><i class="bi bi-tools"></i> Consulto: <strong><%= t.name %></strong></summary>
+                  <pre class="tool-data"><%= JSON.stringify(t.result, null, 2) %></pre>
+                </details>
+                <% }) %>
+              </div>
+              <% } catch(e) {} } %>
+              <div class="msg-bubble msg-bubble-assistant markdown-body"><%= m.content %></div>
+            </div>
+          </div>
+          <% } %>
+        <% }) %>
+      <% } %>
+      <div id="typingIndicator" class="msg msg-assistant" style="display:none">
+        <span class="msg-avatar-sm"><%= agent.avatar || '🤖' %></span>
+        <div class="msg-bubble msg-bubble-assistant">
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input">
+      <form id="chatForm" onsubmit="sendMessage(event)">
+        <div class="input-group">
+          <textarea id="chatInput" class="form-control" rows="1" placeholder="Escribe tu pregunta..." required
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage(event)}"></textarea>
+          <button type="submit" class="btn btn-primary" id="sendBtn">
+            <i class="bi bi-send-fill"></i>
+          </button>
+        </div>
+      </form>
+      <small class="text-muted d-block text-center mt-1" style="font-size:0.7rem">
+        <%= agent.model || 'llama-3.3-70b' %> via Groq · Las respuestas pueden contener errores
+      </small>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+const AGENT_ID = <%= agent.id %>;
+let CONV_ID = <%= conversation ? conversation.id : 'null' %>;
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const typingIndicator = document.getElementById('typingIndicator');
+const sendBtn = document.getElementById('sendBtn');
+
+function scrollToBottom() {
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+scrollToBottom();
+
+function sendSuggestion(btn) {
+  chatInput.value = btn.textContent;
+  sendMessage(new Event('submit'));
+}
+
+function appendMessage(role, content, toolResults) {
+  // Remove welcome if present
+  const welcome = chatMessages.querySelector('.welcome-msg');
+  if (welcome) welcome.remove();
+
+  const div = document.createElement('div');
+  div.className = 'msg msg-' + role;
+
+  if (role === 'user') {
+    div.innerHTML = '<div class="msg-bubble msg-bubble-user">' + escapeHtml(content) + '</div>';
+  } else {
+    let toolHtml = '';
+    if (toolResults && toolResults.length > 0) {
+      toolHtml = '<div class="tool-results mb-2">' + toolResults.map(t =>
+        '<details class="tool-card"><summary><i class="bi bi-tools"></i> Consulto: <strong>' + t.name + '</strong></summary>' +
+        '<pre class="tool-data">' + JSON.stringify(t.result, null, 2) + '</pre></details>'
+      ).join('') + '</div>';
+    }
+    const rendered = marked.parse(content || '');
+    div.innerHTML = '<span class="msg-avatar-sm"><%= agent.avatar || "🤖" %></span><div>' +
+      toolHtml + '<div class="msg-bubble msg-bubble-assistant markdown-body">' + rendered + '</div></div>';
+  }
+
+  chatMessages.insertBefore(div, typingIndicator);
+  scrollToBottom();
+}
+
+function escapeHtml(text) {
+  const d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+async function sendMessage(e) {
+  e.preventDefault();
+  const content = chatInput.value.trim();
+  if (!content) return;
+
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+  sendBtn.disabled = true;
+
+  appendMessage('user', content);
+  typingIndicator.style.display = 'flex';
+  scrollToBottom();
+
+  try {
+    const csrfCookie = document.cookie.split(';').find(c => c.trim().startsWith('_csrf='));
+    const csrf = csrfCookie ? csrfCookie.split('=')[1] : '';
+
+    const res = await fetch('/agentes/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        agent_id: AGENT_ID,
+        conversation_id: CONV_ID,
+        content,
+        context_path: window.location.pathname,
+        _csrf: csrf
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.error) {
+      appendMessage('assistant', '⚠️ Error: ' + data.error);
+    } else {
+      if (!CONV_ID && data.conversation_id) {
+        CONV_ID = data.conversation_id;
+        history.replaceState(null, '', '/agentes/' + AGENT_ID + '/chat/' + CONV_ID);
+      }
+      appendMessage('assistant', data.content, data.tool_results);
+    }
+  } catch (err) {
+    appendMessage('assistant', '⚠️ Error de conexion: ' + err.message);
+  } finally {
+    typingIndicator.style.display = 'none';
+    sendBtn.disabled = false;
+    chatInput.focus();
+  }
+}
+
+function deleteConversation(id) {
+  if (!confirm('¿Eliminar esta conversacion?')) return;
+  const csrfCookie = document.cookie.split(';').find(c => c.trim().startsWith('_csrf='));
+  const csrf = csrfCookie ? csrfCookie.split('=')[1] : '';
+  fetch('/agentes/api/conversations/' + id + '?_csrf=' + csrf, { method: 'DELETE' })
+    .then(() => window.location.href = '/agentes/' + AGENT_ID + '/chat');
+}
+
+// Auto-resize textarea
+chatInput.addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+});
+</script>
+
+<style>
+.chat-layout {
+  display: flex;
+  height: calc(100vh - 60px);
+  margin: -1rem -1.5rem;
+  overflow: hidden;
+}
+.chat-sidebar {
+  width: 240px;
+  border-right: 1px solid #DFE6E9;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.conv-list { flex: 1; overflow-y: auto; }
+.conv-item {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  color: #2D3436;
+  text-decoration: none;
+  font-size: 0.82rem;
+  margin-bottom: 2px;
+  transition: background 0.15s;
+}
+.conv-item:hover { background: rgba(232,93,58,0.06); color: #2D3436; }
+.conv-item.active { background: rgba(232,93,58,0.1); font-weight: 600; }
+.conv-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.chat-header {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #DFE6E9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+.agent-avatar-sm {
+  font-size: 1.5rem;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(232,93,58,0.08);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.msg-avatar-sm {
+  font-size: 1.2rem;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(232,93,58,0.08);
+  border-radius: 8px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.msg { display: flex; gap: 0.5rem; max-width: 85%; }
+.msg-user { align-self: flex-end; }
+.msg-assistant { align-self: flex-start; }
+
+.msg-bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+.msg-bubble-user {
+  background: var(--coral, #E85D3A);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+  white-space: pre-wrap;
+}
+.msg-bubble-assistant {
+  background: #F8F9FA;
+  color: #2D3436;
+  border: 1px solid #E9ECEF;
+  border-bottom-left-radius: 4px;
+}
+.msg-bubble-assistant p { margin-bottom: 0.5rem; }
+.msg-bubble-assistant p:last-child { margin-bottom: 0; }
+.msg-bubble-assistant ul, .msg-bubble-assistant ol { padding-left: 1.2rem; margin-bottom: 0.5rem; }
+.msg-bubble-assistant table { font-size: 0.82rem; margin-bottom: 0.5rem; }
+.msg-bubble-assistant table th, .msg-bubble-assistant table td { padding: 0.25rem 0.5rem; border: 1px solid #DFE6E9; }
+.msg-bubble-assistant code { background: #E9ECEF; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.82rem; }
+.msg-bubble-assistant pre { background: #2D3436; color: #DFE6E9; padding: 0.75rem; border-radius: 8px; overflow-x: auto; }
+.msg-bubble-assistant pre code { background: transparent; color: inherit; }
+.msg-bubble-assistant strong { color: var(--coral, #E85D3A); }
+.msg-bubble-assistant h1,.msg-bubble-assistant h2,.msg-bubble-assistant h3,.msg-bubble-assistant h4 { font-size: 1rem; font-weight: 700; margin: 0.75rem 0 0.25rem; }
+
+.tool-results { font-size: 0.8rem; }
+.tool-card {
+  background: #F0F7FF;
+  border: 1px solid #D6E9FF;
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  margin-bottom: 4px;
+}
+.tool-card summary { cursor: pointer; color: #2980B9; }
+.tool-data {
+  background: #fff;
+  border: 1px solid #E9ECEF;
+  border-radius: 6px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.chat-input {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid #DFE6E9;
+  flex-shrink: 0;
+}
+.chat-input .form-control {
+  border-radius: 12px;
+  resize: none;
+  border: 1.5px solid #DFE6E9;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+}
+.chat-input .form-control:focus {
+  border-color: var(--coral, #E85D3A);
+  box-shadow: 0 0 0 3px rgba(232,93,58,0.08);
+}
+.chat-input .btn {
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+}
+
+.welcome-msg {
+  text-align: center;
+  padding: 3rem 1rem;
+  margin: auto;
+}
+.welcome-avatar {
+  font-size: 3.5rem;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(232,93,58,0.08);
+  border-radius: 20px;
+  margin: 0 auto 1rem;
+}
+.welcome-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+.suggestion-chip {
+  background: #fff;
+  border: 1.5px solid #DFE6E9;
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  font-size: 0.82rem;
+  color: #636E72;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.suggestion-chip:hover {
+  border-color: var(--coral, #E85D3A);
+  color: var(--coral, #E85D3A);
+  background: rgba(232,93,58,0.04);
+}
+
+.typing-dots {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+.typing-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #B2BEC3;
+  animation: typing 1.4s infinite both;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .chat-sidebar { display: none; }
+  .chat-layout { margin: -0.5rem; }
+}
+</style>
+
+<%- include('../partials/footer') %>

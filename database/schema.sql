@@ -411,3 +411,50 @@ CREATE TABLE IF NOT EXISTS evaluation_form_responses (
   FOREIGN KEY (form_id) REFERENCES evaluation_forms(id),
   FOREIGN KEY (filled_by) REFERENCES users(id)
 );
+
+-- v3.1: Agentes IA
+
+CREATE TABLE IF NOT EXISTS ai_agents (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  org_id INTEGER,
+  code TEXT NOT NULL,
+  name TEXT NOT NULL,
+  avatar TEXT,
+  description TEXT,
+  system_prompt TEXT NOT NULL,
+  tools_enabled TEXT,
+  model TEXT DEFAULT 'llama-3.3-70b-versatile',
+  temperature REAL DEFAULT 0.3,
+  max_tokens INTEGER DEFAULT 2048,
+  roles_allowed TEXT DEFAULT '["admin","responsable","evaluador","consulta"]',
+  is_public INTEGER DEFAULT 0,
+  active INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS ai_conversations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  org_id INTEGER NOT NULL,
+  user_id INTEGER,
+  agent_id INTEGER NOT NULL,
+  title TEXT,
+  context_path TEXT,
+  context_data TEXT,
+  pinned INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (agent_id) REFERENCES ai_agents(id)
+);
+
+CREATE TABLE IF NOT EXISTS ai_messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  conversation_id INTEGER NOT NULL,
+  role TEXT NOT NULL,
+  content TEXT NOT NULL,
+  tool_calls TEXT,
+  tool_results TEXT,
+  tokens_used INTEGER,
+  is_favorite INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (conversation_id) REFERENCES ai_conversations(id)
+);
