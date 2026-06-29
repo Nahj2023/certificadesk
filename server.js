@@ -17,6 +17,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;
+  res.flash = (msg) => res.cookie("flash", msg, { maxAge: 5000, httpOnly: false, path: "/" });
   next();
 });
 

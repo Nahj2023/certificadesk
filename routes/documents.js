@@ -26,7 +26,7 @@ router.post("/", upload.single("file"), (req, res) => {
     "INSERT INTO documents (org_id, category, name, version, file_path, file_name, expiry_date, uploaded_by) VALUES (?,?,?,?,?,?,?,?)"
   ).run(req.user.org_id, category, name, version||"1.0", req.file?.path||null, req.file?.originalname||null, expiry_date||null, req.user.id);
   logActivity(req.user.org_id, req.user.id, "subir", "documento", r.lastInsertRowid, name);
-  res.redirect("/documentos");
+  res.flash("Documento guardado"); res.redirect("/documentos");
 });
 
 module.exports = router;

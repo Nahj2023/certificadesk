@@ -19,7 +19,7 @@ router.post("/", (req, res) => {
     "INSERT INTO audits (org_id, auditor_id, type, scope, scheduled_date) VALUES (?,?,?,?,?)"
   ).run(req.user.org_id, auditor_id||null, type||"interna", scope, scheduled_date);
   logActivity(req.user.org_id, req.user.id, "crear", "auditoria", r.lastInsertRowid);
-  res.redirect("/auditorias");
+  res.flash("Registro guardado"); res.redirect("/auditorias");
 });
 
 router.post("/:id/completar", (req, res) => {
@@ -28,7 +28,7 @@ router.post("/:id/completar", (req, res) => {
     "UPDATE audits SET status='completada', observations=?, findings_count=?, non_conformities=?, completed_at=CURRENT_TIMESTAMP WHERE id=? AND org_id=?"
   ).run(observations, parseInt(findings_count)||0, parseInt(non_conformities)||0, req.params.id, req.user.org_id);
   logActivity(req.user.org_id, req.user.id, "completar", "auditoria", req.params.id);
-  res.redirect("/auditorias");
+  res.flash("Registro guardado"); res.redirect("/auditorias");
 });
 
 module.exports = router;

@@ -19,7 +19,7 @@ router.post("/", (req, res) => {
     "INSERT INTO complaints (org_id, type, from_name, from_email, from_phone, subject, description, priority, assigned_to) VALUES (?,?,?,?,?,?,?,?,?)"
   ).run(req.user.org_id, type||"reclamo", from_name, from_email, from_phone, subject, description, priority||"media", assigned_to||null);
   logActivity(req.user.org_id, req.user.id, "crear", "reclamo", r.lastInsertRowid, subject);
-  res.redirect("/reclamos");
+  res.flash("Registro guardado"); res.redirect("/reclamos");
 });
 
 router.post("/:id/resolver", (req, res) => {
@@ -27,7 +27,7 @@ router.post("/:id/resolver", (req, res) => {
   getDb().prepare("UPDATE complaints SET status='resuelto', resolution=?, resolved_at=CURRENT_TIMESTAMP WHERE id=? AND org_id=?")
     .run(resolution, req.params.id, req.user.org_id);
   logActivity(req.user.org_id, req.user.id, "resolver", "reclamo", req.params.id);
-  res.redirect("/reclamos");
+  res.flash("Registro guardado"); res.redirect("/reclamos");
 });
 
 module.exports = router;

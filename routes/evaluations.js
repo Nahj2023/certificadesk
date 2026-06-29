@@ -36,6 +36,7 @@ router.post("/", (req, res) => {
       "INSERT INTO evaluations (org_id, candidate_id, profile_id, evaluator_id, type, scheduled_date, location) VALUES (?,?,?,?,?,?,?)"
     ).run(req.user.org_id, candidate_id, profile_id||null, evaluator_id||null, type||"terreno", scheduled_date, location);
     db.prepare("UPDATE candidates SET status='evaluando' WHERE id=? AND org_id=?").run(candidate_id, req.user.org_id);
+    res.flash("Evaluacion programada exitosamente");
     logActivity(req.user.org_id, req.user.id, "crear", "evaluacion", r.lastInsertRowid);
     res.redirect("/evaluaciones");
   } catch(e) {

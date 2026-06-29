@@ -24,12 +24,12 @@ router.post("/", (req, res) => {
     "INSERT INTO conflicts_of_interest (org_id, evaluator_id, candidate_id, type, description, declaration_date) VALUES (?,?,?,?,?,?)"
   ).run(req.user.org_id, evaluator_id, candidate_id || null, type, description, declaration_date || null);
   logActivity(req.user.org_id, req.user.id, "declarar", "conflicto", r.lastInsertRowid, type);
-  res.redirect("/conflictos");
+  res.flash("Registro guardado"); res.redirect("/conflictos");
 });
 
 router.get("/:id/editar", (req, res) => {
   const conflict = getDb().prepare("SELECT * FROM conflicts_of_interest WHERE id=? AND org_id=?").get(req.params.id, req.user.org_id);
-  if (!conflict) return res.redirect("/conflictos");
+  if (!conflict) return res.flash("Registro guardado"); res.redirect("/conflictos");
   const evaluators = getDb().prepare("SELECT id, name FROM evaluators WHERE org_id=? AND active=1").all(req.user.org_id);
   const candidates = getDb().prepare("SELECT id, name FROM candidates WHERE org_id=?").all(req.user.org_id);
   res.render("conflicts/form", { conflict, evaluators, candidates, error: null });
@@ -42,7 +42,7 @@ router.post("/:id", (req, res) => {
     WHERE id=? AND org_id=?
   `).run(evaluator_id, candidate_id || null, type, description, declaration_date || null, action_taken, status, req.params.id, req.user.org_id);
   logActivity(req.user.org_id, req.user.id, "actualizar", "conflicto", req.params.id);
-  res.redirect("/conflictos");
+  res.flash("Registro guardado"); res.redirect("/conflictos");
 });
 
 router.post("/:id/resolver", (req, res) => {
@@ -50,7 +50,7 @@ router.post("/:id/resolver", (req, res) => {
   getDb().prepare("UPDATE conflicts_of_interest SET status='resuelto', action_taken=? WHERE id=? AND org_id=?")
     .run(action_taken, req.params.id, req.user.org_id);
   logActivity(req.user.org_id, req.user.id, "resolver", "conflicto", req.params.id);
-  res.redirect("/conflictos");
+  res.flash("Registro guardado"); res.redirect("/conflictos");
 });
 
 module.exports = router;

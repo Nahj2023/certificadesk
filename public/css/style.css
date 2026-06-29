@@ -518,3 +518,89 @@ a:hover { color: #D14E2E; }
 /* ── Search results ── */
 .list-group-item-action:hover { background: var(--coral-light) !important; }
 .list-group-item { border-color: var(--border); }
+
+/* ── Skeleton loaders ── */
+.skeleton {
+  background: linear-gradient(90deg, var(--bg-alt) 25%, rgba(255,255,255,0.5) 50%, var(--bg-alt) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite ease-in-out;
+  border-radius: 6px;
+  color: transparent !important;
+  user-select: none;
+  pointer-events: none;
+}
+.skeleton * { visibility: hidden; }
+.skeleton-text { height: 14px; margin-bottom: 8px; border-radius: 4px; }
+.skeleton-text.short { width: 60%; }
+.skeleton-circle { width: 44px; height: 44px; border-radius: 50%; }
+.skeleton-card { height: 100px; border-radius: var(--card-radius); }
+@keyframes skeleton-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+/* ── Toast notifications ── */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast-notification {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 12px 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: auto;
+  border-left: 4px solid var(--green);
+  max-width: 380px;
+}
+.toast-notification.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+.toast-notification i { font-size: 1.1rem; flex-shrink: 0; }
+
+/* ── Tooltips override ── */
+.tooltip .tooltip-inner {
+  background: var(--sidebar-bg);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 6px 12px;
+  letter-spacing: 0.01em;
+}
+.tooltip .tooltip-arrow::before { border-top-color: var(--sidebar-bg); }
+.bs-tooltip-bottom .tooltip-arrow::before { border-bottom-color: var(--sidebar-bg); }
+
+/* ── Page entry animations ── */
+.main-content > .container-fluid { animation: fadeInUp 0.3s ease; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Table row hover transition ── */
+.table-hover tbody tr { transition: background-color 0.15s ease; }
+
+/* ── Badge pulse for pending items ── */
+.badge-pulse { animation: badgePulse 2s infinite; }
+@keyframes badgePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+/* ── Button press effect ── */
+.btn:active { transform: scale(0.97); }
+
+/* ── Pipeline step hover lift ── */
+.pipeline-step { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+.pipeline-step:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+
+/* ── Sidebar nav-link transition ── */
+.sidebar .nav-link { transition: all 0.2s ease; }
+.sidebar .nav-link:hover { padding-left: 1.4rem; }

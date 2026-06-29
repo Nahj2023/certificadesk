@@ -34,6 +34,7 @@ router.post("/", (req, res) => {
        VALUES (?,?,?,?,?,?,?,?,?,?,?)`
     ).run(req.user.org_id, rut, name, email, phone, region, education_level, parseInt(work_experience_years)||0, profile_id||null, notes, req.user.id);
 
+    res.flash("Candidato creado exitosamente");
     logActivity(req.user.org_id, req.user.id, "crear", "candidato", result.lastInsertRowid, name);
     res.redirect("/candidatos");
   } catch (e) {
@@ -102,6 +103,7 @@ router.post("/:id/elegibilidad", (req, res) => {
     req.params.id, oid
   );
 
+  res.flash("Candidato marcado como elegible");
   logActivity(oid, req.user.id, "elegibilidad", "candidato", req.params.id, `${candidate.name} marcado elegible`);
   res.redirect(`/candidatos/${req.params.id}`);
 });
@@ -115,6 +117,7 @@ router.post("/:id", (req, res) => {
      WHERE id=? AND org_id=?`
   ).run(rut, name, email, phone, region, education_level, parseInt(work_experience_years)||0, profile_id||null, status, notes, req.params.id, req.user.org_id);
 
+  res.flash("Candidato actualizado");
   logActivity(req.user.org_id, req.user.id, "editar", "candidato", req.params.id, name);
   res.redirect(`/candidatos/${req.params.id}`);
 });
@@ -122,6 +125,7 @@ router.post("/:id", (req, res) => {
 router.post("/:id/eliminar", (req, res) => {
   const db = getDb();
   db.prepare("DELETE FROM candidates WHERE id=? AND org_id=?").run(req.params.id, req.user.org_id);
+  res.flash("Candidato eliminado");
   logActivity(req.user.org_id, req.user.id, "eliminar", "candidato", req.params.id);
   res.redirect("/candidatos");
 });

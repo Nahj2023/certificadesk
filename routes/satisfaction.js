@@ -24,7 +24,7 @@ router.post("/", (req, res) => {
     "INSERT INTO satisfaction (org_id, candidate_id, score_overall, score_evaluator, score_process, score_infrastructure, score_communication, comments) VALUES (?,?,?,?,?,?,?,?)"
   ).run(req.user.org_id, candidate_id||null, parseInt(score_overall), parseInt(score_evaluator)||null, parseInt(score_process)||null, parseInt(score_infrastructure)||null, parseInt(score_communication)||null, comments);
   logActivity(req.user.org_id, req.user.id, "crear", "encuesta", r.lastInsertRowid);
-  res.redirect("/satisfaccion");
+  res.flash("Encuesta registrada"); res.redirect("/satisfaccion");
 });
 
 module.exports = router;

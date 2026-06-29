@@ -38,12 +38,12 @@
             </td>
             <td>
               <% if (e.status === 'programada') { %>
-                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#resultModal<%= e.id %>" title="Registrar resultado"><i class="bi bi-clipboard-check"></i></button>
+                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#resultModal<%= e.id %>" data-bs-toggle="tooltip" title="Registrar resultado"><i class="bi bi-clipboard-check"></i></button>
               <% } %>
               <% if (e.status === 'completada' && e.candidate_status === 'pendiente_comite') { %>
-                <a href="/evaluaciones/<%= e.id %>/comite" class="btn btn-sm btn-outline-primary" title="Comite de Decision"><i class="bi bi-people-fill"></i></a>
+                <a href="/evaluaciones/<%= e.id %>/comite" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Comite de Decision"><i class="bi bi-people-fill"></i></a>
               <% } %>
-              <a href="/evaluaciones/<%= e.id %>" class="btn btn-sm btn-outline-secondary" title="Ver detalle"><i class="bi bi-eye"></i></a>
+              <a href="/evaluaciones/<%= e.id %>" class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Ver detalle"><i class="bi bi-eye"></i></a>
             </td>
           </tr>
           <% if (e.status === 'programada') { %>
