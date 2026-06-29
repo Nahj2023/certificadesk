@@ -1,0 +1,71 @@
+<%- include('../partials/header') %>
+
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-body p-4">
+        <h5 class="mb-3"><%= editUser ? 'Editar usuario' : 'Nuevo usuario' %></h5>
+        <% if (error) { %>
+          <div class="alert alert-danger py-2"><%= error %></div>
+        <% } %>
+        <form method="POST" action="<%= editUser ? '/admin/usuarios/' + editUser.id : '/admin/usuarios' %>">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Usuario <span class="text-danger">*</span></label>
+              <input type="text" name="username" class="form-control" value="<%= editUser ? editUser.username : '' %>" <%= editUser ? 'readonly' : 'required' %>>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Nombre completo <span class="text-danger">*</span></label>
+              <input type="text" name="display_name" class="form-control" value="<%= editUser ? editUser.display_name : '' %>" required>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" value="<%= editUser ? (editUser.email || '') : '' %>">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Rol <span class="text-danger">*</span></label>
+              <select name="role" class="form-select" required>
+                <% roles.forEach(r => { %>
+                  <option value="<%= r.value %>" <%= editUser && editUser.role === r.value ? 'selected' : '' %>><%= r.label %> — <%= r.desc %></option>
+                <% }); %>
+              </select>
+            </div>
+          </div>
+          <% if (!editUser) { %>
+          <div class="mb-3">
+            <label class="form-label">Contrasena <span class="text-danger">*</span></label>
+            <input type="password" name="password" class="form-control" required minlength="8">
+            <div class="form-text">Minimo 8 caracteres, 1 mayuscula, 1 numero</div>
+          </div>
+          <% } %>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> <%= editUser ? 'Guardar cambios' : 'Crear usuario' %></button>
+            <a href="/admin/usuarios" class="btn btn-outline-secondary">Cancelar</a>
+          </div>
+        </form>
+
+        <% if (editUser) { %>
+        <hr class="my-4">
+        <h6 class="mb-3">Cambiar contrasena</h6>
+        <form method="POST" action="/admin/usuarios/<%= editUser.id %>/password">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <input type="password" name="password" class="form-control" placeholder="Nueva contrasena" required minlength="8">
+              <div class="form-text">Invalida todas las sesiones activas del usuario</div>
+            </div>
+            <div class="col-md-6 d-flex align-items-start">
+              <button type="submit" class="btn btn-warning"><i class="bi bi-key"></i> Cambiar contrasena</button>
+            </div>
+          </div>
+        </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

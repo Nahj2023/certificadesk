@@ -1,0 +1,65 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-1">Log de acceso</h4>
+    <p class="text-muted mb-0" style="font-size:0.85rem"><%= total %> registro<%= total !== 1 ? 's' : '' %> total</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0" style="font-size:0.85rem">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Usuario</th>
+          <th>Accion</th>
+          <th>Entidad</th>
+          <th>ID</th>
+          <th>Detalle</th>
+          <th>IP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% logs.forEach(log => { %>
+        <tr>
+          <td style="white-space:nowrap"><%= new Date(log.created_at).toLocaleString('es-CL') %></td>
+          <td><%= log.user_name || 'Sistema' %></td>
+          <td>
+            <% const actionBadge = {
+              create: 'success', update: 'primary', delete: 'danger',
+              create_user: 'success', update_user: 'primary', deactivate_user: 'warning',
+              activate_user: 'success', reset_password: 'warning',
+              view_detail: 'info', login: 'secondary'
+            }; %>
+            <span class="badge bg-<%= actionBadge[log.action] || 'secondary' %>"><%= log.action %></span>
+          </td>
+          <td><%= log.entity_type || '—' %></td>
+          <td><%= log.entity_id || '—' %></td>
+          <td class="text-muted"><%= log.details || '—' %></td>
+          <td><code style="font-size:0.78rem"><%= log.ip || '—' %></code></td>
+        </tr>
+        <% }); %>
+        <% if (logs.length === 0) { %>
+        <tr><td colspan="7" class="text-center text-muted py-4">Sin registros</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+  <% if (totalPages > 1) { %>
+  <div class="card-footer d-flex justify-content-center">
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        <% for (let p = 1; p <= totalPages; p++) { %>
+          <li class="page-item <%= p === page ? 'active' : '' %>">
+            <a class="page-link" href="/admin/logs?page=<%= p %>"><%= p %></a>
+          </li>
+        <% } %>
+      </ul>
+    </nav>
+  </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

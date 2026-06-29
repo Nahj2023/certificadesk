@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const path = require("path");
 const { requireAuth } = require("./middleware/auth");
 const { csrfProtection } = require("./middleware/csrf");
+const { requireWriteRole, requireAdmin, logAccess } = require("./middleware/roles");
 
 const app = express();
 const PORT = process.env.PORT || 3300;
@@ -54,20 +55,21 @@ app.use("/", require("./routes/auth"));
 // Protected
 app.use(requireAuth);
 app.use("/dashboard", require("./routes/dashboard"));
-app.use("/candidatos", require("./routes/candidates"));
-app.use("/evaluaciones", require("./routes/evaluations"));
-app.use("/evaluadores", require("./routes/evaluators"));
-app.use("/auditorias", require("./routes/audits"));
-app.use("/reclamos", require("./routes/complaints"));
-app.use("/documentos", require("./routes/documents"));
-app.use("/satisfaccion", require("./routes/satisfaction"));
-app.use("/reportes", require("./routes/reports"));
-app.use("/conflictos", require("./routes/conflicts"));
-app.use("/registros", require("./routes/records"));
-app.use("/evidencias", require("./routes/evidence"));
-app.use("/franquicia", require("./routes/franquicia"));
+app.use("/candidatos", requireWriteRole("candidatos"), logAccess("candidatos"), require("./routes/candidates"));
+app.use("/evaluaciones", requireWriteRole("evaluaciones"), logAccess("evaluaciones"), require("./routes/evaluations"));
+app.use("/evaluadores", requireWriteRole("evaluadores"), logAccess("evaluadores"), require("./routes/evaluators"));
+app.use("/auditorias", requireWriteRole("auditorias"), require("./routes/audits"));
+app.use("/reclamos", requireWriteRole("reclamos"), require("./routes/complaints"));
+app.use("/documentos", requireWriteRole("documentos"), require("./routes/documents"));
+app.use("/satisfaccion", requireWriteRole("satisfaccion"), require("./routes/satisfaction"));
+app.use("/reportes", requireWriteRole("reportes"), require("./routes/reports"));
+app.use("/conflictos", requireWriteRole("conflictos"), require("./routes/conflicts"));
+app.use("/registros", requireWriteRole("registros"), require("./routes/records"));
+app.use("/evidencias", requireWriteRole("evidencias"), require("./routes/evidence"));
+app.use("/franquicia", requireWriteRole("franquicia"), require("./routes/franquicia"));
 app.use("/docs", require("./routes/docs"));
 app.use("/busqueda", require("./routes/search"));
+app.use("/admin", requireAdmin, require("./routes/admin"));
 
 app.use((req, res) => {
   res.status(404).render("error", {

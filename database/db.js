@@ -22,34 +22,50 @@ function initSchema() {
   const schema = fs.readFileSync(SCHEMA_PATH, "utf8");
   db.exec(schema);
 
-  const orgCount = db.prepare("SELECT COUNT(*) as c FROM organizations").get().c;
+  const orgCount = db
+    .prepare("SELECT COUNT(*) as c FROM organizations")
+    .get().c;
   if (orgCount === 0) {
     seedDefaults();
   }
   seedManuals();
+  migrateColumns();
 }
 
 function seedDefaults() {
   const hash = bcrypt.hashSync("admin2026", 10);
 
-  db.prepare(`INSERT INTO organizations (name, rut, region, email, plan)
-    VALUES (?, ?, ?, ?, ?)`).run(
-    "CEC Demo", "76.000.000-0", "Metropolitana", "demo@certificadesk.cl", "professional"
+  db.prepare(
+    `INSERT INTO organizations (name, rut, region, email, plan)
+    VALUES (?, ?, ?, ?, ?)`
+  ).run(
+    "CEC Demo",
+    "76.000.000-0",
+    "Metropolitana",
+    "demo@certificadesk.cl",
+    "professional"
   );
 
-  db.prepare(`INSERT INTO users (org_id, username, password, display_name, role, email)
-    VALUES (?, ?, ?, ?, ?, ?)`).run(
-    1, "admin", hash, "Administrador", "responsable", "admin@certificadesk.cl"
-  );
+  db.prepare(
+    `INSERT INTO users (org_id, username, password, display_name, role, email)
+    VALUES (?, ?, ?, ?, ?, ?)`
+  ).run(1, "admin", hash, "Administrador", "admin", "admin@certificadesk.cl");
 
   const profiles = [
     ["UCL0001", "Operador de Maquinaria Pesada", "Mineria", "Extraccion"],
     ["UCL0002", "Soldador por Arco Manual", "Manufactura", "Metalmecanica"],
-    ["UCL0003", "Electricista de Instalaciones Domiciliarias", "Construccion", "Instalaciones"],
+    [
+      "UCL0003",
+      "Electricista de Instalaciones Domiciliarias",
+      "Construccion",
+      "Instalaciones",
+    ],
     ["UCL0004", "Guia de Turismo Aventura", "Turismo", "Actividades"],
     ["UCL0005", "Operador de Grua Horquilla", "Logistica", "Transporte"],
   ];
-  const stmt = db.prepare("INSERT INTO profiles (code, name, sector, subsector) VALUES (?,?,?,?)");
+  const stmt = db.prepare(
+    "INSERT INTO profiles (code, name, sector, subsector) VALUES (?,?,?,?)"
+  );
   for (const p of profiles) stmt.run(...p);
 
   console.log("[DB] Seed: org demo + admin + 5 perfiles");
@@ -58,26 +74,54 @@ function seedDefaults() {
 function seedManuals() {
   const org = db.prepare("SELECT id FROM organizations LIMIT 1").get();
   if (!org) return;
-  const count = db.prepare("SELECT COUNT(*) as c FROM documents WHERE org_id=? AND category='manual_chilevalora'").get(org.id).c;
+  const count = db
+    .prepare(
+      "SELECT COUNT(*) as c FROM documents WHERE org_id=? AND category='manual_chilevalora'"
+    )
+    .get(org.id).c;
   if (count >= 3) return;
 
-  const stmt = db.prepare("INSERT INTO documents (org_id, category, name, version, status) VALUES (?,?,?,?,?)");
+  const stmt = db.prepare(
+    "INSERT INTO documents (org_id, category, name, version, status) VALUES (?,?,?,?,?)"
+  );
   const manuals = [
-    'Manual del Candidato — Guia de Evaluacion y Certificacion',
-    'Manual del Evaluador — Metodologia e Instrumentos',
-    'Manual del Auditor — Procedimiento de Auditoria Interna',
+    "Manual del Candidato — Guia de Evaluacion y Certificacion",
+    "Manual del Evaluador — Metodologia e Instrumentos",
+    "Manual del Auditor — Procedimiento de Auditoria Interna",
   ];
   for (const m of manuals) {
-    const exists = db.prepare("SELECT id FROM documents WHERE org_id=? AND category='manual_chilevalora' AND name=?").get(org.id, m);
-    if (!exists) stmt.run(org.id, 'manual_chilevalora', m, '1.0', 'vigente');
+    const exists = db
+      .prepare(
+        "SELECT id FROM documents WHERE org_id=? AND category='manual_chilevalora' AND name=?"
+      )
+      .get(org.id, m);
+    if (!exists)
+      stmt.run(org.id, "manual_chilevalora", m, "1.0", "vigente");
   }
   console.log("[DB] Manuales ChileValora verificados");
 }
 
-function logActivity(orgId, userId, action, entityType, entityId, details) {
-  getDb().prepare(
-    "INSERT INTO activity_log (org_id, user_id, action, entity_type, entity_id, details) VALUES (?,?,?,?,?,?)"
-  ).run(orgId, userId, action, entityType, entityId, details || null);
+function migrateColumns() {
+  try {
+    db.prepare("SELECT token_version FROM users LIMIT 1").get();
+  } catch {
+    db.exec("ALTER TABLE users ADD COLUMN token_version INTEGER DEFAULT 1");
+    console.log("[DB] Migración: users.token_version añadido");
+  }
+  try {
+    db.prepare("SELECT ip FROM activity_log LIMIT 1").get();
+  } catch {
+    db.exec("ALTER TABLE activity_log ADD COLUMN ip TEXT");
+    console.log("[DB] Migración: activity_log.ip añadido");
+  }
+}
+
+function logActivity(orgId, userId, action, entityType, entityId, details, ip) {
+  getDb()
+    .prepare(
+      "INSERT INTO activity_log (org_id, user_id, action, entity_type, entity_id, details, ip) VALUES (?,?,?,?,?,?,?)"
+    )
+    .run(orgId, userId, action, entityType, entityId, details || null, ip || null);
 }
 
 module.exports = { getDb, logActivity };

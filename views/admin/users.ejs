@@ -1,0 +1,63 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-1">Usuarios</h4>
+    <p class="text-muted mb-0" style="font-size:0.85rem"><%= users.length %> usuario<%= users.length !== 1 ? 's' : '' %> registrado<%= users.length !== 1 ? 's' : '' %></p>
+  </div>
+  <a href="/admin/usuarios/nuevo" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nuevo usuario</a>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0" data-enhance>
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Ultimo acceso</th>
+          <th style="width:200px">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(u => { %>
+        <tr>
+          <td><code><%= u.username %></code></td>
+          <td><%= u.display_name %></td>
+          <td><%= u.email || '—' %></td>
+          <td>
+            <% const roleBadge = { admin: 'danger', responsable: 'primary', evaluador: 'info', consulta: 'secondary' }; %>
+            <span class="badge bg-<%= roleBadge[u.role] || 'secondary' %>"><%= u.role %></span>
+          </td>
+          <td>
+            <% if (u.active) { %>
+              <span class="badge bg-success">Activo</span>
+            <% } else { %>
+              <span class="badge bg-secondary">Inactivo</span>
+            <% } %>
+          </td>
+          <td style="font-size:0.82rem"><%= u.last_login ? new Date(u.last_login).toLocaleString('es-CL') : 'Nunca' %></td>
+          <td>
+            <div class="btn-group btn-group-sm">
+              <a href="/admin/usuarios/<%= u.id %>/editar" class="btn btn-outline-secondary" data-bs-toggle="tooltip" title="Editar"><i class="bi bi-pencil"></i></a>
+              <% if (u.id !== user.id) { %>
+              <form method="POST" action="/admin/usuarios/<%= u.id %>/toggle" class="d-inline">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn btn-outline-<%= u.active ? 'warning' : 'success' %>" data-bs-toggle="tooltip" title="<%= u.active ? 'Desactivar' : 'Activar' %>">
+                  <i class="bi bi-<%= u.active ? 'pause-circle' : 'play-circle' %>"></i>
+                </button>
+              </form>
+              <% } %>
+            </div>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

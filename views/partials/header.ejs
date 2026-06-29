@@ -104,10 +104,23 @@
             <i class="bi bi-file-earmark-bar-graph"></i> Reporte ChileValora
           </a>
         </li>
+        <% if (user.role === 'admin') { %>
+        <li class="nav-section">Administracion</li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath.startsWith('/admin/usuarios') ? 'active' : '' %>" href="/admin/usuarios">
+            <i class="bi bi-people-fill"></i> Usuarios
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/admin/logs' ? 'active' : '' %>" href="/admin/logs">
+            <i class="bi bi-clock-history"></i> Log de acceso
+          </a>
+        </li>
+        <% } %>
       </ul>
       <div class="sidebar-footer">
         <div class="d-flex align-items-center justify-content-between">
-          <small><i class="bi bi-person-circle"></i> <%= user.display_name %></small>
+          <small><i class="bi bi-person-circle"></i> <%= user.display_name %> <span class="badge bg-dark" style="font-size:0.65rem"><%= user.role %></span></small>
           <a href="/logout" class="btn btn-sm btn-outline-light">Salir</a>
         </div>
       </div>
@@ -129,7 +142,10 @@
             franquicia: 'Franquicia',
             reportes: 'Reportes',
             evidencias: 'Evidencias',
-            busqueda: 'Busqueda'
+            busqueda: 'Busqueda',
+            admin: 'Administracion',
+            usuarios: 'Usuarios',
+            logs: 'Log de acceso'
           };
           const pathParts = currentPath.split('/').filter(Boolean);
           const showBreadcrumb = pathParts.length > 1 || (pathParts.length === 1 && pathParts[0] !== 'dashboard');

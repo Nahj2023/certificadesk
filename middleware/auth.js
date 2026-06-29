@@ -11,7 +11,13 @@ const TOKEN_EXPIRY = "24h";
 
 function generateToken(user) {
   return jwt.sign(
-    { id: user.id, org_id: user.org_id, username: user.username, role: user.role },
+    {
+      id: user.id,
+      org_id: user.org_id,
+      username: user.username,
+      role: user.role,
+      tv: user.token_version || 1,
+    },
     JWT_SECRET,
     { expiresIn: TOKEN_EXPIRY }
   );
@@ -22,10 +28,16 @@ function requireAuth(req, res, next) {
   if (!token) return res.redirect("/login");
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    const user = getDb().prepare(
-      "SELECT u.*, o.name as org_name, o.plan as org_plan FROM users u JOIN organizations o ON u.org_id = o.id WHERE u.id = ? AND u.active = 1"
-    ).get(decoded.id);
+    const user = getDb()
+      .prepare(
+        "SELECT u.*, o.name as org_name, o.plan as org_plan FROM users u JOIN organizations o ON u.org_id = o.id WHERE u.id = ? AND u.active = 1"
+      )
+      .get(decoded.id);
     if (!user) return res.redirect("/login");
+    if (decoded.tv && user.token_version && decoded.tv !== user.token_version) {
+      res.clearCookie("token");
+      return res.redirect("/login");
+    }
     req.user = user;
     res.locals.user = user;
     next();
@@ -38,18 +50,24 @@ function requireAuth(req, res, next) {
 function requireRole(...roles) {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return res.status(403).render("error", { title: "Acceso denegado", message: "No tiene permisos para esta sección" });
+      return res.status(403).render("error", {
+        title: "Acceso denegado",
+        message: "No tiene permisos para esta sección",
+      });
     }
     next();
   };
 }
 
 function apiAuth(req, res, next) {
-  const token = req.cookies?.token || req.headers.authorization?.replace("Bearer ", "");
+  const token =
+    req.cookies?.token || req.headers.authorization?.replace("Bearer ", "");
   if (!token) return res.status(401).json({ error: "No autorizado" });
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    const user = getDb().prepare("SELECT * FROM users WHERE id = ? AND active = 1").get(decoded.id);
+    const user = getDb()
+      .prepare("SELECT * FROM users WHERE id = ? AND active = 1")
+      .get(decoded.id);
     if (!user) return res.status(401).json({ error: "Usuario no válido" });
     req.user = user;
     next();
@@ -59,10 +77,19 @@ function apiAuth(req, res, next) {
 }
 
 function validatePassword(password) {
-  if (password.length < 8) return "La contraseña debe tener al menos 8 caracteres";
-  if (!/[A-Z]/.test(password)) return "La contraseña debe incluir al menos una mayúscula";
-  if (!/[0-9]/.test(password)) return "La contraseña debe incluir al menos un número";
+  if (password.length < 8)
+    return "La contraseña debe tener al menos 8 caracteres";
+  if (!/[A-Z]/.test(password))
+    return "La contraseña debe incluir al menos una mayúscula";
+  if (!/[0-9]/.test(password))
+    return "La contraseña debe incluir al menos un número";
   return null;
 }
 
-module.exports = { generateToken, requireAuth, requireRole, apiAuth, validatePassword };
+module.exports = {
+  generateToken,
+  requireAuth,
+  requireRole,
+  apiAuth,
+  validatePassword,
+};
