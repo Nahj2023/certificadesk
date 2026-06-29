@@ -14,110 +14,215 @@
       <a href="/evaluaciones/<%= evaluation.id %>/comite" class="btn btn-sm btn-primary"><i class="bi bi-people-fill"></i> Comite</a>
     <% } %>
     <a href="/docs/informe/<%= evaluation.id %>" target="_blank" class="btn btn-sm btn-outline-success"><i class="bi bi-eye"></i> Ver</a>
-      <a href="/docs/pdf/informe/<%= evaluation.id %>" class="btn btn-sm btn-success"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+    <a href="/docs/pdf/informe/<%= evaluation.id %>" class="btn btn-sm btn-success"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
     <a href="/evaluaciones" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
   </div>
 </div>
 
-<div class="row g-3 mb-4">
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white"><strong>Datos Generales</strong></div>
-      <div class="card-body">
-        <table class="table table-sm mb-0">
-          <tr><th style="width:35%">Candidato</th><td><%= evaluation.candidate_name %> (<%= evaluation.candidate_rut %>)</td></tr>
-          <tr><th>Perfil</th><td><%= evaluation.profile_code || '' %> <%= evaluation.profile_name || '-' %></td></tr>
-          <tr><th>Evaluador</th><td><%= evaluation.evaluator_name || '-' %></td></tr>
-          <tr><th>Fecha Programada</th><td><%= evaluation.scheduled_date || '-' %></td></tr>
-          <tr><th>Ubicacion</th><td><%= evaluation.location || '-' %></td></tr>
-          <tr><th>Tipo</th><td><%= evaluation.type || '-' %></td></tr>
-          <tr><th>Completada</th><td><%= evaluation.completed_at ? evaluation.completed_at.substring(0,10) : '-' %></td></tr>
-        </table>
+<!-- Tabs -->
+<ul class="nav nav-tabs mb-4" role="tablist">
+  <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-info" role="tab"><i class="bi bi-info-circle me-1"></i> Informacion</a></li>
+  <% if (evaluation.status === 'completada') { %>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-scores" role="tab"><i class="bi bi-graph-up me-1"></i> Puntajes</a></li>
+  <% } %>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-obs" role="tab"><i class="bi bi-journal-text me-1"></i> Observaciones</a></li>
+</ul>
+
+<div class="tab-content">
+  <!-- Tab: Info -->
+  <div class="tab-pane fade show active" id="tab-info" role="tabpanel">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header"><strong>Datos Generales</strong></div>
+          <div class="card-body p-0">
+            <table class="table table-sm mb-0">
+              <tr><th style="width:35%">Candidato</th><td><%= evaluation.candidate_name %> (<%= evaluation.candidate_rut %>)</td></tr>
+              <tr><th>Perfil</th><td><%= evaluation.profile_code || '' %> <%= evaluation.profile_name || '-' %></td></tr>
+              <tr><th>Evaluador</th><td><%= evaluation.evaluator_name || '-' %></td></tr>
+              <tr><th>Fecha Programada</th><td><%= evaluation.scheduled_date || '-' %></td></tr>
+              <tr><th>Ubicacion</th><td><%= evaluation.location || '-' %></td></tr>
+              <tr><th>Tipo</th><td><%= evaluation.type || '-' %></td></tr>
+              <tr><th>Completada</th><td><%= evaluation.completed_at ? evaluation.completed_at.substring(0,10) : '-' %></td></tr>
+            </table>
+          </div>
+        </div>
       </div>
+      <% if (evaluation.status === 'completada' && evaluation.score_ponderado) { %>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header"><strong>Resultado</strong></div>
+          <div class="card-body text-center py-4">
+            <div class="fs-1 fw-bold" style="color: <%= evaluation.score_ponderado >= 3.0 ? 'var(--green)' : 'var(--red)' %>">
+              <%= evaluation.score_ponderado.toFixed(2) %><small style="font-size:1rem;font-weight:500;color:var(--text-secondary)">/4.0</small>
+            </div>
+            <div class="mt-2">
+              <% if (evaluation.score_ponderado >= 3.0) { %>
+                <span class="badge bg-success fs-6 px-3 py-2">COMPETENTE</span>
+              <% } else { %>
+                <span class="badge bg-danger fs-6 px-3 py-2">AUN NO COMPETENTE</span>
+              <% } %>
+            </div>
+            <small class="d-block text-muted mt-2">Umbral: >= 3.0 en escala 1-4</small>
+          </div>
+        </div>
+      </div>
+      <% } %>
     </div>
   </div>
 
   <% if (evaluation.status === 'completada') { %>
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white"><strong>Puntaje Ponderado: <%= evaluation.score_ponderado ? evaluation.score_ponderado.toFixed(2) : (evaluation.score || '-') %></strong></div>
-      <div class="card-body">
-        <% if (evaluation.score_ponderado) { %>
-        <table class="table table-sm mb-0">
-          <thead><tr><th>Instrumento</th><th>Tipo</th><th>Puntaje</th><th>Peso</th><th>Aporte</th></tr></thead>
-          <tbody>
-            <tr>
-              <td>Prueba de Conocimientos</td>
-              <td>Escrita</td>
-              <td><strong><%= evaluation.score_conocimientos %></strong>/4</td>
-              <td>20%</td>
-              <td><%= (evaluation.score_conocimientos * 0.20).toFixed(2) %></td>
-            </tr>
-            <tr>
-              <td>Eval. Jefe / Caso</td>
-              <td><%= evaluation.tipo_jefe === 'analisis_caso' ? 'Analisis de Caso' : 'Jefe Directo' %></td>
-              <td><strong><%= evaluation.score_jefe_directo %></strong>/4</td>
-              <td>10%</td>
-              <td><%= (evaluation.score_jefe_directo * 0.10).toFixed(2) %></td>
-            </tr>
-            <tr>
-              <td>Observacion Terreno</td>
-              <td><%= evaluation.tipo_terreno === 'simulacion' ? 'Simulacion' : 'Terreno' %></td>
-              <td><strong><%= evaluation.score_terreno %></strong>/4</td>
-              <td>60%</td>
-              <td><%= (evaluation.score_terreno * 0.60).toFixed(2) %></td>
-            </tr>
-            <tr>
-              <td>Evidencias Indirectas</td>
-              <td>Documentos</td>
-              <td><strong><%= evaluation.score_evidencias %></strong>/4</td>
-              <td>10%</td>
-              <td><%= (evaluation.score_evidencias * 0.10).toFixed(2) %></td>
-            </tr>
-            <tr class="table-active fw-bold">
-              <td colspan="2">TOTAL PONDERADO</td>
-              <td><%= evaluation.score_ponderado.toFixed(2) %>/4</td>
-              <td>100%</td>
-              <td><%= evaluation.score_ponderado.toFixed(2) %></td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="mt-2 text-center">
-          <% if (evaluation.score_ponderado >= 3.0) { %>
-            <span class="badge bg-success fs-6">COMPETENTE</span>
-          <% } else { %>
-            <span class="badge bg-danger fs-6">AUN NO COMPETENTE</span>
-          <% } %>
-          <small class="d-block text-muted mt-1">Umbral: >= 3.0 en escala 1-4</small>
+  <!-- Tab: Puntajes -->
+  <div class="tab-pane fade" id="tab-scores" role="tabpanel">
+    <div class="row g-3">
+      <div class="col-md-7">
+        <div class="card">
+          <div class="card-header"><strong>Detalle por Instrumento</strong></div>
+          <div class="card-body p-0">
+            <% if (evaluation.score_ponderado) { %>
+            <table class="table table-sm mb-0">
+              <thead><tr><th>Instrumento</th><th>Tipo</th><th>Puntaje</th><th>Peso</th><th>Aporte</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>Prueba de Conocimientos</td>
+                  <td>Escrita</td>
+                  <td><strong><%= evaluation.score_conocimientos %></strong>/4</td>
+                  <td>20%</td>
+                  <td><%= (evaluation.score_conocimientos * 0.20).toFixed(2) %></td>
+                </tr>
+                <tr>
+                  <td>Eval. Jefe / Caso</td>
+                  <td><%= evaluation.tipo_jefe === 'analisis_caso' ? 'Analisis de Caso' : 'Jefe Directo' %></td>
+                  <td><strong><%= evaluation.score_jefe_directo %></strong>/4</td>
+                  <td>10%</td>
+                  <td><%= (evaluation.score_jefe_directo * 0.10).toFixed(2) %></td>
+                </tr>
+                <tr>
+                  <td>Observacion Terreno</td>
+                  <td><%= evaluation.tipo_terreno === 'simulacion' ? 'Simulacion' : 'Terreno' %></td>
+                  <td><strong><%= evaluation.score_terreno %></strong>/4</td>
+                  <td>60%</td>
+                  <td><%= (evaluation.score_terreno * 0.60).toFixed(2) %></td>
+                </tr>
+                <tr>
+                  <td>Evidencias Indirectas</td>
+                  <td>Documentos</td>
+                  <td><strong><%= evaluation.score_evidencias %></strong>/4</td>
+                  <td>10%</td>
+                  <td><%= (evaluation.score_evidencias * 0.10).toFixed(2) %></td>
+                </tr>
+                <tr class="table-active fw-bold">
+                  <td colspan="2">TOTAL PONDERADO</td>
+                  <td><%= evaluation.score_ponderado.toFixed(2) %>/4</td>
+                  <td>100%</td>
+                  <td><%= evaluation.score_ponderado.toFixed(2) %></td>
+                </tr>
+              </tbody>
+            </table>
+            <% } else { %>
+              <div class="p-3">Puntaje: <%= evaluation.score || '-' %> — Resultado: <%= evaluation.result %></div>
+            <% } %>
+          </div>
         </div>
-        <% } else { %>
-          <p>Puntaje: <%= evaluation.score || '-' %> — Resultado: <%= evaluation.result %></p>
-        <% } %>
+      </div>
+      <div class="col-md-5">
+        <div class="card">
+          <div class="card-header"><strong><i class="bi bi-radar"></i> Radar de Instrumentos</strong></div>
+          <div class="card-body d-flex align-items-center justify-content-center" style="min-height:280px">
+            <% if (evaluation.score_ponderado) { %>
+              <canvas id="radarInstrumentos"></canvas>
+            <% } else { %>
+              <span class="text-muted">Sin datos de instrumentos</span>
+            <% } %>
+          </div>
+        </div>
       </div>
     </div>
   </div>
   <% } %>
+
+  <!-- Tab: Observaciones -->
+  <div class="tab-pane fade" id="tab-obs" role="tabpanel">
+    <div class="row g-3">
+      <% if (evaluation.plan_trabajo) { %>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header"><strong><i class="bi bi-list-task me-1"></i> Plan de Trabajo</strong></div>
+          <div class="card-body"><%= evaluation.plan_trabajo %></div>
+        </div>
+      </div>
+      <% } %>
+      <% if (evaluation.observations) { %>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header"><strong><i class="bi bi-chat-dots me-1"></i> Observaciones</strong></div>
+          <div class="card-body"><%= evaluation.observations %></div>
+        </div>
+      </div>
+      <% } %>
+      <% if (evaluation.informe_brechas) { %>
+      <div class="col-12">
+        <div class="card" style="border-left:4px solid var(--red) !important">
+          <div class="card-header"><strong><i class="bi bi-exclamation-triangle me-1" style="color:var(--red)"></i> Informe de Brechas</strong></div>
+          <div class="card-body"><%= evaluation.informe_brechas %></div>
+        </div>
+      </div>
+      <% } %>
+      <% if (!evaluation.plan_trabajo && !evaluation.observations && !evaluation.informe_brechas) { %>
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body text-center py-4 text-muted">
+            <i class="bi bi-journal-text" style="font-size:2rem"></i><br>Sin observaciones registradas
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </div>
 </div>
 
-<% if (evaluation.plan_trabajo) { %>
-<div class="card border-0 shadow-sm mb-3">
-  <div class="card-header bg-white"><strong>Plan de Trabajo</strong></div>
-  <div class="card-body"><%= evaluation.plan_trabajo %></div>
-</div>
-<% } %>
-
-<% if (evaluation.observations) { %>
-<div class="card border-0 shadow-sm mb-3">
-  <div class="card-header bg-white"><strong>Observaciones</strong></div>
-  <div class="card-body"><%= evaluation.observations %></div>
-</div>
-<% } %>
-
-<% if (evaluation.informe_brechas) { %>
-<div class="card border-0 shadow-sm mb-3 border-danger">
-  <div class="card-header bg-danger bg-opacity-10"><strong><i class="bi bi-exclamation-triangle"></i> Informe de Brechas</strong></div>
-  <div class="card-body"><%= evaluation.informe_brechas %></div>
-</div>
+<% if (evaluation.status === 'completada' && evaluation.score_ponderado) { %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+new Chart(document.getElementById('radarInstrumentos'), {
+  type: 'radar',
+  data: {
+    labels: ['Conocimientos\n(20%)', 'Jefe/Caso\n(10%)', 'Terreno\n(60%)', 'Evidencias\n(10%)'],
+    datasets: [{
+      label: 'Puntaje',
+      data: [<%= evaluation.score_conocimientos %>, <%= evaluation.score_jefe_directo %>, <%= evaluation.score_terreno %>, <%= evaluation.score_evidencias %>],
+      backgroundColor: 'rgba(232,93,58,0.15)',
+      borderColor: '#E85D3A',
+      borderWidth: 2,
+      pointBackgroundColor: '#E85D3A',
+      pointRadius: 5
+    }, {
+      label: 'Umbral (3.0)',
+      data: [3, 3, 3, 3],
+      backgroundColor: 'transparent',
+      borderColor: 'rgba(46,204,113,0.5)',
+      borderWidth: 1.5,
+      borderDash: [4, 4],
+      pointRadius: 0
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      r: {
+        min: 0, max: 4,
+        ticks: { stepSize: 1, font: { size: 10 }, backdropColor: 'transparent' },
+        pointLabels: { font: { size: 11, family: "'Inter', sans-serif" } },
+        grid: { color: 'rgba(0,0,0,0.06)' }
+      }
+    },
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 10 }, usePointStyle: true, padding: 12 } }
+    }
+  }
+});
+</script>
 <% } %>
 
 <%- include('../partials/footer') %>

@@ -8,12 +8,15 @@
       const statusColors = { registrado:'secondary', elegible:'info', evaluando:'warning', pendiente_comite:'primary', certificado:'success', no_certificado:'danger', apelacion:'dark' };
       const statusColor = statusColors[candidate.status] || 'secondary';
     %>
-    <span class="badge bg-<%= statusColor %> mt-1"><%= candidate.status %></span>
+    <span class="badge bg-<%= statusColor %> mt-1"><%= candidate.status.replace('_',' ') %></span>
   </div>
-  <div>
-    <% if (candidate.status === 'certificado' ) { %><a href="/docs/certificado/<%= candidate.id %>" target="_blank" class="btn btn-outline-success"><i class="bi bi-eye"></i> Ver</a><a href="/docs/pdf/certificado/<%= candidate.id %>" class="btn btn-success"><i class="bi bi-file-earmark-pdf"></i> PDF</a><% } %>
-    <a href="/candidatos/<%= candidate.id %>/editar" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
-    <a href="/candidatos" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+  <div class="d-flex gap-2">
+    <% if (candidate.status === 'certificado') { %>
+      <a href="/docs/certificado/<%= candidate.id %>" target="_blank" class="btn btn-sm btn-outline-success"><i class="bi bi-eye"></i> Ver</a>
+      <a href="/docs/pdf/certificado/<%= candidate.id %>" class="btn btn-sm btn-success"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+    <% } %>
+    <a href="/candidatos/<%= candidate.id %>/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
+    <a href="/candidatos" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
   </div>
 </div>
 
@@ -21,27 +24,72 @@
 <div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> Debe marcar todos los requisitos obligatorios de elegibilidad.</div>
 <% } %>
 
-<div class="row g-3 mb-4">
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white"><strong>Datos del Candidato</strong></div>
-      <div class="card-body">
-        <table class="table table-sm mb-0">
-          <tr><th style="width:35%">RUT</th><td><%= candidate.rut || '-' %></td></tr>
-          <tr><th>Email</th><td><%= candidate.email || '-' %></td></tr>
-          <tr><th>Telefono</th><td><%= candidate.phone || '-' %></td></tr>
-          <tr><th>Region</th><td><%= candidate.region || '-' %></td></tr>
-          <tr><th>Educacion</th><td><%= candidate.education_level || '-' %></td></tr>
-          <tr><th>Experiencia</th><td><%= candidate.work_experience_years %> anos</td></tr>
-          <tr><th>Perfil</th><td><%= candidate.profile_name || '-' %></td></tr>
-          <tr><th>Registro</th><td><%= candidate.created_at ? candidate.created_at.substring(0,10) : '-' %></td></tr>
-        </table>
+<!-- Tabs -->
+<ul class="nav nav-tabs mb-4" role="tablist">
+  <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab-info" role="tab"><i class="bi bi-person me-1"></i> Informacion</a></li>
+  <% if (candidate.status === 'registrado') { %>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-elegibilidad" role="tab"><i class="bi bi-check2-square me-1"></i> Elegibilidad</a></li>
+  <% } %>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-evaluaciones" role="tab"><i class="bi bi-clipboard-check me-1"></i> Evaluaciones <% if (evaluations.length) { %><span class="badge bg-secondary ms-1"><%= evaluations.length %></span><% } %></a></li>
+  <% if (decisions && decisions.length > 0) { %>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-decisiones" role="tab"><i class="bi bi-people me-1"></i> Comite <span class="badge bg-secondary ms-1"><%= decisions.length %></span></a></li>
+  <% } %>
+</ul>
+
+<div class="tab-content">
+  <!-- Tab: Info -->
+  <div class="tab-pane fade show active" id="tab-info" role="tabpanel">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header"><strong>Datos del Candidato</strong></div>
+          <div class="card-body p-0">
+            <table class="table table-sm mb-0">
+              <tr><th style="width:35%">RUT</th><td><%= candidate.rut || '-' %></td></tr>
+              <tr><th>Email</th><td><%= candidate.email || '-' %></td></tr>
+              <tr><th>Telefono</th><td><%= candidate.phone || '-' %></td></tr>
+              <tr><th>Region</th><td><%= candidate.region || '-' %></td></tr>
+              <tr><th>Educacion</th><td><%= candidate.education_level || '-' %></td></tr>
+              <tr><th>Experiencia</th><td><%= candidate.work_experience_years %> anos</td></tr>
+              <tr><th>Perfil</th><td><%= candidate.profile_name || '-' %></td></tr>
+              <tr><th>Registro</th><td><%= candidate.created_at ? candidate.created_at.substring(0,10) : '-' %></td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <% if (candidate.charla_informativa || candidate.entrevista_inicial) { %>
+        <div class="card">
+          <div class="card-header"><strong><i class="bi bi-info-circle me-1"></i> Datos de Elegibilidad</strong></div>
+          <div class="card-body p-0">
+            <table class="table table-sm mb-0">
+              <% if (candidate.charla_informativa) { %><tr><th style="width:40%">Charla Informativa</th><td><%= candidate.charla_informativa %></td></tr><% } %>
+              <% if (candidate.entrevista_inicial) { %><tr><th>Entrevista Inicial</th><td><%= candidate.entrevista_inicial %></td></tr><% } %>
+              <tr><th>Cedula Identidad</th><td><%= candidate.cedula_identidad ? '<i class="bi bi-check-circle text-success"></i> Si' : '<i class="bi bi-x-circle text-danger"></i> No' %></td></tr>
+              <tr><th>CV Entregado</th><td><%= candidate.cv_entregado ? '<i class="bi bi-check-circle text-success"></i> Si' : '<i class="bi bi-x-circle text-danger"></i> No' %></td></tr>
+              <tr><th>Carta Compromiso</th><td><%= candidate.carta_compromiso ? '<i class="bi bi-check-circle text-success"></i> Si' : '<i class="bi bi-x-circle text-danger"></i> No' %></td></tr>
+              <tr><th>Aut. ChileValora</th><td><%= candidate.autorizacion_chilevalora ? '<i class="bi bi-check-circle text-success"></i> Si' : '<i class="bi bi-x-circle text-danger"></i> No' %></td></tr>
+              <tr><th>Aut. Jefatura</th><td><%= candidate.autorizacion_jefe ? '<i class="bi bi-check-circle text-success"></i> Si' : '<i class="bi bi-x-circle text-danger"></i> No' %></td></tr>
+              <% if (candidate.informe_elegibilidad) { %><tr><th>Informe</th><td><%= candidate.informe_elegibilidad %></td></tr><% } %>
+            </table>
+          </div>
+        </div>
+        <% } %>
+        <% if (candidate.notes) { %>
+        <div class="card mt-3">
+          <div class="card-header"><strong>Notas</strong></div>
+          <div class="card-body"><%= candidate.notes %></div>
+        </div>
+        <% } %>
       </div>
     </div>
+  </div>
 
-    <% if (candidate.status === 'registrado') { %>
-    <div class="card border-0 shadow-sm mt-3">
-      <div class="card-header bg-white"><strong><i class="bi bi-check2-square"></i> Verificacion de Elegibilidad (D016 Proc. 1.1)</strong></div>
+  <% if (candidate.status === 'registrado') { %>
+  <!-- Tab: Elegibilidad -->
+  <div class="tab-pane fade" id="tab-elegibilidad" role="tabpanel">
+    <div class="card">
+      <div class="card-header"><strong><i class="bi bi-check2-square me-1"></i> Verificacion de Elegibilidad (D016 Proc. 1.1)</strong></div>
       <div class="card-body">
         <form method="POST" action="/candidatos/<%= candidate.id %>/elegibilidad">
           <p class="text-muted small">Segun Manual del Candidato, complete las etapas de elegibilidad:</p>
@@ -113,59 +161,54 @@
         </form>
       </div>
     </div>
-    <% } %>
-
-    <% if (candidate.status === 'elegible' && candidate.charla_informativa) { %>
-    <div class="card border-0 shadow-sm mt-3">
-      <div class="card-header bg-white"><strong><i class="bi bi-info-circle"></i> Datos de Elegibilidad</strong></div>
-      <div class="card-body">
-        <table class="table table-sm mb-0">
-          <% if (candidate.charla_informativa) { %><tr><th style="width:40%">Charla Informativa</th><td><%= candidate.charla_informativa %></td></tr><% } %>
-          <% if (candidate.entrevista_inicial) { %><tr><th>Entrevista Inicial</th><td><%= candidate.entrevista_inicial %></td></tr><% } %>
-          <tr><th>Cedula Identidad</th><td><%= candidate.cedula_identidad ? 'Si' : 'No' %></td></tr>
-          <tr><th>CV Entregado</th><td><%= candidate.cv_entregado ? 'Si' : 'No' %></td></tr>
-          <tr><th>Carta Compromiso</th><td><%= candidate.carta_compromiso ? 'Si' : 'No' %></td></tr>
-          <tr><th>Aut. ChileValora</th><td><%= candidate.autorizacion_chilevalora ? 'Si' : 'No' %></td></tr>
-          <tr><th>Aut. Jefatura</th><td><%= candidate.autorizacion_jefe ? 'Si' : 'No' %></td></tr>
-          <% if (candidate.informe_elegibilidad) { %><tr><th>Informe</th><td><%= candidate.informe_elegibilidad %></td></tr><% } %>
-        </table>
-      </div>
-    </div>
-    <% } %>
   </div>
-  <div class="col-md-6">
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-white"><strong>Evaluaciones</strong></div>
+  <% } %>
+
+  <!-- Tab: Evaluaciones -->
+  <div class="tab-pane fade" id="tab-evaluaciones" role="tabpanel">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Historial de Evaluaciones</strong>
+        <span class="badge bg-secondary"><%= evaluations.length %></span>
+      </div>
       <div class="card-body p-0">
-        <table class="table table-sm mb-0">
-          <thead><tr><th>Fecha</th><th>Evaluador</th><th>Pond.</th><th>Resultado</th></tr></thead>
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Fecha</th><th>Evaluador</th><th>Tipo</th><th>Ponderado</th><th>Resultado</th><th></th></tr></thead>
           <tbody>
             <% if (evaluations.length === 0) { %>
-              <tr><td colspan="4" class="text-muted text-center py-3">Sin evaluaciones</td></tr>
+              <tr><td colspan="6" class="text-muted text-center py-4"><i class="bi bi-clipboard-x" style="font-size:1.5rem"></i><br>Sin evaluaciones</td></tr>
             <% } else { evaluations.forEach(e => { %>
               <tr>
                 <td><a href="/evaluaciones/<%= e.id %>"><%= e.scheduled_date || '-' %></a></td>
                 <td><%= e.evaluator_name || '-' %></td>
-                <td><%= e.score_ponderado ? e.score_ponderado.toFixed(2) : (e.score || '-') %></td>
+                <td><%= e.type || '-' %></td>
+                <td><strong><%= e.score_ponderado ? e.score_ponderado.toFixed(2) : (e.score || '-') %></strong></td>
                 <td><span class="badge bg-<%= e.result === 'competente' ? 'success' : e.result === 'aun_no_competente' ? 'danger' : 'secondary' %>"><%= e.result || e.status %></span></td>
+                <td class="text-end">
+                  <a href="/evaluaciones/<%= e.id %>" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
+                </td>
               </tr>
             <% })} %>
           </tbody>
         </table>
       </div>
     </div>
+  </div>
 
-    <% if (decisions && decisions.length > 0) { %>
-    <div class="card border-0 shadow-sm mt-3">
-      <div class="card-header bg-white"><strong>Decisiones del Comite</strong></div>
+  <% if (decisions && decisions.length > 0) { %>
+  <!-- Tab: Decisiones Comite -->
+  <div class="tab-pane fade" id="tab-decisiones" role="tabpanel">
+    <div class="card">
+      <div class="card-header"><strong>Decisiones del Comite</strong></div>
       <div class="card-body p-0">
-        <table class="table table-sm mb-0">
-          <thead><tr><th>Fecha</th><th>Decision</th><th>Por</th></tr></thead>
+        <table class="table table-hover mb-0">
+          <thead><tr><th>Fecha</th><th>Decision</th><th>Justificacion</th><th>Por</th></tr></thead>
           <tbody>
             <% decisions.forEach(d => { %>
             <tr>
               <td><%= d.committee_date || '-' %></td>
-              <td><span class="badge bg-<%= d.decision === 'certificar' ? 'success' : 'danger' %>"><%= d.decision %></span></td>
+              <td><span class="badge bg-<%= d.decision === 'certificar' ? 'success' : 'danger' %> fs-6"><%= d.decision %></span></td>
+              <td class="text-muted" style="max-width:300px"><%= d.justification || '-' %></td>
               <td><%= d.decided_by_name || '-' %></td>
             </tr>
             <% }) %>
@@ -173,19 +216,14 @@
         </table>
       </div>
     </div>
-    <% } %>
-
-    <% if (candidate.notes) { %>
-    <div class="card border-0 shadow-sm mt-3">
-      <div class="card-header bg-white"><strong>Notas</strong></div>
-      <div class="card-body"><%= candidate.notes %></div>
-    </div>
-    <% } %>
   </div>
+  <% } %>
 </div>
 
-<form method="POST" action="/candidatos/<%= candidate.id %>/eliminar" onsubmit="return confirm('Eliminar este candidato?')">
-  <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Eliminar candidato</button>
-</form>
+<div class="mt-4">
+  <form method="POST" action="/candidatos/<%= candidate.id %>/eliminar" onsubmit="return confirm('Eliminar este candidato?')">
+    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Eliminar candidato</button>
+  </form>
+</div>
 
 <%- include('../partials/footer') %>

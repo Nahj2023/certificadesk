@@ -487,3 +487,34 @@ a:hover { color: #D14E2E; }
   border-radius: 12px !important;
   border: 1.5px solid var(--border) !important;
 }
+
+/* ── Breadcrumbs ── */
+.breadcrumb { background: none; padding: 0; margin: 0; }
+.breadcrumb-item a { color: var(--text-secondary); font-weight: 500; }
+.breadcrumb-item a:hover { color: var(--coral); }
+.breadcrumb-item.active { color: var(--text); font-weight: 600; }
+.breadcrumb-item + .breadcrumb-item::before { color: var(--text-muted); }
+
+/* ── Sidebar search ── */
+.sidebar-search input::placeholder { color: rgba(255,255,255,0.3) !important; }
+.sidebar-search input:focus { background: rgba(255,255,255,0.1) !important; border-color: var(--coral) !important; box-shadow: none !important; }
+.sidebar-search .input-group-text { font-size: 0.8rem; }
+
+/* ── Nav tabs (detail views) ── */
+.nav-tabs { border-bottom: 2px solid var(--border); }
+.nav-tabs .nav-link {
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  padding: 0.6rem 1rem;
+  transition: var(--transition);
+}
+.nav-tabs .nav-link:hover { color: var(--coral); border-bottom-color: var(--coral-mid); }
+.nav-tabs .nav-link.active { color: var(--coral); border-bottom-color: var(--coral); background: none; }
+
+/* ── Search results ── */
+.list-group-item-action:hover { background: var(--coral-light) !important; }
+.list-group-item { border-color: var(--border); }

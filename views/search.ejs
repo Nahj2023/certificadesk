@@ -1,0 +1,53 @@
+<% const title = 'Busqueda' %>
+<%- include('partials/header', { title }) %>
+
+<div class="mb-4">
+  <h4 class="mb-1"><i class="bi bi-search"></i> Busqueda Global</h4>
+  <span class="text-muted" style="font-size:0.85rem">Resultados para "<strong><%= q %></strong>"</span>
+</div>
+
+<div class="card mb-3">
+  <div class="card-body py-2 px-3">
+    <form method="GET" class="d-flex gap-2 align-items-center">
+      <input type="text" name="q" class="form-control" placeholder="Buscar candidatos, evaluadores, documentos..." value="<%= q %>" autofocus>
+      <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Buscar</button>
+    </form>
+  </div>
+</div>
+
+<% if (q && results.length === 0) { %>
+  <div class="card">
+    <div class="card-body text-center py-5">
+      <i class="bi bi-search" style="font-size:3rem;color:var(--text-muted)"></i>
+      <p class="text-muted mt-3">No se encontraron resultados para "<strong><%= q %></strong>"</p>
+    </div>
+  </div>
+<% } else if (results.length > 0) { %>
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong><%= results.length %> resultado<%= results.length !== 1 ? 's' : '' %></strong>
+    </div>
+    <div class="card-body p-0">
+      <div class="list-group list-group-flush">
+        <% results.forEach(r => { %>
+        <a href="<%= r.url %>" class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 px-4">
+          <div class="stat-icon <%= r.color %>" style="width:40px;height:40px;border-radius:10px;font-size:0.9rem">
+            <i class="bi <%= r.icon %>"></i>
+          </div>
+          <div class="flex-grow-1">
+            <div class="fw-bold" style="font-size:0.9rem"><%= r.title %></div>
+            <% if (r.subtitle) { %><small class="text-muted"><%= r.subtitle %></small><% } %>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-secondary" style="font-size:0.65rem;text-transform:uppercase"><%= r.type %></span>
+            <% if (r.badge) { %><span class="badge bg-info"><%= r.badge %></span><% } %>
+            <i class="bi bi-chevron-right text-muted"></i>
+          </div>
+        </a>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>
