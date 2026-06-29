@@ -1,7 +1,12 @@
 const jwt = require("jsonwebtoken");
 const { getDb } = require("../database/db");
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
+if (!process.env.JWT_SECRET) {
+  console.error("[FATAL] JWT_SECRET no configurado en .env — abortando");
+  process.exit(1);
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
 const TOKEN_EXPIRY = "24h";
 
 function generateToken(user) {
@@ -53,4 +58,11 @@ function apiAuth(req, res, next) {
   }
 }
 
-module.exports = { generateToken, requireAuth, requireRole, apiAuth };
+function validatePassword(password) {
+  if (password.length < 8) return "La contraseña debe tener al menos 8 caracteres";
+  if (!/[A-Z]/.test(password)) return "La contraseña debe incluir al menos una mayúscula";
+  if (!/[0-9]/.test(password)) return "La contraseña debe incluir al menos un número";
+  return null;
+}
+
+module.exports = { generateToken, requireAuth, requireRole, apiAuth, validatePassword };

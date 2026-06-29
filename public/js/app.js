@@ -22,6 +22,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 40 + i * 30);
   });
 
+  // CSRF: inject token into all forms
+  const csrfToken = getCookie("_csrf");
+  if (csrfToken) {
+    document.querySelectorAll('form[method="POST"], form[method="post"]').forEach(form => {
+      if (!form.querySelector('input[name="_csrf"]')) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "_csrf";
+        input.value = csrfToken;
+        form.appendChild(input);
+      }
+    });
+  }
+
   // Toast: read flash cookie and show
   const flash = getCookie("flash");
   if (flash) {

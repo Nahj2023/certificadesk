@@ -1,23 +1,49 @@
 require("dotenv/config");
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
 const path = require("path");
 const { requireAuth } = require("./middleware/auth");
+const { csrfProtection } = require("./middleware/csrf");
 
 const app = express();
 const PORT = process.env.PORT || 3300;
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "cdn.jsdelivr.net"],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "cdn.jsdelivr.net",
+          "fonts.googleapis.com",
+        ],
+        fontSrc: ["'self'", "fonts.gstatic.com", "cdn.jsdelivr.net"],
+        imgSrc: ["'self'", "data:"],
+        connectSrc: ["'self'"],
+      },
+    },
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+app.use(csrfProtection);
+
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;
-  res.flash = (msg) => res.cookie("flash", msg, { maxAge: 5000, httpOnly: false, path: "/" });
+  res.flash = (msg) =>
+    res.cookie("flash", msg, { maxAge: 5000, httpOnly: false, path: "/" });
   next();
 });
 
@@ -44,12 +70,20 @@ app.use("/docs", require("./routes/docs"));
 app.use("/busqueda", require("./routes/search"));
 
 app.use((req, res) => {
-  res.status(404).render("error", { title: "No encontrado", message: "Página no encontrada" });
+  res.status(404).render("error", {
+    title: "No encontrado",
+    message: "Página no encontrada",
+  });
 });
 
 app.use((err, req, res, next) => {
   console.error("[Error]", err.message);
-  res.status(500).render("error", { title: "Error", message: "Error interno del servidor" });
+  res.status(500).render("error", {
+    title: "Error",
+    message: "Error interno del servidor",
+  });
 });
 
-app.listen(PORT, () => console.log(`[CertificaDesk] Puerto ${PORT} - ${new Date().toISOString()}`));
+app.listen(PORT, () =>
+  console.log(`[CertificaDesk] Puerto ${PORT} - ${new Date().toISOString()}`)
+);
