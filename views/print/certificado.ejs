@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Certificado de Competencia — <%= candidate.name %></title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    @page { size: A4 landscape; margin: 0; }
+    @media print { body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; } .no-print { display: none !important; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f5f0eb; }
+    .no-print { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; gap: 8px; }
+    .no-print button, .no-print a { padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; border: none; }
+    .no-print button { background: #E85D3A; color: #fff; }
+    .no-print a { background: #fff; color: #333; border: 1px solid #ddd; }
+    .cert-page {
+      width: 297mm; height: 210mm; margin: 20px auto; background: #fff;
+      position: relative; overflow: hidden; box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+    }
+    .cert-border {
+      position: absolute; inset: 8mm; border: 3px solid #E85D3A;
+      border-radius: 4px; pointer-events: none;
+    }
+    .cert-border-inner {
+      position: absolute; inset: 11mm; border: 1px solid rgba(232,93,58,0.2);
+      border-radius: 2px; pointer-events: none;
+    }
+    .cert-corner { position: absolute; width: 40px; height: 40px; }
+    .cert-corner svg { width: 100%; height: 100%; }
+    .cert-corner.tl { top: 12mm; left: 12mm; }
+    .cert-corner.tr { top: 12mm; right: 12mm; transform: scaleX(-1); }
+    .cert-corner.bl { bottom: 12mm; left: 12mm; transform: scaleY(-1); }
+    .cert-corner.br { bottom: 12mm; right: 12mm; transform: scale(-1); }
+    .cert-watermark {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      font-size: 160px; font-weight: 800; color: rgba(232,93,58,0.03);
+      letter-spacing: 0.05em; pointer-events: none;
+    }
+    .cert-content {
+      position: relative; z-index: 1; height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 18mm 25mm; text-align: center;
+    }
+    .cert-header-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.25em;
+      text-transform: uppercase; color: #E85D3A; margin-bottom: 4px;
+    }
+    .cert-org { font-size: 13px; color: #636E72; font-weight: 500; margin-bottom: 16px; }
+    .cert-title {
+      font-size: 32px; font-weight: 800; color: #2D3436;
+      letter-spacing: -0.02em; margin-bottom: 4px;
+    }
+    .cert-subtitle {
+      font-size: 14px; color: #636E72; font-weight: 400; margin-bottom: 24px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .cert-line { width: 80px; height: 3px; background: #E85D3A; border-radius: 2px; margin: 0 auto 20px; }
+    .cert-otorga { font-size: 12px; color: #999; margin-bottom: 6px; }
+    .cert-name {
+      font-size: 36px; font-weight: 800; color: #E85D3A;
+      letter-spacing: -0.01em; margin-bottom: 4px;
+    }
+    .cert-rut { font-size: 13px; color: #636E72; margin-bottom: 18px; }
+    .cert-perfil-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+    .cert-perfil {
+      font-size: 18px; font-weight: 700; color: #2D3436; margin-bottom: 4px;
+    }
+    .cert-perfil-code { font-size: 12px; color: #636E72; margin-bottom: 16px; }
+    .cert-score-box {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(46,204,113,0.08); border: 1.5px solid rgba(46,204,113,0.3);
+      border-radius: 12px; padding: 6px 18px; margin-bottom: 24px;
+    }
+    .cert-score-box .score { font-size: 22px; font-weight: 800; color: #2ECC71; }
+    .cert-score-box .label { font-size: 11px; color: #27AE60; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .cert-firmas { display: flex; justify-content: center; gap: 80px; margin-top: auto; }
+    .cert-firma { text-align: center; min-width: 160px; }
+    .cert-firma-line { width: 160px; border-top: 1.5px solid #2D3436; margin-bottom: 4px; }
+    .cert-firma-name { font-size: 11px; font-weight: 700; color: #2D3436; }
+    .cert-firma-role { font-size: 10px; color: #999; }
+    .cert-footer {
+      position: absolute; bottom: 14mm; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      padding: 0 28mm; font-size: 9px; color: #B2BEC3;
+    }
+    .cert-folio { font-weight: 700; color: #636E72; }
+  </style>
+</head>
+<body>
+  <div class="no-print">
+    <button onclick="window.print()">Imprimir / PDF</button>
+    <a href="/candidatos/<%= candidate.id %>">Volver</a>
+  </div>
+
+  <div class="cert-page">
+    <div class="cert-border"></div>
+    <div class="cert-border-inner"></div>
+    <div class="cert-corner tl"><svg viewBox="0 0 40 40"><path d="M0 40 L0 0 L40 0" fill="none" stroke="#E85D3A" stroke-width="2"/></svg></div>
+    <div class="cert-corner tr"><svg viewBox="0 0 40 40"><path d="M0 40 L0 0 L40 0" fill="none" stroke="#E85D3A" stroke-width="2"/></svg></div>
+    <div class="cert-corner bl"><svg viewBox="0 0 40 40"><path d="M0 40 L0 0 L40 0" fill="none" stroke="#E85D3A" stroke-width="2"/></svg></div>
+    <div class="cert-corner br"><svg viewBox="0 0 40 40"><path d="M0 40 L0 0 L40 0" fill="none" stroke="#E85D3A" stroke-width="2"/></svg></div>
+    <div class="cert-watermark">CERTIFICADO</div>
+
+    <div class="cert-content">
+      <div class="cert-header-label">Centro de Evaluacion y Certificacion</div>
+      <div class="cert-org"><%= org.name %> — RUT <%= org.rut || '-' %></div>
+      <div class="cert-title">Certificado de Competencia Laboral</div>
+      <div class="cert-subtitle">Ley 20.267 — Sistema Nacional de Certificacion</div>
+      <div class="cert-line"></div>
+      <div class="cert-otorga">Se certifica que</div>
+      <div class="cert-name"><%= candidate.name %></div>
+      <div class="cert-rut">RUT <%= candidate.rut || '-' %></div>
+      <div class="cert-perfil-label">Ha demostrado competencia en el perfil</div>
+      <div class="cert-perfil"><%= candidate.profile_name || '-' %></div>
+      <div class="cert-perfil-code"><%= candidate.profile_code || '' %><%= candidate.profile_sector ? ' — ' + candidate.profile_sector : '' %></div>
+
+      <% if (evaluation && evaluation.score_ponderado) { %>
+      <div class="cert-score-box">
+        <span class="score"><%= evaluation.score_ponderado.toFixed(2) %>/4.0</span>
+        <span class="label">Competente</span>
+      </div>
+      <% } %>
+
+      <div class="cert-firmas">
+        <div class="cert-firma">
+          <div class="cert-firma-line"></div>
+          <div class="cert-firma-name"><%= decision && decision.decided_by_name ? decision.decided_by_name : 'Presidente Comite' %></div>
+          <div class="cert-firma-role">Comite de Certificacion</div>
+        </div>
+        <div class="cert-firma">
+          <div class="cert-firma-line"></div>
+          <div class="cert-firma-name">Representante Legal</div>
+          <div class="cert-firma-role"><%= org.name %></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cert-footer">
+      <div>
+        <span class="cert-folio">Folio: <%= folio %></span><br>
+        Fecha: <%= decision && decision.committee_date ? decision.committee_date : new Date().toISOString().substring(0,10) %>
+      </div>
+      <div style="text-align:center">
+        ChileValora — D016-01-18<br>
+        Proc. 1 — Evaluacion y Certificacion
+      </div>
+      <div style="text-align:right">
+        CertificaDesk — JVH Labs<br>
+        <%= new Date().toISOString().substring(0,10) %>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

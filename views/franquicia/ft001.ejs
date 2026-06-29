@@ -4,94 +4,156 @@
   <meta charset="UTF-8">
   <title>FT001 — Certificado de Cumplimiento EyCCL</title>
   <style>
-    @media print { body { margin: 0; } .no-print { display: none; } }
-    body { font-family: Arial, sans-serif; font-size: 12px; max-width: 800px; margin: 20px auto; padding: 0 20px; }
-    h1 { font-size: 16px; text-align: center; border-bottom: 2px solid #333; padding-bottom: 8px; }
-    h2 { font-size: 13px; background: #f0f0f0; padding: 6px 10px; margin-top: 20px; }
-    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-    th, td { border: 1px solid #999; padding: 5px 8px; text-align: left; }
-    th { background: #e8e8e8; font-size: 11px; }
-    .header-table td { border: none; padding: 3px 8px; }
-    .firma { margin-top: 60px; display: flex; justify-content: space-between; }
-    .firma div { text-align: center; width: 40%; border-top: 1px solid #333; padding-top: 5px; }
-    .small { font-size: 10px; color: #666; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    @page { size: A4; margin: 15mm 18mm; }
+    @media print { body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; } .no-print { display: none !important; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; font-size: 12px; color: #2D3436; line-height: 1.5; background: #f5f0eb; }
+    .no-print { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; gap: 8px; }
+    .no-print button, .no-print a { padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; border: none; }
+    .no-print button { background: #E85D3A; color: #fff; }
+    .no-print a { background: #fff; color: #333; border: 1px solid #ddd; }
+    .page { max-width: 210mm; margin: 20px auto; background: #fff; padding: 20mm 22mm; box-shadow: 0 4px 30px rgba(0,0,0,0.1); }
+    .doc-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #E85D3A; padding-bottom: 12px; margin-bottom: 20px; }
+    .doc-header-left h1 { font-size: 18px; font-weight: 800; color: #2D3436; letter-spacing: -0.02em; }
+    .doc-header-left h2 { font-size: 13px; font-weight: 600; color: #E85D3A; margin-top: 2px; }
+    .doc-header-left .subtitle { font-size: 11px; color: #636E72; margin-top: 2px; }
+    .doc-header-right { text-align: right; font-size: 10px; color: #636E72; }
+    .doc-header-right .folio { font-size: 13px; font-weight: 700; color: #E85D3A; }
+    .section { margin-bottom: 16px; }
+    .section-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: #E85D3A; border-bottom: 1.5px solid rgba(232,93,58,0.2); padding-bottom: 4px; margin-bottom: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .info-grid .cell { padding: 5px 10px; border-bottom: 1px solid #f0f0f0; }
+    .info-grid .cell-label { font-size: 10px; font-weight: 700; color: #636E72; text-transform: uppercase; letter-spacing: 0.04em; }
+    .info-grid .cell-value { font-size: 12px; font-weight: 500; margin-top: 1px; }
+    .data-table th { background: #f8f6f3; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #636E72; padding: 7px 8px; border: 1px solid #eee; text-align: left; }
+    .data-table td { padding: 6px 8px; border: 1px solid #eee; font-size: 11px; }
+    .data-table tbody tr:nth-child(even) { background: #fafaf8; }
+    .cost-summary { background: rgba(232,93,58,0.04); border: 1.5px solid rgba(232,93,58,0.15); border-radius: 10px; padding: 14px 18px; margin: 10px 0; }
+    .cost-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px; }
+    .cost-row.total { border-top: 2px solid #E85D3A; margin-top: 6px; padding-top: 8px; font-weight: 800; font-size: 14px; color: #E85D3A; }
+    .declaration { background: #f8f6f3; border-radius: 8px; padding: 14px 18px; font-size: 11px; color: #636E72; line-height: 1.6; }
+    .firmas { display: flex; justify-content: space-between; margin-top: 50px; }
+    .firma { text-align: center; width: 40%; }
+    .firma-line { border-top: 1.5px solid #2D3436; margin-bottom: 4px; }
+    .firma-name { font-size: 11px; font-weight: 700; }
+    .firma-role { font-size: 10px; color: #999; }
+    .doc-footer { margin-top: 30px; padding-top: 10px; border-top: 1px solid #eee; display: flex; justify-content: space-between; font-size: 9px; color: #B2BEC3; }
   </style>
 </head>
 <body>
-  <div class="no-print" style="text-align:right; margin-bottom:10px">
-    <button onclick="window.print()" style="padding:8px 16px; cursor:pointer">Imprimir / PDF</button>
-    <a href="/franquicia/<%= accion.id %>" style="padding:8px 16px">Volver</a>
+  <div class="no-print">
+    <button onclick="window.print()">Imprimir / PDF</button>
+    <a href="/franquicia/<%= accion.id %>">Volver</a>
   </div>
 
-  <h1>CERTIFICADO DE CUMPLIMIENTO DE CONDICIONES<br>Evaluacion y Certificacion de Competencias Laborales (EyCCL)<br>FT001</h1>
-
-  <h2>1. Datos del Centro de Evaluacion y Certificacion (CEC)</h2>
-  <table class="header-table">
-    <tr><td><strong>Nombre CEC:</strong></td><td><%= org.name %></td><td><strong>RUT:</strong></td><td><%= org.rut || '-' %></td></tr>
-    <tr><td><strong>Region:</strong></td><td><%= org.region || '-' %></td><td><strong>Email:</strong></td><td><%= org.email || '-' %></td></tr>
-  </table>
-
-  <h2>2. Datos de la Empresa</h2>
-  <table class="header-table">
-    <tr><td><strong>Razon Social:</strong></td><td><%= accion.empresa_nombre %></td><td><strong>RUT:</strong></td><td><%= accion.empresa_rut %></td></tr>
-    <tr><td><strong>Direccion:</strong></td><td><%= accion.empresa_direccion || '-' %></td><td><strong>Region:</strong></td><td><%= accion.empresa_region || '-' %></td></tr>
-    <tr><td><strong>Responsable:</strong></td><td><%= accion.responsable_nombre || '-' %></td><td><strong>RUT Resp.:</strong></td><td><%= accion.responsable_rut || '-' %></td></tr>
-  </table>
-
-  <h2>3. Datos de la Accion</h2>
-  <table class="header-table">
-    <tr><td><strong>Perfil:</strong></td><td><%= accion.profile_code || '' %> — <%= accion.profile_name || '-' %></td></tr>
-    <tr><td><strong>Tipo Actividad:</strong></td><td><%= accion.tipo %></td><td><strong>Valor UCL:</strong></td><td>$<%= (accion.valor_ucl || 0).toLocaleString('es-CL') %></td></tr>
-    <tr><td><strong>Fecha Inicio:</strong></td><td><%= accion.fecha_inicio || '-' %></td><td><strong>Fecha Termino:</strong></td><td><%= accion.fecha_termino || '-' %></td></tr>
-    <tr><td><strong>Comite Bipartito:</strong></td><td><%= accion.tiene_comite_bipartito ? 'SI' : 'NO' %></td></tr>
-  </table>
-
-  <h2>4. Participantes (<%= participantes.length %>)</h2>
-  <table>
-    <thead>
-      <tr><th>#</th><th>RUT</th><th>Nombre</th><th>Tramo</th><th>% Franq.</th><th>Copago</th><th>Resultado</th></tr>
-    </thead>
-    <tbody>
-      <% participantes.forEach((p, i) => { %>
-      <tr>
-        <td><%= i + 1 %></td>
-        <td><%= p.rut %></td>
-        <td><%= p.nombre %></td>
-        <td><%= p.tramo_franquicia %></td>
-        <td><%= p.porcentaje_franquicia %>%</td>
-        <td>$<%= (p.copago || 0).toLocaleString('es-CL') %></td>
-        <td><%= p.resultado %></td>
-      </tr>
-      <% }) %>
-    </tbody>
-  </table>
-
-  <h2>5. Resumen de Costos</h2>
-  <table class="header-table">
-    <tr><td><strong>Total Bruto:</strong></td><td>$<%= costos.totalBruto.toLocaleString('es-CL') %></td></tr>
-    <tr><td><strong>Franquicia Tributaria SENCE:</strong></td><td>$<%= costos.totalFranquicia.toLocaleString('es-CL') %></td></tr>
-    <tr><td><strong>Copago Trabajadores:</strong></td><td>$<%= costos.totalCopago.toLocaleString('es-CL') %></td></tr>
-    <tr><td><strong>Costo Neto Empresa:</strong></td><td>$<%= costos.costoEmpresa.toLocaleString('es-CL') %></td></tr>
-  </table>
-
-  <h2>6. Declaracion</h2>
-  <p>El Centro de Evaluacion y Certificacion de Competencias Laborales (CEC) declara que cumple con las condiciones establecidas en la Ley 20.267 y la normativa vigente de ChileValora y SENCE para la ejecucion de la accion de Evaluacion y Certificacion de Competencias Laborales descrita en el presente documento.</p>
-  <p>Se certifica que el CEC cuenta con evaluadores habilitados por ChileValora, procedimientos operacionales aprobados, y la infraestructura necesaria para llevar a cabo el proceso de evaluacion.</p>
-
-  <div class="firma">
-    <div>
-      Representante Legal CEC<br>
-      <span class="small"><%= org.name %></span>
+  <div class="page">
+    <div class="doc-header">
+      <div class="doc-header-left">
+        <h1>Certificado de Cumplimiento de Condiciones</h1>
+        <h2>Evaluacion y Certificacion de Competencias Laborales</h2>
+        <div class="subtitle"><%= org.name %></div>
+      </div>
+      <div class="doc-header-right">
+        <div class="folio">FT001</div>
+        Ley 20.267<br>
+        Franquicia Tributaria SENCE
+      </div>
     </div>
-    <div>
-      Representante Empresa<br>
-      <span class="small"><%= accion.empresa_nombre %></span>
+
+    <div class="section">
+      <div class="section-title">1. Centro de Evaluacion y Certificacion</div>
+      <div class="info-grid">
+        <div class="cell"><div class="cell-label">Nombre CEC</div><div class="cell-value"><%= org.name %></div></div>
+        <div class="cell"><div class="cell-label">RUT</div><div class="cell-value"><%= org.rut || '-' %></div></div>
+        <div class="cell"><div class="cell-label">Region</div><div class="cell-value"><%= org.region || '-' %></div></div>
+        <div class="cell"><div class="cell-label">Email</div><div class="cell-value"><%= org.email || '-' %></div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">2. Datos de la Empresa</div>
+      <div class="info-grid">
+        <div class="cell"><div class="cell-label">Razon Social</div><div class="cell-value"><%= accion.empresa_nombre %></div></div>
+        <div class="cell"><div class="cell-label">RUT</div><div class="cell-value"><%= accion.empresa_rut %></div></div>
+        <div class="cell"><div class="cell-label">Direccion</div><div class="cell-value"><%= accion.empresa_direccion || '-' %></div></div>
+        <div class="cell"><div class="cell-label">Region</div><div class="cell-value"><%= accion.empresa_region || '-' %></div></div>
+        <div class="cell"><div class="cell-label">Responsable</div><div class="cell-value"><%= accion.responsable_nombre || '-' %></div></div>
+        <div class="cell"><div class="cell-label">RUT Responsable</div><div class="cell-value"><%= accion.responsable_rut || '-' %></div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">3. Datos de la Accion</div>
+      <div class="info-grid">
+        <div class="cell"><div class="cell-label">Perfil</div><div class="cell-value"><%= accion.profile_code || '' %> — <%= accion.profile_name || '-' %></div></div>
+        <div class="cell"><div class="cell-label">Tipo Actividad</div><div class="cell-value"><%= accion.tipo %></div></div>
+        <div class="cell"><div class="cell-label">Fecha Inicio</div><div class="cell-value"><%= accion.fecha_inicio || '-' %></div></div>
+        <div class="cell"><div class="cell-label">Fecha Termino</div><div class="cell-value"><%= accion.fecha_termino || '-' %></div></div>
+        <div class="cell"><div class="cell-label">Valor UCL</div><div class="cell-value">$<%= (accion.valor_ucl || 0).toLocaleString('es-CL') %></div></div>
+        <div class="cell"><div class="cell-label">Comite Bipartito</div><div class="cell-value"><%= accion.tiene_comite_bipartito ? 'SI' : 'NO' %></div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">4. Participantes (<%= participantes.length %>)</div>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>RUT</th><th>Nombre</th><th>Tramo</th><th>% Franq.</th><th>Copago</th><th>Resultado</th></tr></thead>
+        <tbody>
+          <% participantes.forEach((p, i) => { %>
+          <tr>
+            <td><%= i + 1 %></td>
+            <td><%= p.rut %></td>
+            <td><%= p.nombre %></td>
+            <td><%= p.tramo_franquicia %></td>
+            <td><%= p.porcentaje_franquicia %>%</td>
+            <td>$<%= (p.copago || 0).toLocaleString('es-CL') %></td>
+            <td><strong><%= p.resultado %></strong></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">5. Resumen de Costos</div>
+      <div class="cost-summary">
+        <div class="cost-row"><span>Total Bruto</span><span>$<%= costos.totalBruto.toLocaleString('es-CL') %></span></div>
+        <div class="cost-row"><span>Franquicia Tributaria SENCE</span><span style="color:#27AE60; font-weight:600;">-$<%= costos.totalFranquicia.toLocaleString('es-CL') %></span></div>
+        <div class="cost-row"><span>Copago Trabajadores</span><span>-$<%= costos.totalCopago.toLocaleString('es-CL') %></span></div>
+        <div class="cost-row total"><span>Costo Neto Empresa</span><span>$<%= costos.costoEmpresa.toLocaleString('es-CL') %></span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">6. Declaracion</div>
+      <div class="declaration">
+        El Centro de Evaluacion y Certificacion de Competencias Laborales (CEC) declara que cumple con las condiciones establecidas en la Ley 20.267 y la normativa vigente de ChileValora y SENCE para la ejecucion de la accion de Evaluacion y Certificacion de Competencias Laborales descrita en el presente documento. Se certifica que el CEC cuenta con evaluadores habilitados por ChileValora, procedimientos operacionales aprobados, y la infraestructura necesaria para llevar a cabo el proceso de evaluacion.
+      </div>
+    </div>
+
+    <div class="firmas">
+      <div class="firma">
+        <div class="firma-line"></div>
+        <div class="firma-name">Representante Legal CEC</div>
+        <div class="firma-role"><%= org.name %></div>
+      </div>
+      <div class="firma">
+        <div class="firma-line"></div>
+        <div class="firma-name">Representante Empresa</div>
+        <div class="firma-role"><%= accion.empresa_nombre %></div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <div>FT001 — <%= org.name %></div>
+      <div>Ley 20.267 — Sistema Nacional de Certificacion de Competencias Laborales</div>
+      <div>CertificaDesk — <%= new Date().toISOString().substring(0,10) %></div>
     </div>
   </div>
-
-  <p class="small" style="margin-top:40px; text-align:center">
-    Documento generado por CertificaDesk — <%= new Date().toISOString().substring(0,10) %><br>
-    Ref: Ley 20.267 — Sistema Nacional de Certificacion de Competencias Laborales
-  </p>
 </body>
 </html>

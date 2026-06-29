@@ -13,6 +13,7 @@
     <% if (evaluation.status === 'completada' && evaluation.candidate_status === 'pendiente_comite') { %>
       <a href="/evaluaciones/<%= evaluation.id %>/comite" class="btn btn-sm btn-primary"><i class="bi bi-people-fill"></i> Comite</a>
     <% } %>
+    <a href="/docs/informe/<%= evaluation.id %>" target="_blank" class="btn btn-sm btn-outline-success"><i class="bi bi-printer"></i> Informe PDF</a>
     <a href="/evaluaciones" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
   </div>
 </div>

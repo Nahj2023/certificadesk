@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Acta Comite — <%= decision.candidate_name %></title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    @page { size: A4; margin: 15mm 18mm; }
+    @media print { body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; } .no-print { display: none !important; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; font-size: 12px; color: #2D3436; line-height: 1.5; background: #f5f0eb; }
+    .no-print { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; gap: 8px; }
+    .no-print button, .no-print a { padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; border: none; }
+    .no-print button { background: #E85D3A; color: #fff; }
+    .no-print a { background: #fff; color: #333; border: 1px solid #ddd; }
+    .page { max-width: 210mm; margin: 20px auto; background: #fff; padding: 20mm 22mm; box-shadow: 0 4px 30px rgba(0,0,0,0.1); }
+    .doc-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #E85D3A; padding-bottom: 12px; margin-bottom: 20px; }
+    .doc-header-left h1 { font-size: 20px; font-weight: 800; color: #2D3436; letter-spacing: -0.02em; }
+    .doc-header-left .subtitle { font-size: 11px; color: #636E72; margin-top: 2px; }
+    .doc-header-right { text-align: right; font-size: 10px; color: #636E72; }
+    .doc-header-right .folio { font-size: 13px; font-weight: 700; color: #E85D3A; }
+    .section { margin-bottom: 18px; }
+    .section-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: #E85D3A; border-bottom: 1.5px solid rgba(232,93,58,0.2); padding-bottom: 4px; margin-bottom: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    .info-table td { padding: 4px 8px; vertical-align: top; }
+    .info-table .label { font-weight: 600; color: #636E72; width: 35%; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .info-table .value { font-weight: 500; }
+    .score-table { margin: 10px 0; }
+    .score-table th { background: #f8f6f3; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #636E72; padding: 8px; border: 1px solid #eee; text-align: left; }
+    .score-table td { padding: 8px; border: 1px solid #eee; }
+    .score-table .total-row { background: rgba(232,93,58,0.04); font-weight: 700; }
+    .score-table .total-row td { border-top: 2px solid #E85D3A; }
+    .decision-box {
+      text-align: center; padding: 20px; border-radius: 12px; margin: 15px 0;
+    }
+    .decision-box.certificar { background: rgba(46,204,113,0.06); border: 2px solid rgba(46,204,113,0.3); }
+    .decision-box.no-certificar { background: rgba(231,76,60,0.06); border: 2px solid rgba(231,76,60,0.3); }
+    .decision-label { font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+    .decision-value { font-size: 24px; font-weight: 800; letter-spacing: 0.05em; }
+    .decision-value.cert { color: #27AE60; }
+    .decision-value.no-cert { color: #E74C3C; }
+    .obs-box { background: #f8f6f3; border-radius: 8px; padding: 12px 16px; font-size: 12px; min-height: 40px; }
+    .checklist { list-style: none; padding: 0; }
+    .checklist li { padding: 5px 0; font-size: 12px; display: flex; align-items: center; gap: 8px; }
+    .check-icon { width: 18px; height: 18px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+    .check-icon.yes { background: rgba(46,204,113,0.12); color: #27AE60; }
+    .check-icon.no { background: rgba(231,76,60,0.12); color: #E74C3C; }
+    .firmas { display: flex; justify-content: space-between; margin-top: 40px; }
+    .firma { text-align: center; width: 30%; }
+    .firma-line { border-top: 1.5px solid #2D3436; margin-bottom: 4px; }
+    .firma-name { font-size: 11px; font-weight: 700; }
+    .firma-role { font-size: 10px; color: #999; }
+    .doc-footer { margin-top: 30px; padding-top: 10px; border-top: 1px solid #eee; display: flex; justify-content: space-between; font-size: 9px; color: #B2BEC3; }
+  </style>
+</head>
+<body>
+  <div class="no-print">
+    <button onclick="window.print()">Imprimir / PDF</button>
+    <a href="/evaluaciones/<%= decision.evaluation_id %>/comite">Volver</a>
+  </div>
+
+  <div class="page">
+    <div class="doc-header">
+      <div class="doc-header-left">
+        <h1>Acta de Comite de Certificacion</h1>
+        <div class="subtitle"><%= org.name %> — CEC acreditado ChileValora</div>
+      </div>
+      <div class="doc-header-right">
+        <div class="folio"><%= folio %></div>
+        Fecha Comite: <%= decision.committee_date || '-' %><br>
+        D016 — Proc. 1.3
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">1. Datos del Candidato</div>
+      <table class="info-table">
+        <tr><td class="label">Nombre</td><td class="value"><%= decision.candidate_name %></td></tr>
+        <tr><td class="label">RUT</td><td class="value"><%= decision.candidate_rut || '-' %></td></tr>
+        <tr><td class="label">Perfil</td><td class="value"><%= decision.profile_code || '' %> — <%= decision.profile_name || '-' %></td></tr>
+        <tr><td class="label">Evaluador</td><td class="value"><%= decision.evaluator_name || '-' %> (<%= decision.evaluator_rut || '-' %>)</td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">2. Resultados de la Evaluacion</div>
+      <% if (decision.score_ponderado) { %>
+      <table class="score-table">
+        <thead><tr><th>Instrumento</th><th>Puntaje</th><th>Peso</th><th>Aporte</th></tr></thead>
+        <tbody>
+          <tr><td>Prueba de Conocimientos</td><td><%= decision.score_conocimientos %>/4</td><td>20%</td><td><%= (decision.score_conocimientos * 0.20).toFixed(2) %></td></tr>
+          <tr><td>Eval. Jefe / Caso</td><td><%= decision.score_jefe_directo %>/4</td><td>10%</td><td><%= (decision.score_jefe_directo * 0.10).toFixed(2) %></td></tr>
+          <tr><td>Observacion Terreno</td><td><%= decision.score_terreno %>/4</td><td>60%</td><td><%= (decision.score_terreno * 0.60).toFixed(2) %></td></tr>
+          <tr><td>Evidencias Indirectas</td><td><%= decision.score_evidencias %>/4</td><td>10%</td><td><%= (decision.score_evidencias * 0.10).toFixed(2) %></td></tr>
+          <tr class="total-row"><td>TOTAL PONDERADO</td><td colspan="2"><%= decision.score_ponderado.toFixed(2) %>/4</td><td><%= decision.score_ponderado.toFixed(2) %></td></tr>
+        </tbody>
+      </table>
+      <% } %>
+    </div>
+
+    <div class="section">
+      <div class="section-title">3. Revision del Comite</div>
+      <ul class="checklist">
+        <li>
+          <span class="check-icon <%= decision.portfolio_reviewed ? 'yes' : 'no' %>"><%= decision.portfolio_reviewed ? 'SI' : 'NO' %></span>
+          Portafolio de evidencias revisado
+        </li>
+        <li>
+          <span class="check-icon <%= decision.audit_status !== 'sin_auditoria' ? 'yes' : 'no' %>"><%= decision.audit_status !== 'sin_auditoria' ? 'SI' : '-' %></span>
+          Auditoria: <%= decision.audit_status || 'Sin auditoria' %>
+        </li>
+        <li>
+          <span class="check-icon yes">OK</span>
+          Recomendacion evaluador: <%= decision.evaluator_recommendation || decision.result || '-' %>
+        </li>
+      </ul>
+      <% if (decision.members) { %>
+      <div style="margin-top: 10px;">
+        <strong style="font-size:11px; color:#636E72;">Miembros del Comite:</strong>
+        <div class="obs-box" style="margin-top:4px;"><%= decision.members %></div>
+      </div>
+      <% } %>
+    </div>
+
+    <div class="section">
+      <div class="section-title">4. Decision</div>
+      <div class="decision-box <%= decision.decision === 'certificar' ? 'certificar' : 'no-certificar' %>">
+        <div class="decision-label">El Comite de Certificacion resuelve</div>
+        <div class="decision-value <%= decision.decision === 'certificar' ? 'cert' : 'no-cert' %>">
+          <%= decision.decision === 'certificar' ? 'CERTIFICAR' : 'NO CERTIFICAR' %>
+        </div>
+      </div>
+      <% if (decision.justification) { %>
+      <div style="margin-top:10px;">
+        <strong style="font-size:11px; color:#636E72;">Justificacion:</strong>
+        <div class="obs-box" style="margin-top:4px;"><%= decision.justification %></div>
+      </div>
+      <% } %>
+    </div>
+
+    <% if (decision.observations) { %>
+    <div class="section">
+      <div class="section-title">5. Observaciones</div>
+      <div class="obs-box"><%= decision.observations %></div>
+    </div>
+    <% } %>
+
+    <div class="firmas">
+      <div class="firma">
+        <div class="firma-line"></div>
+        <div class="firma-name"><%= decision.decided_by_name || 'Presidente' %></div>
+        <div class="firma-role">Presidente Comite</div>
+      </div>
+      <div class="firma">
+        <div class="firma-line"></div>
+        <div class="firma-name">Miembro</div>
+        <div class="firma-role">Comite de Certificacion</div>
+      </div>
+      <div class="firma">
+        <div class="firma-line"></div>
+        <div class="firma-name">Miembro</div>
+        <div class="firma-role">Comite de Certificacion</div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <div><%= folio %> — <%= org.name %></div>
+      <div>ChileValora D016-01-18 — Proc. 1.3 Comite de Certificacion</div>
+      <div>CertificaDesk — <%= new Date().toISOString().substring(0,10) %></div>
+    </div>
+  </div>
+</body>
+</html>

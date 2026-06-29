@@ -11,6 +11,7 @@
     <span class="badge bg-<%= statusColor %> mt-1"><%= candidate.status %></span>
   </div>
   <div>
+    <% if (candidate.status === 'certificado' ) { %><a href="/docs/certificado/<%= candidate.id %>" target="_blank" class="btn btn-success"><i class="bi bi-award"></i> Certificado</a><% } %>
     <a href="/candidatos/<%= candidate.id %>/editar" class="btn btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
     <a href="/candidatos" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
   </div>

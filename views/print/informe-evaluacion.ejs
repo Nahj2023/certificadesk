@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Informe Evaluacion — <%= evaluation.candidate_name %></title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    @page { size: A4; margin: 15mm 18mm; }
+    @media print { body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; } .no-print { display: none !important; } }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; font-size: 12px; color: #2D3436; line-height: 1.5; background: #f5f0eb; }
+    .no-print { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; gap: 8px; }
+    .no-print button, .no-print a { padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; border: none; }
+    .no-print button { background: #E85D3A; color: #fff; }
+    .no-print a { background: #fff; color: #333; border: 1px solid #ddd; }
+    .page { max-width: 210mm; margin: 20px auto; background: #fff; padding: 20mm 22mm; box-shadow: 0 4px 30px rgba(0,0,0,0.1); }
+    .doc-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #E85D3A; padding-bottom: 12px; margin-bottom: 20px; }
+    .doc-header-left h1 { font-size: 20px; font-weight: 800; color: #2D3436; letter-spacing: -0.02em; }
+    .doc-header-left .subtitle { font-size: 11px; color: #636E72; margin-top: 2px; }
+    .doc-header-right { text-align: right; font-size: 10px; color: #636E72; }
+    .doc-header-right .folio { font-size: 13px; font-weight: 700; color: #E85D3A; }
+    .section { margin-bottom: 18px; }
+    .section-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: #E85D3A; border-bottom: 1.5px solid rgba(232,93,58,0.2); padding-bottom: 4px; margin-bottom: 10px;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    .info-table td { padding: 4px 8px; vertical-align: top; }
+    .info-table .label { font-weight: 600; color: #636E72; width: 35%; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .info-table .value { font-weight: 500; }
+    .score-table { margin: 10px 0; }
+    .score-table th { background: #f8f6f3; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #636E72; padding: 8px; border: 1px solid #eee; text-align: left; }
+    .score-table td { padding: 8px; border: 1px solid #eee; font-size: 12px; }
+    .score-table .total-row { background: rgba(232,93,58,0.04); font-weight: 700; }
+    .score-table .total-row td { border-top: 2px solid #E85D3A; }
+    .result-badge {
+      display: inline-block; padding: 6px 16px; border-radius: 8px; font-weight: 700; font-size: 13px;
+      letter-spacing: 0.03em; text-transform: uppercase;
+    }
+    .result-badge.competente { background: rgba(46,204,113,0.1); color: #27AE60; border: 1.5px solid rgba(46,204,113,0.3); }
+    .result-badge.no-competente { background: rgba(231,76,60,0.1); color: #E74C3C; border: 1.5px solid rgba(231,76,60,0.3); }
+    .obs-box { background: #f8f6f3; border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #2D3436; min-height: 40px; }
+    .brechas-box { background: rgba(231,76,60,0.04); border: 1px solid rgba(231,76,60,0.15); border-radius: 8px; padding: 12px 16px; }
+    .firmas { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 10px; }
+    .firma { text-align: center; width: 40%; }
+    .firma-line { border-top: 1.5px solid #2D3436; margin-bottom: 4px; }
+    .firma-name { font-size: 11px; font-weight: 700; }
+    .firma-role { font-size: 10px; color: #999; }
+    .doc-footer { margin-top: 30px; padding-top: 10px; border-top: 1px solid #eee; display: flex; justify-content: space-between; font-size: 9px; color: #B2BEC3; }
+  </style>
+</head>
+<body>
+  <div class="no-print">
+    <button onclick="window.print()">Imprimir / PDF</button>
+    <a href="/evaluaciones/<%= evaluation.id %>">Volver</a>
+  </div>
+
+  <div class="page">
+    <div class="doc-header">
+      <div class="doc-header-left">
+        <h1>Informe de Evaluacion Individual</h1>
+        <div class="subtitle"><%= org.name %> — CEC acreditado ChileValora</div>
+      </div>
+      <div class="doc-header-right">
+        <div class="folio"><%= folio %></div>
+        Fecha: <%= evaluation.completed_at ? evaluation.completed_at.substring(0,10) : '-' %><br>
+        D016 — Proc. 1
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">1. Datos del Candidato</div>
+      <table class="info-table">
+        <tr><td class="label">Nombre</td><td class="value"><%= evaluation.candidate_name %></td></tr>
+        <tr><td class="label">RUT</td><td class="value"><%= evaluation.candidate_rut || '-' %></td></tr>
+        <tr><td class="label">Email</td><td class="value"><%= evaluation.candidate_email || '-' %></td></tr>
+        <tr><td class="label">Region</td><td class="value"><%= evaluation.candidate_region || '-' %></td></tr>
+        <tr><td class="label">Educacion</td><td class="value"><%= evaluation.education_level || '-' %></td></tr>
+        <tr><td class="label">Experiencia</td><td class="value"><%= evaluation.work_experience_years || 0 %> anos</td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">2. Perfil Evaluado</div>
+      <table class="info-table">
+        <tr><td class="label">Perfil</td><td class="value"><%= evaluation.profile_name || '-' %></td></tr>
+        <tr><td class="label">Codigo</td><td class="value"><%= evaluation.profile_code || '-' %></td></tr>
+        <tr><td class="label">Sector</td><td class="value"><%= evaluation.profile_sector || '-' %></td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">3. Datos de la Evaluacion</div>
+      <table class="info-table">
+        <tr><td class="label">Evaluador</td><td class="value"><%= evaluation.evaluator_name || '-' %> (<%= evaluation.evaluator_rut || '-' %>)</td></tr>
+        <tr><td class="label">Fecha</td><td class="value"><%= evaluation.scheduled_date || '-' %></td></tr>
+        <tr><td class="label">Ubicacion</td><td class="value"><%= evaluation.location || '-' %></td></tr>
+        <tr><td class="label">Tipo</td><td class="value"><%= evaluation.type || '-' %></td></tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <div class="section-title">4. Resultados por Instrumento</div>
+      <% if (evaluation.score_ponderado) { %>
+      <table class="score-table">
+        <thead>
+          <tr><th>Instrumento</th><th>Modalidad</th><th>Puntaje</th><th>Peso</th><th>Aporte</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Prueba de Conocimientos</td>
+            <td>Escrita</td>
+            <td><strong><%= evaluation.score_conocimientos %></strong> / 4</td>
+            <td>20%</td>
+            <td><%= (evaluation.score_conocimientos * 0.20).toFixed(2) %></td>
+          </tr>
+          <tr>
+            <td>Evaluacion Jefe / Caso</td>
+            <td><%= evaluation.tipo_jefe === 'analisis_caso' ? 'Analisis de Caso' : 'Jefe Directo' %></td>
+            <td><strong><%= evaluation.score_jefe_directo %></strong> / 4</td>
+            <td>10%</td>
+            <td><%= (evaluation.score_jefe_directo * 0.10).toFixed(2) %></td>
+          </tr>
+          <tr>
+            <td>Observacion en Terreno</td>
+            <td><%= evaluation.tipo_terreno === 'simulacion' ? 'Simulacion' : 'Terreno' %></td>
+            <td><strong><%= evaluation.score_terreno %></strong> / 4</td>
+            <td>60%</td>
+            <td><%= (evaluation.score_terreno * 0.60).toFixed(2) %></td>
+          </tr>
+          <tr>
+            <td>Evidencias Indirectas</td>
+            <td>Documentos</td>
+            <td><strong><%= evaluation.score_evidencias %></strong> / 4</td>
+            <td>10%</td>
+            <td><%= (evaluation.score_evidencias * 0.10).toFixed(2) %></td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="2">PUNTAJE PONDERADO FINAL</td>
+            <td><strong><%= evaluation.score_ponderado.toFixed(2) %></strong> / 4</td>
+            <td>100%</td>
+            <td><strong><%= evaluation.score_ponderado.toFixed(2) %></strong></td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="text-align:center; margin: 12px 0;">
+        <span class="result-badge <%= evaluation.result === 'competente' ? 'competente' : 'no-competente' %>">
+          <%= evaluation.result === 'competente' ? 'COMPETENTE' : 'AUN NO COMPETENTE' %>
+        </span>
+        <div style="font-size:10px; color:#999; margin-top:4px;">Umbral de competencia: >= 3.0 en escala 1-4</div>
+      </div>
+      <% } else { %>
+      <p>Puntaje: <%= evaluation.score || '-' %> — Resultado: <%= evaluation.result || '-' %></p>
+      <% } %>
+    </div>
+
+    <% if (evaluation.observations) { %>
+    <div class="section">
+      <div class="section-title">5. Observaciones del Evaluador</div>
+      <div class="obs-box"><%= evaluation.observations %></div>
+    </div>
+    <% } %>
+
+    <% if (evaluation.plan_trabajo) { %>
+    <div class="section">
+      <div class="section-title">6. Plan de Trabajo</div>
+      <div class="obs-box"><%= evaluation.plan_trabajo %></div>
+    </div>
+    <% } %>
+
+    <% if (evaluation.informe_brechas) { %>
+    <div class="section">
+      <div class="section-title">Informe de Brechas</div>
+      <div class="brechas-box"><%= evaluation.informe_brechas %></div>
+    </div>
+    <% } %>
+
+    <div class="firmas">
+      <div class="firma">
+        <div class="firma-line"></div>
+        <div class="firma-name"><%= evaluation.evaluator_name || 'Evaluador' %></div>
+        <div class="firma-role">Evaluador CEC</div>
+      </div>
+      <div class="firma">
+        <div class="firma-line"></div>
+        <div class="firma-name">Responsable CEC</div>
+        <div class="firma-role"><%= org.name %></div>
+      </div>
+    </div>
+
+    <div class="doc-footer">
+      <div><%= folio %> — <%= org.name %></div>
+      <div>ChileValora D016-01-18 — Proc. 1 Evaluacion y Certificacion</div>
+      <div>CertificaDesk — <%= new Date().toISOString().substring(0,10) %></div>
+    </div>
+  </div>
+</body>
+</html>
