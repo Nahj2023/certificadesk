@@ -58,7 +58,8 @@
 </head>
 <body>
   <div class="no-print">
-    <button onclick="window.print()">Imprimir / PDF</button>
+    <button onclick="window.print()">Imprimir</button>
+    <a href="/docs/pdf/acta/<%= decision.id %>" style="padding:10px 20px;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;border:none;background:#2ECC71;color:#fff">Descargar PDF</a>
     <a href="/evaluaciones/<%= decision.evaluation_id %>/comite">Volver</a>
   </div>
 

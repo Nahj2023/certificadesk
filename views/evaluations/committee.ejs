@@ -5,7 +5,8 @@
     <h4 class="mb-1">Comite de Decision — Certificacion</h4>
     <span class="text-muted" style="font-size:0.85rem">Procedimiento 1.3 — Comite de decision D016</span>
   </div>
-  <% if (decision) { %><a href="/docs/acta/<%= decision.id %>" target="_blank" class="btn btn-outline-success"><i class="bi bi-printer"></i> Acta PDF</a><% } %>
+  <% if (decision) { %><a href="/docs/acta/<%= decision.id %>" target="_blank" class="btn btn-outline-success"><i class="bi bi-eye"></i> Ver</a>
+  <a href="/docs/pdf/acta/<%= decision.id %>" class="btn btn-success"><i class="bi bi-file-earmark-pdf"></i> PDF</a><% } %>
   <a href="/evaluaciones" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
 <div class="row g-4">

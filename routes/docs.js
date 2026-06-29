@@ -1,41 +1,49 @@
 const router = require("express").Router();
+const path = require("path");
+const ejs = require("ejs");
 const { getDb } = require("../database/db");
+const { renderPdf } = require("../services/pdf");
 
-// Certificado de Competencia Laboral
-router.get("/certificado/:candidateId", (req, res) => {
+function renderTemplate(template, data) {
+  const file = path.join(__dirname, "..", "views", "print", template + ".ejs");
+  return new Promise((resolve, reject) => {
+    ejs.renderFile(file, data, (err, html) => err ? reject(err) : resolve(html));
+  });
+}
+
+// --- Data loaders ---
+
+function loadCertificado(oid, candidateId) {
   const db = getDb();
-  const oid = req.user.org_id;
   const candidate = db.prepare(
     `SELECT c.*, p.name as profile_name, p.code as profile_code, p.sector as profile_sector
      FROM candidates c LEFT JOIN profiles p ON c.profile_id=p.id
      WHERE c.id=? AND c.org_id=? AND c.status='certificado'`
-  ).get(req.params.candidateId, oid);
-  if (!candidate) return res.redirect("/candidatos");
+  ).get(candidateId, oid);
+  if (!candidate) return null;
 
   const decision = db.prepare(
     `SELECT cd.*, u.display_name as decided_by_name
      FROM certification_decisions cd LEFT JOIN users u ON cd.decided_by=u.id
      WHERE cd.candidate_id=? AND cd.org_id=? AND cd.decision='certificar'
      ORDER BY cd.created_at DESC LIMIT 1`
-  ).get(req.params.candidateId, oid);
+  ).get(candidateId, oid);
 
   const evaluation = db.prepare(
     `SELECT e.*, ev.name as evaluator_name
      FROM evaluations e LEFT JOIN evaluators ev ON e.evaluator_id=ev.id
      WHERE e.candidate_id=? AND e.org_id=? AND e.status='completada'
      ORDER BY e.completed_at DESC LIMIT 1`
-  ).get(req.params.candidateId, oid);
+  ).get(candidateId, oid);
 
   const org = db.prepare("SELECT * FROM organizations WHERE id=?").get(oid);
   const folio = `CEC-${org.rut ? org.rut.replace(/[.-]/g,'').slice(0,6) : 'XXX'}-${String(candidate.id).padStart(4,'0')}`;
 
-  res.render("print/certificado", { candidate, decision, evaluation, org, folio });
-});
+  return { candidate, decision, evaluation, org, folio };
+}
 
-// Informe de Evaluacion Individual
-router.get("/informe/:evaluationId", (req, res) => {
+function loadInforme(oid, evaluationId) {
   const db = getDb();
-  const oid = req.user.org_id;
   const evaluation = db.prepare(
     `SELECT e.*, c.name as candidate_name, c.rut as candidate_rut, c.email as candidate_email,
      c.phone as candidate_phone, c.region as candidate_region, c.education_level, c.work_experience_years,
@@ -46,19 +54,17 @@ router.get("/informe/:evaluationId", (req, res) => {
      LEFT JOIN profiles p ON e.profile_id=p.id
      LEFT JOIN evaluators ev ON e.evaluator_id=ev.id
      WHERE e.id=? AND e.org_id=? AND e.status='completada'`
-  ).get(req.params.evaluationId, oid);
-  if (!evaluation) return res.redirect("/evaluaciones");
+  ).get(evaluationId, oid);
+  if (!evaluation) return null;
 
   const org = db.prepare("SELECT * FROM organizations WHERE id=?").get(oid);
   const folio = `INF-${String(evaluation.id).padStart(4,'0')}`;
 
-  res.render("print/informe-evaluacion", { evaluation, org, folio });
-});
+  return { evaluation, org, folio };
+}
 
-// Acta de Comite de Decision
-router.get("/acta/:decisionId", (req, res) => {
+function loadActa(oid, decisionId) {
   const db = getDb();
-  const oid = req.user.org_id;
   const decision = db.prepare(
     `SELECT cd.*, c.name as candidate_name, c.rut as candidate_rut,
      u.display_name as decided_by_name,
@@ -73,13 +79,83 @@ router.get("/acta/:decisionId", (req, res) => {
      LEFT JOIN evaluators ev ON e.evaluator_id=ev.id
      LEFT JOIN users u ON cd.decided_by=u.id
      WHERE cd.id=? AND cd.org_id=?`
-  ).get(req.params.decisionId, oid);
-  if (!decision) return res.redirect("/evaluaciones");
+  ).get(decisionId, oid);
+  if (!decision) return null;
 
   const org = db.prepare("SELECT * FROM organizations WHERE id=?").get(oid);
   const folio = `ACT-${String(decision.id).padStart(4,'0')}`;
 
-  res.render("print/acta-comite", { decision, org, folio });
+  return { decision, org, folio };
+}
+
+// --- HTML preview routes ---
+
+router.get("/certificado/:candidateId", (req, res) => {
+  const data = loadCertificado(req.user.org_id, req.params.candidateId);
+  if (!data) return res.redirect("/candidatos");
+  res.render("print/certificado", data);
+});
+
+router.get("/informe/:evaluationId", (req, res) => {
+  const data = loadInforme(req.user.org_id, req.params.evaluationId);
+  if (!data) return res.redirect("/evaluaciones");
+  res.render("print/informe-evaluacion", data);
+});
+
+router.get("/acta/:decisionId", (req, res) => {
+  const data = loadActa(req.user.org_id, req.params.decisionId);
+  if (!data) return res.redirect("/evaluaciones");
+  res.render("print/acta-comite", data);
+});
+
+// --- PDF download routes ---
+
+router.get("/pdf/certificado/:candidateId", async (req, res) => {
+  try {
+    const data = loadCertificado(req.user.org_id, req.params.candidateId);
+    if (!data) return res.redirect("/candidatos");
+    const html = await renderTemplate("certificado", data);
+    const pdf = await renderPdf(html, { format: "A4", landscape: true });
+    const filename = `Certificado-${data.candidate.name.replace(/\s+/g, '_')}-${data.folio}.pdf`;
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(pdf);
+  } catch (e) {
+    console.error("[PDF] Certificado error:", e.message);
+    res.status(500).send("Error generando PDF");
+  }
+});
+
+router.get("/pdf/informe/:evaluationId", async (req, res) => {
+  try {
+    const data = loadInforme(req.user.org_id, req.params.evaluationId);
+    if (!data) return res.redirect("/evaluaciones");
+    const html = await renderTemplate("informe-evaluacion", data);
+    const pdf = await renderPdf(html);
+    const filename = `Informe-${data.evaluation.candidate_name.replace(/\s+/g, '_')}-${data.folio}.pdf`;
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(pdf);
+  } catch (e) {
+    console.error("[PDF] Informe error:", e.message);
+    res.status(500).send("Error generando PDF");
+  }
+});
+
+router.get("/pdf/acta/:decisionId", async (req, res) => {
+  try {
+    const data = loadActa(req.user.org_id, req.params.decisionId);
+    if (!data) return res.redirect("/evaluaciones");
+    const html = await renderTemplate("acta-comite", data);
+    const pdf = await renderPdf(html);
+    const filename = `Acta-Comite-${data.decision.candidate_name.replace(/\s+/g, '_')}-${data.folio}.pdf`;
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(pdf);
+  } catch (e) {
+    console.error("[PDF] Acta error:", e.message);
+    res.status(500).send("Error generando PDF");
+  }
 });
 
 module.exports = router;
