@@ -7,7 +7,8 @@ if (!process.env.JWT_SECRET) {
 }
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const TOKEN_EXPIRY = "24h";
+const TOKEN_EXPIRY = "30m";
+const PASSWORD_MAX_AGE_DAYS = 90;
 
 function generateToken(user) {
   return jwt.sign(
@@ -38,6 +39,21 @@ function requireAuth(req, res, next) {
       res.clearCookie("token");
       return res.redirect("/login");
     }
+
+    // Password expiration check
+    if (isPasswordExpired(user) && req.path !== "/mi-cuenta/password" && req.method === "GET") {
+      return res.redirect("/mi-cuenta/password?expired=1");
+    }
+
+    // Sliding session: refresh token on each request
+    const freshToken = generateToken(user);
+    res.cookie("token", freshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 30 * 60 * 1000,
+    });
+
     req.user = user;
     res.locals.user = user;
     next();
@@ -86,10 +102,65 @@ function validatePassword(password) {
   return null;
 }
 
+function isPasswordExpired(user) {
+  if (!user.password_changed_at) return false;
+  const changed = new Date(user.password_changed_at);
+  const now = new Date();
+  const diffDays = (now - changed) / (1000 * 60 * 60 * 24);
+  return diffDays > PASSWORD_MAX_AGE_DAYS;
+}
+
+const LOCKOUT_ATTEMPTS = 5;
+const LOCKOUT_MINUTES = 30;
+
+function checkLockout(user) {
+  if (!user.locked_until) return null;
+  const lockedUntil = new Date(user.locked_until);
+  if (new Date() < lockedUntil) {
+    const mins = Math.ceil((lockedUntil - new Date()) / 60000);
+    return `Cuenta bloqueada. Intente en ${mins} minuto${mins !== 1 ? "s" : ""}`;
+  }
+  getDb()
+    .prepare("UPDATE users SET failed_attempts = 0, locked_until = NULL WHERE id = ?")
+    .run(user.id);
+  return null;
+}
+
+function recordFailedAttempt(user) {
+  const attempts = (user.failed_attempts || 0) + 1;
+  if (attempts >= LOCKOUT_ATTEMPTS) {
+    const lockUntil = new Date(Date.now() + LOCKOUT_MINUTES * 60 * 1000).toISOString();
+    getDb()
+      .prepare("UPDATE users SET failed_attempts = ?, locked_until = ? WHERE id = ?")
+      .run(attempts, lockUntil, user.id);
+    return `Cuenta bloqueada por ${LOCKOUT_MINUTES} minutos (${LOCKOUT_ATTEMPTS} intentos fallidos)`;
+  }
+  getDb()
+    .prepare("UPDATE users SET failed_attempts = ? WHERE id = ?")
+    .run(attempts, user.id);
+  const remaining = LOCKOUT_ATTEMPTS - attempts;
+  return remaining <= 2
+    ? `Credenciales inválidas. ${remaining} intento${remaining !== 1 ? "s" : ""} restante${remaining !== 1 ? "s" : ""}`
+    : null;
+}
+
+function resetFailedAttempts(userId) {
+  getDb()
+    .prepare("UPDATE users SET failed_attempts = 0, locked_until = NULL WHERE id = ?")
+    .run(userId);
+}
+
 module.exports = {
   generateToken,
   requireAuth,
   requireRole,
   apiAuth,
   validatePassword,
+  isPasswordExpired,
+  checkLockout,
+  recordFailedAttempt,
+  resetFailedAttempts,
+  LOCKOUT_ATTEMPTS,
+  LOCKOUT_MINUTES,
+  PASSWORD_MAX_AGE_DAYS,
 };

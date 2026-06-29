@@ -109,6 +109,12 @@ function migrateColumns() {
     ["candidates", "consent_ip", "ALTER TABLE candidates ADD COLUMN consent_ip TEXT"],
     ["candidates", "anonymized", "ALTER TABLE candidates ADD COLUMN anonymized INTEGER DEFAULT 0"],
     ["organizations", "retention_years", "ALTER TABLE organizations ADD COLUMN retention_years INTEGER DEFAULT 5"],
+    // Fase 4
+    ["users", "totp_secret", "ALTER TABLE users ADD COLUMN totp_secret TEXT"],
+    ["users", "totp_enabled", "ALTER TABLE users ADD COLUMN totp_enabled INTEGER DEFAULT 0"],
+    ["users", "failed_attempts", "ALTER TABLE users ADD COLUMN failed_attempts INTEGER DEFAULT 0"],
+    ["users", "locked_until", "ALTER TABLE users ADD COLUMN locked_until DATETIME"],
+    ["users", "password_changed_at", "ALTER TABLE users ADD COLUMN password_changed_at DATETIME"],
   ];
 
   for (const [table, col, sql] of migrations) {

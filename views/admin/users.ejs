@@ -19,7 +19,7 @@
           <th>Rol</th>
           <th>Estado</th>
           <th>Ultimo acceso</th>
-          <th style="width:200px">Acciones</th>
+          <th style="width:240px">Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -33,10 +33,15 @@
             <span class="badge bg-<%= roleBadge[u.role] || 'secondary' %>"><%= u.role %></span>
           </td>
           <td>
-            <% if (u.active) { %>
-              <span class="badge bg-success">Activo</span>
-            <% } else { %>
+            <% if (!u.active) { %>
               <span class="badge bg-secondary">Inactivo</span>
+            <% } else if (u.locked_until && new Date(u.locked_until) > new Date()) { %>
+              <span class="badge bg-danger">Bloqueado</span>
+            <% } else { %>
+              <span class="badge bg-success">Activo</span>
+            <% } %>
+            <% if (u.totp_enabled) { %>
+              <span class="badge bg-info" style="font-size:0.6rem" title="2FA activo">2FA</span>
             <% } %>
           </td>
           <td style="font-size:0.82rem"><%= u.last_login ? new Date(u.last_login).toLocaleString('es-CL') : 'Nunca' %></td>
@@ -50,6 +55,18 @@
                   <i class="bi bi-<%= u.active ? 'pause-circle' : 'play-circle' %>"></i>
                 </button>
               </form>
+              <% if (u.locked_until && new Date(u.locked_until) > new Date()) { %>
+              <form method="POST" action="/admin/usuarios/<%= u.id %>/unlock" class="d-inline">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn btn-outline-info" data-bs-toggle="tooltip" title="Desbloquear"><i class="bi bi-unlock"></i></button>
+              </form>
+              <% } %>
+              <% if (u.totp_enabled) { %>
+              <form method="POST" action="/admin/usuarios/<%= u.id %>/reset-2fa" class="d-inline">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn btn-outline-danger" data-bs-toggle="tooltip" title="Resetear 2FA"><i class="bi bi-shield-x"></i></button>
+              </form>
+              <% } %>
               <% } %>
             </div>
           </td>

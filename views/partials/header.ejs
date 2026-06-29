@@ -104,6 +104,17 @@
             <i class="bi bi-file-earmark-bar-graph"></i> Reporte ChileValora
           </a>
         </li>
+        <li class="nav-section">Mi Cuenta</li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/mi-cuenta/2fa' ? 'active' : '' %>" href="/mi-cuenta/2fa">
+            <i class="bi bi-shield-lock"></i> 2FA
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/mi-cuenta/password' ? 'active' : '' %>" href="/mi-cuenta/password">
+            <i class="bi bi-key"></i> Cambiar contraseña
+          </a>
+        </li>
         <% if (user.role === 'admin') { %>
         <li class="nav-section">Administracion</li>
         <li class="nav-item">
@@ -157,7 +168,10 @@
             usuarios: 'Usuarios',
             arco: 'ARCO',
             retencion: 'Retencion',
-            logs: 'Log de acceso'
+            logs: 'Log de acceso',
+            'mi-cuenta': 'Mi Cuenta',
+            '2fa': '2FA',
+            password: 'Contraseña'
           };
           const pathParts = currentPath.split('/').filter(Boolean);
           const showBreadcrumb = pathParts.length > 1 || (pathParts.length === 1 && pathParts[0] !== 'dashboard');

@@ -8,6 +8,7 @@ const { csrfProtection } = require("./middleware/csrf");
 const { requireWriteRole, requireAdmin, logAccess } = require("./middleware/roles");
 
 const app = express();
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 3300;
 
 app.set("view engine", "ejs");

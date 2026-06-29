@@ -60,8 +60,8 @@ router.post("/usuarios", (req, res) => {
   const hash = bcrypt.hashSync(password, 10);
   const result = getDb()
     .prepare(
-      `INSERT INTO users (org_id, username, password, display_name, role, email)
-       VALUES (?,?,?,?,?,?)`
+      `INSERT INTO users (org_id, username, password, display_name, role, email, password_changed_at)
+       VALUES (?,?,?,?,?,?,CURRENT_TIMESTAMP)`
     )
     .run(req.user.org_id, username, hash, display_name, role || "consulta", email || null);
   logActivity(req.user.org_id, req.user.id, "create_user", "users", result.lastInsertRowid, null, req.ip);
@@ -119,7 +119,7 @@ router.post("/usuarios/:id/password", (req, res) => {
   const hash = bcrypt.hashSync(password, 10);
   const newVersion = (target.token_version || 1) + 1;
   getDb()
-    .prepare("UPDATE users SET password = ?, token_version = ? WHERE id = ?")
+    .prepare("UPDATE users SET password = ?, token_version = ?, password_changed_at = CURRENT_TIMESTAMP WHERE id = ?")
     .run(hash, newVersion, target.id);
   logActivity(req.user.org_id, req.user.id, "reset_password", "users", target.id, null, req.ip);
   res.flash("Contrasena actualizada — sesiones anteriores invalidadas");
@@ -140,6 +140,34 @@ router.post("/usuarios/:id/toggle", (req, res) => {
   }
   logActivity(req.user.org_id, req.user.id, newActive ? "activate_user" : "deactivate_user", "users", target.id, null, req.ip);
   res.flash(newActive ? "Usuario activado" : "Usuario desactivado");
+  res.redirect("/admin/usuarios");
+});
+
+// POST /admin/usuarios/:id/reset-2fa
+router.post("/usuarios/:id/reset-2fa", (req, res) => {
+  const target = getDb()
+    .prepare("SELECT * FROM users WHERE id = ? AND org_id = ?")
+    .get(req.params.id, req.user.org_id);
+  if (!target) return res.redirect("/admin/usuarios");
+  getDb()
+    .prepare("UPDATE users SET totp_enabled = 0, totp_secret = NULL WHERE id = ?")
+    .run(target.id);
+  logActivity(req.user.org_id, req.user.id, "admin_reset_2fa", "users", target.id, null, req.ip);
+  res.flash("2FA reseteado para " + target.display_name);
+  res.redirect("/admin/usuarios");
+});
+
+// POST /admin/usuarios/:id/unlock
+router.post("/usuarios/:id/unlock", (req, res) => {
+  const target = getDb()
+    .prepare("SELECT * FROM users WHERE id = ? AND org_id = ?")
+    .get(req.params.id, req.user.org_id);
+  if (!target) return res.redirect("/admin/usuarios");
+  getDb()
+    .prepare("UPDATE users SET failed_attempts = 0, locked_until = NULL WHERE id = ?")
+    .run(target.id);
+  logActivity(req.user.org_id, req.user.id, "admin_unlock", "users", target.id, null, req.ip);
+  res.flash("Cuenta desbloqueada: " + target.display_name);
   res.redirect("/admin/usuarios");
 });
 

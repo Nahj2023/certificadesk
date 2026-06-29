@@ -90,6 +90,20 @@
       border-radius: 10px;
       font-size: 0.85rem;
     }
+    .alert-info {
+      background: rgba(52,152,219,0.08);
+      border: none;
+      color: #2980B9;
+      border-radius: 10px;
+      font-size: 0.85rem;
+    }
+    .totp-input {
+      font-size: 1.8rem;
+      letter-spacing: 0.5em;
+      text-align: center;
+      font-weight: 700;
+      padding: 0.8rem;
+    }
     .footer-text { text-align: center; margin-top: 2rem; font-size: 0.75rem; color: #B2BEC3; }
     .footer-text a { color: #E85D3A; text-decoration: none; }
   </style>
@@ -104,23 +118,44 @@
       <p>Gestion para Centros de Evaluacion y Certificacion</p>
     </div>
     <div class="login-card">
-      <h2>Bienvenido</h2>
-      <p class="subtitle">Ingresa tus credenciales para acceder</p>
-      <% if (error) { %>
-        <div class="alert alert-danger py-2 mb-3"><%= error %></div>
+      <% if (typeof step !== 'undefined' && step === 'totp') { %>
+        <h2>Verificacion 2FA</h2>
+        <p class="subtitle">Ingrese el codigo de su aplicacion autenticadora</p>
+        <% if (error) { %>
+          <div class="alert alert-danger py-2 mb-3"><%= error %></div>
+        <% } %>
+        <form method="POST" action="/login">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <input type="hidden" name="username" value="<%= typeof username !== 'undefined' ? username : '' %>">
+          <input type="hidden" name="step" value="totp">
+          <div class="mb-4">
+            <label class="form-label">Codigo de 6 digitos</label>
+            <input type="text" name="totp_code" class="form-control totp-input" maxlength="6" pattern="[0-9]{6}" required autofocus autocomplete="one-time-code" inputmode="numeric" placeholder="000000">
+          </div>
+          <button type="submit" class="btn btn-login">Verificar</button>
+          <div class="text-center mt-3">
+            <a href="/login" style="color:#636E72;font-size:0.82rem;text-decoration:none">Volver al inicio de sesion</a>
+          </div>
+        </form>
+      <% } else { %>
+        <h2>Bienvenido</h2>
+        <p class="subtitle">Ingresa tus credenciales para acceder</p>
+        <% if (error) { %>
+          <div class="alert alert-danger py-2 mb-3"><%= error %></div>
+        <% } %>
+        <form method="POST" action="/login">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <div class="mb-3">
+            <label class="form-label">Usuario</label>
+            <input type="text" name="username" class="form-control" required autofocus placeholder="Tu usuario">
+          </div>
+          <div class="mb-4">
+            <label class="form-label">Contrasena</label>
+            <input type="password" name="password" class="form-control" required placeholder="Tu contrasena">
+          </div>
+          <button type="submit" class="btn btn-login">Ingresar</button>
+        </form>
       <% } %>
-      <form method="POST" action="/login">
-        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-        <div class="mb-3">
-          <label class="form-label">Usuario</label>
-          <input type="text" name="username" class="form-control" required autofocus placeholder="Tu usuario">
-        </div>
-        <div class="mb-4">
-          <label class="form-label">Contrasena</label>
-          <input type="password" name="password" class="form-control" required placeholder="Tu contrasena">
-        </div>
-        <button type="submit" class="btn btn-login">Ingresar</button>
-      </form>
     </div>
     <div class="footer-text">
       <a href="/">CertificaDesk</a> por <a href="https://jvh-labs.cl">JVH Labs</a> &middot; ChileValora D016
