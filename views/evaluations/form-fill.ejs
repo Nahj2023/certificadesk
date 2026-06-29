@@ -1,0 +1,210 @@
+<% const title = (response && response.status === 'completado' ? 'Ver' : 'Llenar') + ' — ' + form.name %>
+<%- include('../partials/header', { title }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h4 class="mb-1"><%= form.name %></h4>
+    <span class="text-muted" style="font-size:0.85rem"><%= form.description %></span>
+    <% if (form.weight > 0) { %>
+      <span class="badge bg-info ms-2">Ponderacion <%= form.weight %>%</span>
+    <% } %>
+  </div>
+  <a href="/evaluaciones/<%= evaluation.id %>" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Volver</a>
+</div>
+
+<!-- Evaluation context -->
+<div class="alert alert-light border mb-4 small">
+  <i class="bi bi-person"></i> <strong><%= evaluation.candidate_name %></strong> (<%= evaluation.candidate_rut || 'sin RUT' %>)
+  <% if (evaluation.profile_name) { %> · <i class="bi bi-briefcase"></i> <%= evaluation.profile_name %><% } %>
+  <% if (evaluation.evaluator_name) { %> · <i class="bi bi-person-badge"></i> <%= evaluation.evaluator_name %><% } %>
+</div>
+
+<% const isReadOnly = response && response.status === 'completado'; %>
+<% const responses = response ? JSON.parse(response.responses_json) : {}; %>
+<% const items = JSON.parse(form.items_json); %>
+<% const rubricLabels = {1: 'Ausencia', 2: 'En Desarrollo', 3: 'Desarrollada', 4: 'Excepcional'}; %>
+<% const rubricColors = {1: '#E74C3C', 2: '#F39C12', 3: '#27AE60', 4: '#2980B9'}; %>
+
+<form method="POST" action="/evaluaciones/<%= evaluation.id %>/formularios/<%= form.id %>" id="formEval">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <% if (form.type !== 'elegibilidad' && form.type !== 'evidencias') { %>
+  <!-- Rubric scale legend -->
+  <div class="card mb-4" style="border-left:4px solid var(--coral)">
+    <div class="card-body py-2 d-flex align-items-center gap-4 flex-wrap small">
+      <strong class="me-2">Escala de Evaluacion (D016):</strong>
+      <% [1,2,3,4].forEach(n => { %>
+        <span><span class="badge" style="background:<%= rubricColors[n] %>"><%= n %></span> <%= rubricLabels[n] %></span>
+      <% }) %>
+      <span class="ms-auto text-muted">Umbral competente: >= 3.0</span>
+    </div>
+  </div>
+  <% } %>
+
+  <div class="row g-3">
+    <% let itemIndex = 0; items.forEach(item => { itemIndex++; %>
+      <% if (item.type === 'rubric') { %>
+        <!-- Rubric Item -->
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body py-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <div class="fw-semibold mb-2">
+                    <span class="badge bg-dark me-2" style="font-size:0.7rem"><%= itemIndex %></span>
+                    <%= item.label %>
+                    <% if (item.required) { %><span class="text-danger">*</span><% } %>
+                  </div>
+                  <% if (item.help) { %><small class="text-muted d-block mb-2"><%= item.help %></small><% } %>
+                </div>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <% [1,2,3,4].forEach(n => { %>
+                  <label class="rubric-option <%= responses[item.id] == n ? 'selected' : '' %>" style="--rubric-color:<%= rubricColors[n] %>">
+                    <input type="radio" name="<%= item.id %>" value="<%= n %>" class="d-none rubric-input"
+                      <%= responses[item.id] == n ? 'checked' : '' %>
+                      <%= item.required ? 'required' : '' %>
+                      <%= isReadOnly ? 'disabled' : '' %>>
+                    <span class="rubric-score"><%= n %></span>
+                    <span class="rubric-label"><%= rubricLabels[n] %></span>
+                  </label>
+                <% }) %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <% } else if (item.type === 'check') { %>
+        <!-- Check Item -->
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-body py-3 d-flex align-items-center gap-3">
+              <div class="form-check mb-0">
+                <input type="checkbox" name="<%= item.id %>" value="1" class="form-check-input" id="chk_<%= item.id %>"
+                  style="width:1.3em;height:1.3em"
+                  <%= responses[item.id] ? 'checked' : '' %>
+                  <%= isReadOnly ? 'disabled' : '' %>>
+                <label class="form-check-label" for="chk_<%= item.id %>">
+                  <span class="badge bg-dark me-1" style="font-size:0.65rem"><%= itemIndex %></span>
+                  <%= item.label %>
+                  <% if (item.required) { %><span class="text-danger">*</span><% } %>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <% } else if (item.type === 'text') { %>
+        <!-- Text Item -->
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body py-3">
+              <label class="form-label fw-semibold"><%= item.label %></label>
+              <textarea name="<%= item.id %>" class="form-control" rows="3"
+                placeholder="Escriba aquí..."
+                <%= isReadOnly ? 'disabled' : '' %>><%= responses[item.id] || '' %></textarea>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    <% }) %>
+  </div>
+
+  <!-- Score calculation (for rubric forms) -->
+  <% const hasRubric = items.some(i => i.type === 'rubric'); %>
+  <% if (hasRubric) { %>
+  <div class="card mt-4" style="border:2px solid var(--coral)">
+    <div class="card-body text-center py-3">
+      <strong>Puntaje del Instrumento:</strong>
+      <span class="fs-4 fw-bold ms-2" id="formScore" style="color:var(--coral)">
+        <%= response && response.score ? response.score.toFixed(2) : '-' %>
+      </span>
+      <span class="text-muted">/ 4.0</span>
+      <span class="ms-2" id="formResult">
+        <% if (response && response.score) { %>
+          <span class="badge bg-<%= response.score >= 3.0 ? 'success' : 'danger' %>"><%= response.score >= 3.0 ? 'COMPETENTE' : 'AUN NO COMPETENTE' %></span>
+        <% } %>
+      </span>
+    </div>
+  </div>
+  <% } %>
+
+  <% if (!isReadOnly) { %>
+  <div class="d-flex gap-2 mt-4 mb-4">
+    <button type="submit" name="action" value="draft" class="btn btn-outline-secondary"><i class="bi bi-save"></i> Guardar Borrador</button>
+    <button type="submit" name="action" value="complete" class="btn btn-primary"><i class="bi bi-check-circle"></i> Completar Formulario</button>
+  </div>
+  <% } else { %>
+  <div class="alert alert-success mt-4 mb-4 small">
+    <i class="bi bi-check-circle-fill"></i> Formulario completado el <%= response.completed_at ? response.completed_at.substring(0,16).replace('T',' ') : '' %>
+    <% if (response.score) { %> — Puntaje: <strong><%= response.score.toFixed(2) %></strong><% } %>
+  </div>
+  <% } %>
+</form>
+
+<style>
+.rubric-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.6rem 1.2rem;
+  border: 2px solid #DFE6E9;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  text-align: center;
+}
+.rubric-option:hover:not(:has(input:disabled)) {
+  border-color: var(--rubric-color);
+  background: color-mix(in srgb, var(--rubric-color) 5%, transparent);
+}
+.rubric-option.selected, .rubric-option:has(input:checked) {
+  border-color: var(--rubric-color);
+  background: color-mix(in srgb, var(--rubric-color) 10%, transparent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--rubric-color) 25%, transparent);
+}
+.rubric-score {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--rubric-color);
+  line-height: 1;
+}
+.rubric-label {
+  font-size: 0.72rem;
+  color: #636E72;
+  margin-top: 2px;
+  font-weight: 500;
+}
+.rubric-option.selected .rubric-label,
+.rubric-option:has(input:checked) .rubric-label {
+  color: var(--rubric-color);
+  font-weight: 600;
+}
+</style>
+
+<% if (hasRubric && !isReadOnly) { %>
+<script>
+document.querySelectorAll('.rubric-input').forEach(input => {
+  input.addEventListener('change', () => {
+    const rubricItems = document.querySelectorAll('.rubric-input:checked');
+    const rubricCount = <%= items.filter(i => i.type === 'rubric').length %>;
+    if (rubricItems.length === rubricCount) {
+      let sum = 0;
+      rubricItems.forEach(r => sum += parseInt(r.value));
+      const avg = sum / rubricCount;
+      document.getElementById('formScore').textContent = avg.toFixed(2);
+      const resultEl = document.getElementById('formResult');
+      resultEl.innerHTML = avg >= 3.0
+        ? '<span class="badge bg-success">COMPETENTE</span>'
+        : '<span class="badge bg-danger">AUN NO COMPETENTE</span>';
+    }
+    // Update visual selection
+    input.closest('.rubric-option').parentElement.querySelectorAll('.rubric-option').forEach(o => o.classList.remove('selected'));
+    input.closest('.rubric-option').classList.add('selected');
+  });
+});
+</script>
+<% } %>
+
+<%- include('../partials/footer') %>

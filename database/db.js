@@ -2,6 +2,7 @@ const Database = require("better-sqlite3");
 const fs = require("fs");
 const path = require("path");
 const bcrypt = require("bcryptjs");
+const { FORM_TEMPLATES } = require("./forms-seed");
 
 const DB_PATH = path.join(__dirname, "..", "certificadesk.db");
 const SCHEMA_PATH = path.join(__dirname, "schema.sql");
@@ -29,6 +30,7 @@ function initSchema() {
     seedDefaults();
   }
   seedManuals();
+  seedFormTemplates();
   migrateColumns();
 }
 
@@ -172,3 +174,16 @@ function logDataTreatment(orgId, userId, action, entityType, entityId, fields, p
 }
 
 module.exports = { getDb, logActivity, logDataTreatment };
+
+function seedFormTemplates() {
+  const count = db.prepare("SELECT COUNT(*) as c FROM evaluation_forms WHERE is_template=1").get().c;
+  if (count >= 7) return;
+  const stmt = db.prepare("INSERT OR IGNORE INTO evaluation_forms (org_id, code, name, type, weight, description, items_json, is_template) VALUES (?,?,?,?,?,?,?,1)");
+  for (const t of FORM_TEMPLATES) {
+    const exists = db.prepare("SELECT id FROM evaluation_forms WHERE code=?").get(t.code);
+    if (!exists) {
+      stmt.run(null, t.code, t.name, t.type, t.weight, t.description, JSON.stringify(t.items));
+    }
+  }
+  console.log("[DB] Formularios ChileValora verificados");
+}

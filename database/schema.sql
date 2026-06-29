@@ -378,3 +378,36 @@ CREATE TABLE IF NOT EXISTS accion_ft_documentos (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (accion_id) REFERENCES acciones_ft(id)
 );
+
+-- v3.0: Formularios de Evaluacion ChileValora
+
+CREATE TABLE IF NOT EXISTS evaluation_forms (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  org_id INTEGER,
+  code TEXT NOT NULL,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  weight INTEGER DEFAULT 0,
+  description TEXT,
+  items_json TEXT NOT NULL,
+  is_template INTEGER DEFAULT 1,
+  active INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS evaluation_form_responses (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  org_id INTEGER NOT NULL,
+  evaluation_id INTEGER NOT NULL,
+  form_id INTEGER NOT NULL,
+  responses_json TEXT NOT NULL DEFAULT '{}',
+  score REAL,
+  status TEXT DEFAULT 'borrador',
+  filled_by INTEGER,
+  completed_at DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (org_id) REFERENCES organizations(id),
+  FOREIGN KEY (evaluation_id) REFERENCES evaluations(id),
+  FOREIGN KEY (form_id) REFERENCES evaluation_forms(id),
+  FOREIGN KEY (filled_by) REFERENCES users(id)
+);

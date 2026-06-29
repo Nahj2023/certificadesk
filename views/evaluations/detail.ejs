@@ -26,6 +26,7 @@
   <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-scores" role="tab"><i class="bi bi-graph-up me-1"></i> Puntajes</a></li>
   <% } %>
   <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-obs" role="tab"><i class="bi bi-journal-text me-1"></i> Observaciones</a></li>
+  <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab-forms" role="tab"><i class="bi bi-file-earmark-text me-1"></i> Formularios <% if (typeof forms !== "undefined" && typeof formResponses !== "undefined") { const completed = formResponses.filter(r=>r.status==="completado").length; if (completed > 0) { %><span class="badge bg-success ms-1"><%= completed %></span><% } } %></a></li>
 </ul>
 
 <div class="tab-content">
@@ -179,7 +180,112 @@
       <% } %>
     </div>
   </div>
-</div>
+
+  <!-- Tab: Formularios de Evaluacion -->
+  <div class="tab-pane fade" id="tab-forms" role="tabpanel">
+    <% if (typeof forms !== 'undefined' && forms.length > 0) { %>
+    <%
+      const responseMap = {};
+      if (typeof formResponses !== 'undefined') {
+        formResponses.forEach(r => { responseMap[r.form_id] = r; });
+      }
+      const groups = [
+        { title: 'Elegibilidad', icon: 'bi-clipboard-check', types: ['elegibilidad'], note: 'Requisito previo a la evaluacion' },
+        { title: 'Instrumentos de Evaluacion', icon: 'bi-pencil-square', types: ['conocimientos','jefatura','terreno','simulacion','caso'], note: 'Jefatura/Caso son alternativos — Terreno/Simulacion son alternativos' },
+        { title: 'Evidencias', icon: 'bi-archive', types: ['evidencias'], note: 'Documentos y certificaciones del candidato' }
+      ];
+    %>
+    <% groups.forEach(group => { %>
+      <% const groupForms = forms.filter(f => group.types.includes(f.type)); %>
+      <% if (groupForms.length > 0) { %>
+      <h6 class="text-muted mb-2 mt-3"><i class="bi <%= group.icon %> me-1"></i> <%= group.title %></h6>
+      <% if (group.note) { %><small class="text-muted d-block mb-2"><%= group.note %></small><% } %>
+      <div class="row g-3 mb-3">
+        <% groupForms.forEach(form => { %>
+          <% const resp = responseMap[form.id]; %>
+          <% const isAlt = form.type === 'simulacion' || form.type === 'caso'; %>
+          <div class="col-md-6 col-lg-4">
+            <div class="card h-100 <%= resp && resp.status === 'completado' ? 'border-success' : '' %>" style="<%= isAlt ? 'border-style:dashed' : '' %>">
+              <div class="card-body py-3">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div>
+                    <strong style="font-size:0.9rem"><%= form.name %></strong>
+                    <% if (isAlt) { %><span class="badge bg-light text-dark ms-1" style="font-size:0.65rem">Alternativo</span><% } %>
+                  </div>
+                  <% if (form.weight > 0) { %>
+                    <span class="badge bg-info"><%= form.weight %>%</span>
+                  <% } %>
+                </div>
+                <small class="text-muted d-block mb-2" style="font-size:0.78rem"><%= form.description %></small>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <% if (resp) { %>
+                      <% if (resp.status === 'completado') { %>
+                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> Completado</span>
+                        <% if (resp.score) { %>
+                          <span class="badge bg-<%= resp.score >= 3.0 ? 'success' : 'danger' %> ms-1"><%= resp.score.toFixed(2) %></span>
+                        <% } %>
+                      <% } else { %>
+                        <span class="badge bg-warning text-dark"><i class="bi bi-pencil"></i> Borrador</span>
+                      <% } %>
+                    <% } else { %>
+                      <span class="badge bg-light text-dark">Pendiente</span>
+                    <% } %>
+                  </div>
+                  <a href="/evaluaciones/<%= evaluation.id %>/formularios/<%= form.id %>" class="btn btn-sm <%= resp && resp.status === 'completado' ? 'btn-outline-success' : 'btn-outline-primary' %>">
+                    <i class="bi <%= resp && resp.status === 'completado' ? 'bi-eye' : 'bi-pencil' %>"></i>
+                    <%= resp && resp.status === 'completado' ? 'Ver' : 'Llenar' %>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+      <% } %>
+    <% }) %>
+
+    <!-- Score summary -->
+    <%
+      const scoredForms = forms.filter(f => f.weight > 0 && responseMap[f.id] && responseMap[f.id].score);
+      if (scoredForms.length > 0) {
+    %>
+    <div class="card mt-3" style="border:2px solid var(--coral)">
+      <div class="card-header"><strong><i class="bi bi-calculator me-1"></i> Puntajes Sugeridos por Formularios</strong></div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <thead><tr><th>Instrumento</th><th>Puntaje</th><th>Peso</th><th>Aporte</th></tr></thead>
+          <tbody>
+            <% let totalPond = 0; let totalWeight = 0; %>
+            <% scoredForms.forEach(f => { %>
+              <% const r = responseMap[f.id]; %>
+              <% const aporte = r.score * (f.weight / 100); totalPond += aporte; totalWeight += f.weight; %>
+              <tr>
+                <td><%= f.name %></td>
+                <td><strong><%= r.score.toFixed(2) %></strong>/4</td>
+                <td><%= f.weight %>%</td>
+                <td><%= aporte.toFixed(2) %></td>
+              </tr>
+            <% }) %>
+            <% if (totalWeight > 0) { %>
+            <tr class="table-active fw-bold">
+              <td>Total Parcial</td>
+              <td colspan="2"><%= totalWeight %>% evaluado</td>
+              <td><%= totalPond.toFixed(2) %></td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% } %>
+    <% } else { %>
+    <div class="text-center py-4 text-muted">
+      <i class="bi bi-file-earmark-text" style="font-size:2rem"></i><br>
+      No hay formularios disponibles
+    </div>
+    <% } %>
+  </div></div>
 
 <% if (evaluation.status === 'completada' && evaluation.score_ponderado) { %>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>

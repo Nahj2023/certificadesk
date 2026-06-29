@@ -131,7 +131,88 @@ router.get("/:id", (req, res) => {
      WHERE e.id=? AND e.org_id=?`
   ).get(req.params.id, oid);
   if (!evaluation) return res.redirect("/evaluaciones");
-  res.render("evaluations/detail", { evaluation });
+  const forms = db.prepare("SELECT * FROM evaluation_forms WHERE active=1 AND is_template=1 ORDER BY weight DESC, code").all();
+  const formResponses = db.prepare("SELECT * FROM evaluation_form_responses WHERE evaluation_id=? AND org_id=?").all(req.params.id, oid);
+  res.render("evaluations/detail", { evaluation, forms, formResponses });
+});
+
+
+// ======= FORMULARIOS DE EVALUACION (ChileValora D016) =======
+
+router.get("/:id/formularios/:formId", (req, res) => {
+  const db = getDb();
+  const oid = req.user.org_id;
+  const evaluation = db.prepare(
+    `SELECT e.*, c.name as candidate_name, c.rut as candidate_rut,
+     p.name as profile_name, ev.name as evaluator_name
+     FROM evaluations e
+     LEFT JOIN candidates c ON e.candidate_id=c.id
+     LEFT JOIN profiles p ON e.profile_id=p.id
+     LEFT JOIN evaluators ev ON e.evaluator_id=ev.id
+     WHERE e.id=? AND e.org_id=?`
+  ).get(req.params.id, oid);
+  if (!evaluation) return res.redirect("/evaluaciones");
+
+  const form = db.prepare("SELECT * FROM evaluation_forms WHERE id=? AND active=1").get(req.params.formId);
+  if (!form) return res.redirect("/evaluaciones/" + req.params.id);
+
+  const response = db.prepare(
+    "SELECT * FROM evaluation_form_responses WHERE evaluation_id=? AND form_id=? AND org_id=?"
+  ).get(req.params.id, req.params.formId, oid);
+
+  res.render("evaluations/form-fill", { evaluation, form, response });
+});
+
+router.post("/:id/formularios/:formId", (req, res) => {
+  const db = getDb();
+  const oid = req.user.org_id;
+  const evalId = req.params.id;
+  const formId = req.params.formId;
+
+  const evaluation = db.prepare("SELECT id FROM evaluations WHERE id=? AND org_id=?").get(evalId, oid);
+  if (!evaluation) return res.redirect("/evaluaciones");
+
+  const form = db.prepare("SELECT * FROM evaluation_forms WHERE id=? AND active=1").get(formId);
+  if (!form) return res.redirect("/evaluaciones/" + evalId);
+
+  const items = JSON.parse(form.items_json);
+  const responses = {};
+  for (const item of items) {
+    if (item.type === "check") {
+      responses[item.id] = req.body[item.id] ? true : false;
+    } else if (item.type === "rubric") {
+      responses[item.id] = parseInt(req.body[item.id]) || null;
+    } else if (item.type === "text") {
+      responses[item.id] = req.body[item.id] || "";
+    }
+  }
+
+  // Calculate score from rubric items
+  const rubricItems = items.filter(i => i.type === "rubric");
+  let score = null;
+  if (rubricItems.length > 0) {
+    const rubricValues = rubricItems.map(i => responses[i.id]).filter(v => v !== null);
+    if (rubricValues.length === rubricItems.length) {
+      score = rubricValues.reduce((a, b) => a + b, 0) / rubricValues.length;
+    }
+  }
+
+  const status = req.body.action === "complete" ? "completado" : "borrador";
+  const existing = db.prepare("SELECT id FROM evaluation_form_responses WHERE evaluation_id=? AND form_id=? AND org_id=?").get(evalId, formId, oid);
+
+  if (existing) {
+    db.prepare(`UPDATE evaluation_form_responses SET responses_json=?, score=?, status=?, filled_by=?,
+      completed_at=CASE WHEN ?=completado THEN CURRENT_TIMESTAMP ELSE completed_at END
+      WHERE id=?`).run(JSON.stringify(responses), score, status, req.user.id, status, existing.id);
+  } else {
+    db.prepare(`INSERT INTO evaluation_form_responses (org_id, evaluation_id, form_id, responses_json, score, status, filled_by, completed_at)
+      VALUES (?,?,?,?,?,?,?,CASE WHEN ?=completado THEN CURRENT_TIMESTAMP ELSE NULL END)`
+    ).run(oid, evalId, formId, JSON.stringify(responses), score, status, req.user.id, status);
+  }
+
+  logActivity(oid, req.user.id, status === "completado" ? "completar_formulario" : "guardar_formulario", "evaluacion", evalId, form.name);
+  res.flash(status === "completado" ? "Formulario completado" : "Borrador guardado");
+  res.redirect("/evaluaciones/" + evalId);
 });
 
 module.exports = router;
