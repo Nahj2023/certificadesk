@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Politica de Privacidad | CertificaDesk</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #F3EDE4; -webkit-font-smoothing: antialiased; }
+    .privacy-wrapper { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
+    .brand { text-align: center; margin-bottom: 2rem; }
+    .brand-logo {
+      width: 48px; height: 48px; background: #E85D3A; border-radius: 14px;
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-bottom: 0.75rem; box-shadow: 0 6px 20px rgba(232,93,58,0.25);
+    }
+    .brand-logo svg { width: 24px; height: 24px; fill: #fff; }
+    .brand h1 { font-size: 1.5rem; font-weight: 800; color: #2D3436; letter-spacing: -0.03em; margin: 0; }
+    .content-card {
+      background: #fff; border-radius: 20px; padding: 2.5rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .content-card h2 { font-size: 1.3rem; font-weight: 700; color: #2D3436; margin-top: 1.5rem; }
+    .content-card h3 { font-size: 1.05rem; font-weight: 600; color: #E85D3A; margin-top: 1.25rem; }
+    .content-card p, .content-card li { font-size: 0.9rem; color: #636E72; line-height: 1.7; }
+    .content-card ul { padding-left: 1.2rem; }
+    .update-date { font-size: 0.78rem; color: #B2BEC3; text-align: right; margin-top: 1.5rem; }
+    .footer-links { text-align: center; margin-top: 1.5rem; font-size: 0.82rem; }
+    .footer-links a { color: #E85D3A; text-decoration: none; margin: 0 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="privacy-wrapper">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+      </div>
+      <h1>CertificaDesk</h1>
+    </div>
+
+    <div class="content-card">
+      <h2 style="margin-top:0">Politica de Privacidad y Proteccion de Datos Personales</h2>
+      <p><strong>Ley 21.719 sobre Proteccion de la Vida Privada — Chile</strong></p>
+
+      <h3>1. Responsable del tratamiento</h3>
+      <p>
+        <strong>JVH Labs</strong>, operador de la plataforma CertificaDesk, con domicilio en Santiago, Chile.
+        Contacto del Delegado de Proteccion de Datos (DPO): <strong>privacidad@jvh-labs.cl</strong>
+      </p>
+
+      <h3>2. Datos que recopilamos</h3>
+      <ul>
+        <li><strong>Candidatos a certificacion:</strong> nombre completo, RUT, email, telefono, region, nivel educacional, experiencia laboral</li>
+        <li><strong>Evaluadores:</strong> nombre, RUT, email, telefono, especialidad</li>
+        <li><strong>Usuarios del sistema:</strong> nombre de usuario, nombre completo, email, rol, actividad de acceso</li>
+      </ul>
+
+      <h3>3. Finalidad del tratamiento</h3>
+      <p>Los datos personales se procesan exclusivamente para:</p>
+      <ul>
+        <li>Gestionar procesos de evaluacion y certificacion de competencias laborales ante ChileValora</li>
+        <li>Generar documentos oficiales (certificados, informes, actas de comite)</li>
+        <li>Cumplir obligaciones del D016-01-18 de ChileValora</li>
+        <li>Reportar estadisticas anonimizadas a ChileValora</li>
+      </ul>
+
+      <h3>4. Base legal (Art. 12-13 Ley 21.719)</h3>
+      <p>
+        El tratamiento de datos se basa en el <strong>consentimiento informado</strong> del titular,
+        otorgado al momento del registro como candidato. El consentimiento es registrado con fecha, hora e IP.
+      </p>
+
+      <h3>5. Medidas de seguridad (Art. 14 bis)</h3>
+      <ul>
+        <li><strong>Cifrado AES-256-GCM</strong> de campos sensibles (RUT, email, telefono) en base de datos</li>
+        <li><strong>Autenticacion de dos factores (2FA)</strong> con TOTP</li>
+        <li><strong>Bloqueo automatico</strong> tras 5 intentos fallidos de acceso</li>
+        <li><strong>Sesiones con expiracion</strong> automatica por inactividad (30 minutos)</li>
+        <li><strong>Contraseñas cifradas</strong> con bcrypt (10 rounds)</li>
+        <li><strong>CSRF protection</strong> en todos los formularios</li>
+        <li><strong>Rate limiting</strong> en endpoints de autenticacion</li>
+        <li><strong>Headers de seguridad</strong> via Helmet.js (CSP, HSTS, X-Frame-Options)</li>
+        <li><strong>Backups cifrados</strong> con GPG AES-256, rotacion automatica</li>
+        <li><strong>Registro de tratamiento</strong> de datos personales (Art. 14 ter)</li>
+        <li><strong>Deteccion de brechas</strong> con alertas automaticas al DPO</li>
+      </ul>
+
+      <h3>6. Derechos ARCO (Art. 5-10)</h3>
+      <p>Todo titular de datos puede ejercer sus derechos de:</p>
+      <ul>
+        <li><strong>Acceso:</strong> conocer que datos suyos son procesados</li>
+        <li><strong>Rectificacion:</strong> corregir datos inexactos</li>
+        <li><strong>Cancelacion:</strong> solicitar la eliminacion de sus datos</li>
+        <li><strong>Oposicion:</strong> oponerse al tratamiento de sus datos</li>
+      </ul>
+      <p>
+        Para ejercer estos derechos, ingrese al portal
+        <a href="/arco" style="color:#E85D3A;font-weight:600">/arco</a>.
+        Las solicitudes se responden en un plazo maximo de 15 dias habiles.
+      </p>
+
+      <h3>7. Retencion y anonimizacion (Art. 3)</h3>
+      <p>
+        Los datos personales se conservan por el periodo configurado por cada Centro (por defecto 5 años),
+        tras lo cual son <strong>anonimizados de forma irreversible</strong> mediante hash SHA-256.
+        Los datos anonimizados no permiten identificar al titular.
+      </p>
+
+      <h3>8. Transferencia de datos</h3>
+      <p>
+        Los datos personales <strong>no se transfieren a terceros</strong> ni fuera del territorio nacional,
+        salvo reportes estadisticos anonimizados enviados a ChileValora en cumplimiento del D016.
+      </p>
+
+      <h3>9. Notificacion de brechas</h3>
+      <p>
+        En caso de detectar un incidente de seguridad que afecte datos personales,
+        se notificara al titular y a la autoridad competente dentro de las 72 horas
+        siguientes a la deteccion, conforme a la Ley 21.719.
+      </p>
+
+      <h3>10. Contacto</h3>
+      <p>
+        Para consultas sobre esta politica o el tratamiento de datos personales:<br>
+        <strong>Email:</strong> privacidad@jvh-labs.cl<br>
+        <strong>Portal ARCO:</strong> <a href="/arco" style="color:#E85D3A">/arco</a><br>
+        <strong>Web:</strong> <a href="https://jvh-labs.cl" style="color:#E85D3A">jvh-labs.cl</a>
+      </p>
+
+      <p class="update-date">Ultima actualizacion: Junio 2026</p>
+    </div>
+
+    <div class="footer-links">
+      <a href="/">Inicio</a>
+      <a href="/arco">Portal ARCO</a>
+      <a href="/login">Acceder</a>
+    </div>
+  </div>
+</body>
+</html>

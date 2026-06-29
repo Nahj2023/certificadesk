@@ -1,0 +1,180 @@
+<%- include('../partials/header') %>
+
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h4 class="mb-1">Evaluacion de Impacto en Proteccion de Datos (EIPD)</h4>
+        <p class="text-muted mb-0" style="font-size:0.85rem">Art. 15 ter — Ley 21.719</p>
+      </div>
+      <button onclick="window.print()" class="btn btn-outline-secondary btn-sm"><i class="bi bi-printer"></i> Imprimir</button>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header"><i class="bi bi-info-circle me-2" style="color:var(--coral)"></i> 1. Identificacion del tratamiento</div>
+      <div class="card-body" style="font-size:0.88rem">
+        <table class="table table-bordered mb-0">
+          <tr><td style="width:35%"><strong>Sistema</strong></td><td>CertificaDesk — SaaS para Centros de Evaluacion y Certificacion (CEC)</td></tr>
+          <tr><td><strong>Responsable</strong></td><td>JVH Labs (operador) / CEC contratante (responsable del tratamiento)</td></tr>
+          <tr><td><strong>DPO</strong></td><td>privacidad@jvh-labs.cl</td></tr>
+          <tr><td><strong>Marco normativo</strong></td><td>Ley 21.719, D016-01-18 ChileValora, R.E.114-2025</td></tr>
+          <tr><td><strong>Fecha evaluacion</strong></td><td><%= new Date().toLocaleDateString('es-CL') %></td></tr>
+          <tr><td><strong>Proxima revision</strong></td><td>Cada 12 meses o ante cambios significativos</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header"><i class="bi bi-people me-2" style="color:var(--coral)"></i> 2. Datos tratados y titulares</div>
+      <div class="card-body" style="font-size:0.88rem">
+        <table class="table table-bordered mb-0">
+          <thead><tr><th>Categoria</th><th>Datos</th><th>Cifrado</th><th>Titulares aprox.</th></tr></thead>
+          <tbody>
+            <tr><td>Candidatos a certificacion</td><td>Nombre, RUT, email, telefono, region, educacion, experiencia</td><td>RUT, email, telefono: AES-256-GCM</td><td><%= stats.candidates %></td></tr>
+            <tr><td>Evaluadores</td><td>Nombre, RUT, email, telefono, especialidad</td><td>RUT, email, telefono: AES-256-GCM</td><td><%= stats.evaluators %></td></tr>
+            <tr><td>Usuarios del sistema</td><td>Username, nombre, email, actividad, IP</td><td>No (datos operacionales)</td><td><%= stats.users %></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header"><i class="bi bi-shield-check me-2" style="color:var(--coral)"></i> 3. Medidas de seguridad implementadas</div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0" style="font-size:0.85rem">
+          <thead><tr><th>Medida</th><th>Tipo</th><th>Estado</th><th>Referencia legal</th></tr></thead>
+          <tbody>
+            <% const measures = [
+              ['Cifrado AES-256-GCM campos PII', 'Tecnica', 'Implementada', 'Art. 14 bis'],
+              ['Consentimiento informado con registro', 'Organizativa', 'Implementada', 'Art. 12-13'],
+              ['Portal ARCO publico', 'Organizativa', 'Implementada', 'Art. 5-10'],
+              ['Anonimizacion irreversible SHA-256', 'Tecnica', 'Implementada', 'Art. 7'],
+              ['Retencion configurable + auto-anonimizacion', 'Organizativa', 'Implementada', 'Art. 3'],
+              ['Registro tratamiento datos personales', 'Tecnica', 'Implementada', 'Art. 14 ter'],
+              ['RBAC 4 roles + separacion privilegios', 'Tecnica', 'Implementada', 'Art. 14 bis'],
+              ['2FA TOTP (Google Authenticator)', 'Tecnica', 'Implementada', 'Art. 14 bis'],
+              ['Bloqueo cuenta automatico (5 intentos)', 'Tecnica', 'Implementada', 'Art. 14 bis'],
+              ['Sesion con expiracion 30 min', 'Tecnica', 'Implementada', 'Art. 14 bis'],
+              ['Expiracion contraseña 90 dias', 'Organizativa', 'Implementada', 'Art. 14 bis'],
+              ['Backup cifrado GPG AES-256 automatico', 'Tecnica', 'Implementada', 'Art. 14 bis'],
+              ['Deteccion brechas + alerta DPO', 'Tecnica', 'Implementada', 'Art. 14 quater'],
+              ['Helmet.js headers seguridad', 'Tecnica', 'Implementada', 'Art. 14 bis'],
+              ['CSRF double-submit cookie', 'Tecnica', 'Implementada', 'Art. 14 bis'],
+              ['Rate limiting login', 'Tecnica', 'Implementada', 'Art. 14 bis'],
+              ['Politica privacidad publica', 'Organizativa', 'Implementada', 'Art. 14'],
+            ]; measures.forEach(m => { %>
+            <tr>
+              <td><%= m[0] %></td>
+              <td><span class="badge bg-<%= m[1]==='Tecnica' ? 'info' : 'primary' %>"><%= m[1] %></span></td>
+              <td><span class="badge bg-success"><%= m[2] %></span></td>
+              <td><code><%= m[3] %></code></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header"><i class="bi bi-exclamation-triangle me-2" style="color:var(--coral)"></i> 4. Evaluacion de riesgos</div>
+      <div class="card-body p-0">
+        <table class="table table-hover mb-0" style="font-size:0.85rem">
+          <thead><tr><th>Riesgo</th><th>Probabilidad</th><th>Impacto</th><th>Nivel</th><th>Mitigacion</th></tr></thead>
+          <tbody>
+            <% const risks = [
+              ['Acceso no autorizado a datos PII', 'Baja', 'Alto', 'Medio', 'Cifrado AES-256, 2FA, RBAC, bloqueo cuenta'],
+              ['Fuga de datos por exfiltracion', 'Baja', 'Alto', 'Medio', 'Deteccion bulk access, logs tratamiento, sesion 30min'],
+              ['Perdida de datos por fallo hardware', 'Baja', 'Alto', 'Medio', 'Backup GPG diario, SQLite WAL, retención 30 días'],
+              ['Uso indebido por personal autorizado', 'Baja', 'Medio', 'Bajo', 'RBAC, log acceso con IP, tratamiento registrado'],
+              ['Incumplimiento derechos ARCO', 'Muy baja', 'Alto', 'Bajo', 'Portal ARCO publico, plazo 15 dias, log respuestas'],
+              ['Retencion excesiva de datos', 'Baja', 'Medio', 'Bajo', 'Politica configurable, anonimizacion irreversible'],
+            ]; risks.forEach(r => {
+              const color = r[3]==='Alto' ? 'danger' : r[3]==='Medio' ? 'warning' : 'success';
+            %>
+            <tr>
+              <td><%= r[0] %></td>
+              <td><%= r[1] %></td>
+              <td><%= r[2] %></td>
+              <td><span class="badge bg-<%= color %>"><%= r[3] %></span></td>
+              <td style="font-size:0.8rem"><%= r[4] %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header"><i class="bi bi-check-circle me-2" style="color:var(--coral)"></i> 5. Conclusion</div>
+      <div class="card-body" style="font-size:0.88rem">
+        <p>
+          La evaluacion concluye que el sistema CertificaDesk implementa medidas de seguridad
+          <strong>proporcionales y adecuadas</strong> al tipo y volumen de datos personales tratados,
+          cumpliendo con los requisitos de la Ley 21.719 de Proteccion de Datos Personales.
+        </p>
+        <p>
+          Todos los riesgos identificados han sido mitigados a un nivel aceptable mediante
+          controles tecnicos y organizativos. El riesgo residual se considera <strong>bajo</strong>.
+        </p>
+        <p class="mb-0">
+          Esta evaluacion debe revisarse al menos cada 12 meses, ante cambios significativos
+          en el tratamiento de datos, o cuando lo solicite la autoridad de proteccion de datos.
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><i class="bi bi-bar-chart me-2" style="color:var(--coral)"></i> 6. Estadisticas actuales</div>
+      <div class="card-body">
+        <div class="row g-3 text-center">
+          <div class="col-md-3">
+            <div class="border rounded p-3">
+              <div style="font-size:1.8rem;font-weight:800;color:var(--coral)"><%= stats.candidates %></div>
+              <small class="text-muted">Candidatos</small>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="border rounded p-3">
+              <div style="font-size:1.8rem;font-weight:800;color:var(--coral)"><%= stats.evaluators %></div>
+              <small class="text-muted">Evaluadores</small>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="border rounded p-3">
+              <div style="font-size:1.8rem;font-weight:800;color:var(--coral)"><%= stats.users %></div>
+              <small class="text-muted">Usuarios</small>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="border rounded p-3">
+              <div style="font-size:1.8rem;font-weight:800;color:var(--coral)"><%= stats.arcoRequests %></div>
+              <small class="text-muted">Solicitudes ARCO</small>
+            </div>
+          </div>
+        </div>
+        <div class="row g-3 text-center mt-1">
+          <div class="col-md-4">
+            <div class="border rounded p-3">
+              <div style="font-size:1.8rem;font-weight:800;color:var(--green)"><%= stats.anonymized %></div>
+              <small class="text-muted">Registros anonimizados</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="border rounded p-3">
+              <div style="font-size:1.8rem;font-weight:800;color:var(--green)"><%= stats.twoFaUsers %></div>
+              <small class="text-muted">Usuarios con 2FA</small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="border rounded p-3">
+              <div style="font-size:1.8rem;font-weight:800;color:var(--green)"><%= stats.treatmentLogs %></div>
+              <small class="text-muted">Registros tratamiento</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

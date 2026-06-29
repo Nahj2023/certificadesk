@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const { getDb, logActivity, logDataTreatment } = require("../database/db");
 const { validatePassword } = require("../middleware/auth");
 const { anonymize } = require("../services/crypto");
+const { checkBreaches } = require("../services/breach-detector");
 
 // GET /admin/usuarios
 router.get("/usuarios", (req, res) => {
@@ -282,6 +283,34 @@ router.post("/retencion/ejecutar", (req, res) => {
   logActivity(oid, req.user.id, "run_retention", "candidates", null, `${count} anonimizados`, req.ip);
   res.flash(`${count} registro${count !== 1 ? "s" : ""} anonimizado${count !== 1 ? "s" : ""}`);
   res.redirect("/admin/retencion");
+});
+
+// ── EIPD ──
+router.get("/eipd", (req, res) => {
+  const db = getDb();
+  const oid = req.user.org_id;
+  const stats = {
+    candidates: db.prepare("SELECT COUNT(*) as c FROM candidates WHERE org_id=?").get(oid).c,
+    evaluators: db.prepare("SELECT COUNT(*) as c FROM evaluators WHERE org_id=?").get(oid).c,
+    users: db.prepare("SELECT COUNT(*) as c FROM users WHERE org_id=?").get(oid).c,
+    arcoRequests: db.prepare("SELECT COUNT(*) as c FROM arco_requests").get().c,
+    anonymized: db.prepare("SELECT COUNT(*) as c FROM candidates WHERE org_id=? AND anonymized=1").get(oid).c,
+    twoFaUsers: db.prepare("SELECT COUNT(*) as c FROM users WHERE org_id=? AND totp_enabled=1").get(oid).c,
+    treatmentLogs: db.prepare("SELECT COUNT(*) as c FROM data_treatment_log WHERE org_id=?").get(oid).c,
+  };
+  res.render("admin/eipd", { title: "EIPD", stats });
+});
+
+// ── Alertas de seguridad ──
+router.get("/alertas", (req, res) => {
+  const alerts = checkBreaches();
+  const recent = getDb()
+    .prepare(
+      `SELECT * FROM activity_log WHERE action='breach_alert' AND org_id=1
+       ORDER BY created_at DESC LIMIT 50`
+    )
+    .all();
+  res.render("admin/alerts", { title: "Alertas de seguridad", alerts, recent });
 });
 
 function getRoles() {

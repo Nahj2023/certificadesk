@@ -6,6 +6,7 @@ const path = require("path");
 const { requireAuth } = require("./middleware/auth");
 const { csrfProtection } = require("./middleware/csrf");
 const { requireWriteRole, requireAdmin, logAccess } = require("./middleware/roles");
+const { runBreachCheck } = require("./services/breach-detector");
 
 const app = express();
 app.set("trust proxy", 1);
@@ -53,6 +54,7 @@ app.use((req, res, next) => {
 app.use("/", require("./routes/landing"));
 app.use("/", require("./routes/auth"));
 app.use("/arco", require("./routes/arco"));
+app.get("/privacidad", (req, res) => res.render("privacy"));
 
 // Protected
 app.use(requireAuth);
@@ -88,6 +90,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () =>
-  console.log(`[CertificaDesk] Puerto ${PORT} - ${new Date().toISOString()}`)
-);
+app.listen(PORT, () => {
+  console.log(`[CertificaDesk] Puerto ${PORT} - ${new Date().toISOString()}`);
+  // Breach detection every 15 minutes
+  setInterval(runBreachCheck, 15 * 60 * 1000);
+});

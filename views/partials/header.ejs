@@ -137,6 +137,16 @@
             <i class="bi bi-clock-history"></i> Log de acceso
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/admin/alertas' ? 'active' : '' %>" href="/admin/alertas">
+            <i class="bi bi-bell"></i> Alertas
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/admin/eipd' ? 'active' : '' %>" href="/admin/eipd">
+            <i class="bi bi-file-earmark-medical"></i> EIPD
+          </a>
+        </li>
         <% } %>
       </ul>
       <div class="sidebar-footer">
@@ -169,6 +179,8 @@
             arco: 'ARCO',
             retencion: 'Retencion',
             logs: 'Log de acceso',
+            alertas: 'Alertas',
+            eipd: 'EIPD',
             'mi-cuenta': 'Mi Cuenta',
             '2fa': '2FA',
             password: 'Contraseña'
