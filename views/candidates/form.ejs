@@ -14,6 +14,7 @@
 <% } %>
 
 <form method="POST" action="<%= candidate && candidate.id ? '/candidatos/' + candidate.id : '/candidatos' %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
   <div class="row g-4">
 
     <!-- Datos Personales -->
@@ -98,6 +99,27 @@
       </div>
     </div>
   </div>
+
+  <% if (!(candidate && candidate.id)) { %>
+  <!-- Consentimiento Informado — Ley 21.719 -->
+  <div class="card mt-4 border-warning">
+    <div class="card-header bg-warning bg-opacity-10">
+      <i class="bi bi-shield-check me-2" style="color:var(--coral)"></i> Consentimiento Informado — Ley 21.719
+    </div>
+    <div class="card-body">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="consent" id="consent" value="1" required>
+        <label class="form-check-label" for="consent" style="font-size:0.88rem">
+          El candidato ha sido informado y autoriza el tratamiento de sus datos personales
+          (nombre, RUT, email, telefono) con la finalidad exclusiva de gestionar su proceso
+          de evaluacion y certificacion de competencias laborales ante ChileValora.
+          Los datos seran almacenados de forma cifrada y podra ejercer sus derechos ARCO
+          en cualquier momento a traves del portal <strong>/arco</strong>.
+        </label>
+      </div>
+    </div>
+  </div>
+  <% } %>
 
   <div class="mt-4 d-flex gap-2">
     <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar Candidato</button>

@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
-const { getDb, logActivity } = require("../database/db");
+const { getDb, logActivity, logDataTreatment } = require("../database/db");
 const { validatePassword } = require("../middleware/auth");
+const { anonymize } = require("../services/crypto");
 
 // GET /admin/usuarios
 router.get("/usuarios", (req, res) => {
@@ -121,7 +122,7 @@ router.post("/usuarios/:id/password", (req, res) => {
     .prepare("UPDATE users SET password = ?, token_version = ? WHERE id = ?")
     .run(hash, newVersion, target.id);
   logActivity(req.user.org_id, req.user.id, "reset_password", "users", target.id, null, req.ip);
-  res.flash("Contraseña actualizada — sesiones anteriores invalidadas");
+  res.flash("Contrasena actualizada — sesiones anteriores invalidadas");
   res.redirect("/admin/usuarios");
 });
 
@@ -169,9 +170,95 @@ router.get("/logs", (req, res) => {
   });
 });
 
+// ── ARCO ──
+router.get("/arco", (req, res) => {
+  const requests = getDb()
+    .prepare("SELECT * FROM arco_requests ORDER BY created_at DESC")
+    .all();
+  res.render("admin/arco", { title: "Solicitudes ARCO", requests });
+});
+
+router.post("/arco/:id/responder", (req, res) => {
+  const { response } = req.body;
+  getDb()
+    .prepare(
+      "UPDATE arco_requests SET status='completada', response=?, responded_by=?, responded_at=CURRENT_TIMESTAMP WHERE id=?"
+    )
+    .run(response, req.user.id, req.params.id);
+  logActivity(req.user.org_id, req.user.id, "respond_arco", "arco_requests", parseInt(req.params.id), null, req.ip);
+  res.flash("Solicitud ARCO respondida");
+  res.redirect("/admin/arco");
+});
+
+// ── Retencion ──
+router.get("/retencion", (req, res) => {
+  const db = getDb();
+  const oid = req.user.org_id;
+  const org = db.prepare("SELECT retention_years FROM organizations WHERE id=?").get(oid);
+  const retention_years = org?.retention_years || 5;
+
+  const stats = {
+    total: db.prepare("SELECT COUNT(*) as c FROM candidates WHERE org_id=? AND anonymized=0").get(oid).c,
+    expired: db.prepare(
+      `SELECT COUNT(*) as c FROM candidates WHERE org_id=? AND anonymized=0
+       AND created_at < datetime('now', '-' || ? || ' years')`
+    ).get(oid, retention_years).c,
+    anonymized: db.prepare("SELECT COUNT(*) as c FROM candidates WHERE org_id=? AND anonymized=1").get(oid).c,
+  };
+
+  const treatments = db
+    .prepare(
+      `SELECT d.*, u.display_name as user_name FROM data_treatment_log d
+       LEFT JOIN users u ON d.user_id=u.id WHERE d.org_id=?
+       ORDER BY d.created_at DESC LIMIT 50`
+    )
+    .all(oid);
+
+  res.render("admin/retention", { title: "Retencion de datos", retention_years, stats, treatments });
+});
+
+router.post("/retencion", (req, res) => {
+  const years = parseInt(req.body.retention_years) || 5;
+  getDb()
+    .prepare("UPDATE organizations SET retention_years=? WHERE id=?")
+    .run(Math.max(1, Math.min(20, years)), req.user.org_id);
+  logActivity(req.user.org_id, req.user.id, "update_retention", "organizations", req.user.org_id, `years=${years}`, req.ip);
+  res.flash("Periodo de retencion actualizado");
+  res.redirect("/admin/retencion");
+});
+
+router.post("/retencion/ejecutar", (req, res) => {
+  const db = getDb();
+  const oid = req.user.org_id;
+  const org = db.prepare("SELECT retention_years FROM organizations WHERE id=?").get(oid);
+  const years = org?.retention_years || 5;
+
+  const expired = db
+    .prepare(
+      `SELECT id, name FROM candidates WHERE org_id=? AND anonymized=0
+       AND created_at < datetime('now', '-' || ? || ' years')`
+    )
+    .all(oid, years);
+
+  let count = 0;
+  for (const c of expired) {
+    const anonName = "Anonimizado-" + anonymize(c.name);
+    db.prepare(
+      `UPDATE candidates SET name=?, rut=NULL, email=NULL, phone=NULL, notes=NULL,
+       anonymized=1, updated_at=CURRENT_TIMESTAMP WHERE id=?`
+    ).run(anonName, c.id);
+    logDataTreatment(oid, req.user.id, "anonymize", "candidato", c.id, "rut,email,phone,name,notes", "retencion_automatica", req.ip);
+    count++;
+  }
+
+  logActivity(oid, req.user.id, "run_retention", "candidates", null, `${count} anonimizados`, req.ip);
+  res.flash(`${count} registro${count !== 1 ? "s" : ""} anonimizado${count !== 1 ? "s" : ""}`);
+  res.redirect("/admin/retencion");
+});
+
 function getRoles() {
   return [
-    { value: "admin", label: "Administrador", desc: "Acceso total + gestión usuarios" },
+    { value: "admin", label: "Administrador", desc: "Acceso total + gestion usuarios" },
     { value: "responsable", label: "Responsable CEC", desc: "Todas las operaciones" },
     { value: "evaluador", label: "Evaluador", desc: "Evaluaciones, evidencias, conflictos" },
     { value: "consulta", label: "Consulta", desc: "Solo lectura" },

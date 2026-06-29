@@ -1,0 +1,84 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-1">Solicitudes ARCO</h4>
+    <p class="text-muted mb-0" style="font-size:0.85rem">Derechos de Acceso, Rectificacion, Cancelacion y Oposicion — Ley 21.719</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0" data-enhance>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Fecha</th>
+          <th>Tipo</th>
+          <th>Solicitante</th>
+          <th>Email</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% requests.forEach(r => { %>
+        <tr>
+          <td><%= r.id %></td>
+          <td style="font-size:0.82rem; white-space:nowrap"><%= new Date(r.created_at).toLocaleDateString('es-CL') %></td>
+          <td>
+            <% const typeBadge = { acceso: 'info', rectificacion: 'primary', cancelacion: 'danger', oposicion: 'warning' }; %>
+            <span class="badge bg-<%= typeBadge[r.type] || 'secondary' %>"><%= r.type %></span>
+          </td>
+          <td><%= r.requester_name %></td>
+          <td style="font-size:0.82rem"><%= r.requester_email %></td>
+          <td>
+            <% if (r.status === 'pendiente') { %>
+              <span class="badge bg-warning text-dark">Pendiente</span>
+            <% } else if (r.status === 'completada') { %>
+              <span class="badge bg-success">Completada</span>
+            <% } else { %>
+              <span class="badge bg-secondary"><%= r.status %></span>
+            <% } %>
+          </td>
+          <td>
+            <% if (r.status === 'pendiente') { %>
+            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#respond-<%= r.id %>"><i class="bi bi-reply"></i> Responder</button>
+            <div class="modal fade" id="respond-<%= r.id %>" tabindex="-1">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <form method="POST" action="/admin/arco/<%= r.id %>/responder">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <div class="modal-header"><h5 class="modal-title">Responder solicitud #<%= r.id %></h5></div>
+                    <div class="modal-body">
+                      <p><strong>Tipo:</strong> <%= r.type %></p>
+                      <p><strong>Solicitante:</strong> <%= r.requester_name %> (<%= r.requester_email %>)</p>
+                      <% if (r.description) { %><p><strong>Descripcion:</strong> <%= r.description %></p><% } %>
+                      <div class="mb-3">
+                        <label class="form-label">Respuesta / Accion tomada</label>
+                        <textarea name="response" class="form-control" rows="4" required></textarea>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                      <button type="submit" class="btn btn-primary">Marcar como completada</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <% } else { %>
+              <span class="text-muted" style="font-size:0.82rem" data-bs-toggle="tooltip" title="<%= r.response || '' %>">Ver respuesta</span>
+            <% } %>
+          </td>
+        </tr>
+        <% }); %>
+        <% if (requests.length === 0) { %>
+        <tr><td colspan="7" class="text-center text-muted py-4">Sin solicitudes ARCO</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

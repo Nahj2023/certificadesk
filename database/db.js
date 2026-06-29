@@ -95,25 +95,58 @@ function seedManuals() {
         "SELECT id FROM documents WHERE org_id=? AND category='manual_chilevalora' AND name=?"
       )
       .get(org.id, m);
-    if (!exists)
-      stmt.run(org.id, "manual_chilevalora", m, "1.0", "vigente");
+    if (!exists) stmt.run(org.id, "manual_chilevalora", m, "1.0", "vigente");
   }
   console.log("[DB] Manuales ChileValora verificados");
 }
 
 function migrateColumns() {
-  try {
-    db.prepare("SELECT token_version FROM users LIMIT 1").get();
-  } catch {
-    db.exec("ALTER TABLE users ADD COLUMN token_version INTEGER DEFAULT 1");
-    console.log("[DB] Migración: users.token_version añadido");
+  const migrations = [
+    ["users", "token_version", "ALTER TABLE users ADD COLUMN token_version INTEGER DEFAULT 1"],
+    ["activity_log", "ip", "ALTER TABLE activity_log ADD COLUMN ip TEXT"],
+    ["candidates", "consent_given", "ALTER TABLE candidates ADD COLUMN consent_given INTEGER DEFAULT 0"],
+    ["candidates", "consent_date", "ALTER TABLE candidates ADD COLUMN consent_date DATETIME"],
+    ["candidates", "consent_ip", "ALTER TABLE candidates ADD COLUMN consent_ip TEXT"],
+    ["candidates", "anonymized", "ALTER TABLE candidates ADD COLUMN anonymized INTEGER DEFAULT 0"],
+    ["organizations", "retention_years", "ALTER TABLE organizations ADD COLUMN retention_years INTEGER DEFAULT 5"],
+  ];
+
+  for (const [table, col, sql] of migrations) {
+    try {
+      db.prepare(`SELECT ${col} FROM ${table} LIMIT 1`).get();
+    } catch {
+      db.exec(sql);
+      console.log(`[DB] Migración: ${table}.${col} añadido`);
+    }
   }
-  try {
-    db.prepare("SELECT ip FROM activity_log LIMIT 1").get();
-  } catch {
-    db.exec("ALTER TABLE activity_log ADD COLUMN ip TEXT");
-    console.log("[DB] Migración: activity_log.ip añadido");
-  }
+
+  db.exec(`CREATE TABLE IF NOT EXISTS arco_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    org_id INTEGER,
+    type TEXT NOT NULL,
+    requester_name TEXT NOT NULL,
+    requester_rut TEXT,
+    requester_email TEXT NOT NULL,
+    description TEXT,
+    status TEXT DEFAULT 'pendiente',
+    response TEXT,
+    responded_by INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    responded_at DATETIME
+  )`);
+
+  db.exec(`CREATE TABLE IF NOT EXISTS data_treatment_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    org_id INTEGER NOT NULL,
+    user_id INTEGER,
+    action TEXT NOT NULL,
+    entity_type TEXT NOT NULL,
+    entity_id INTEGER,
+    fields_accessed TEXT,
+    purpose TEXT,
+    ip TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
 }
 
 function logActivity(orgId, userId, action, entityType, entityId, details, ip) {
@@ -124,4 +157,12 @@ function logActivity(orgId, userId, action, entityType, entityId, details, ip) {
     .run(orgId, userId, action, entityType, entityId, details || null, ip || null);
 }
 
-module.exports = { getDb, logActivity };
+function logDataTreatment(orgId, userId, action, entityType, entityId, fields, purpose, ip) {
+  getDb()
+    .prepare(
+      "INSERT INTO data_treatment_log (org_id, user_id, action, entity_type, entity_id, fields_accessed, purpose, ip) VALUES (?,?,?,?,?,?,?,?)"
+    )
+    .run(orgId, userId, action, entityType, entityId, fields || null, purpose || null, ip || null);
+}
+
+module.exports = { getDb, logActivity, logDataTreatment };

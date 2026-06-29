@@ -112,6 +112,16 @@
           </a>
         </li>
         <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/admin/arco' ? 'active' : '' %>" href="/admin/arco">
+            <i class="bi bi-shield-check"></i> ARCO
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath.startsWith('/admin/retencion') ? 'active' : '' %>" href="/admin/retencion">
+            <i class="bi bi-database-gear"></i> Retencion
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link <%= currentPath === '/admin/logs' ? 'active' : '' %>" href="/admin/logs">
             <i class="bi bi-clock-history"></i> Log de acceso
           </a>
@@ -145,6 +155,8 @@
             busqueda: 'Busqueda',
             admin: 'Administracion',
             usuarios: 'Usuarios',
+            arco: 'ARCO',
+            retencion: 'Retencion',
             logs: 'Log de acceso'
           };
           const pathParts = currentPath.split('/').filter(Boolean);

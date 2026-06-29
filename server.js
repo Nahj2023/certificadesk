@@ -51,6 +51,7 @@ app.use((req, res, next) => {
 // Public
 app.use("/", require("./routes/landing"));
 app.use("/", require("./routes/auth"));
+app.use("/arco", require("./routes/arco"));
 
 // Protected
 app.use(requireAuth);
@@ -74,7 +75,7 @@ app.use("/admin", requireAdmin, require("./routes/admin"));
 app.use((req, res) => {
   res.status(404).render("error", {
     title: "No encontrado",
-    message: "Página no encontrada",
+    message: "Pagina no encontrada",
   });
 });
 
