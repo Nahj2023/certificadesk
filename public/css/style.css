@@ -708,3 +708,11 @@ a:hover { color: #D14E2E; }
   color: var(--text-secondary);
   margin-top: 4px;
 }
+
+/* ── Table responsive global ── */
+.card-body:has(> .table), .card-body.p-0 + .table, .card > .card-body {
+  overflow-x: auto;
+}
+.table { min-width: 600px; }
+.table td, .table th { white-space: nowrap; }
+.table td.wrap { white-space: normal; }
