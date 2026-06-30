@@ -482,7 +482,7 @@ a { color: var(--coral); text-decoration: none; }
     .menu-toggle { display: block; }
     .hero { padding: 120px 24px 80px; min-height: auto; }
     .hero-inner { grid-template-columns: 1fr; gap: 60px; }
-    .hero-visual { display: none; }
+    .hero-visual { order: 2; }
     .hero-proof { flex-wrap: wrap; gap: 20px; }
     .proof-sep { display: none; }
     .chaos-vs-order { grid-template-columns: 1fr; gap: 32px; }
