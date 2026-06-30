@@ -163,7 +163,8 @@
         msgs.innerHTML += '<div class="ai-w-msg assistant"><div class="w-bubble">Error: ' + escHtml(data.error) + '</div></div>';
       } else {
         wConvId = data.conversation_id;
-        const parsed = typeof marked !== 'undefined' ? marked.parse(data.content) : data.content.replace(/\n/g, '<br>');
+        const parsed = typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(marked.parse(data.content)) : escHtml(data.content).replace(/
+/g, '<br>');
         msgs.innerHTML += '<div class="ai-w-msg assistant"><div class="w-bubble">' + parsed + '</div></div>';
       }
       msgs.scrollTop = msgs.scrollHeight;

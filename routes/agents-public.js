@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { getDb } = require("../database/db");
 const Groq = require("groq-sdk");
+const rateLimit = require("express-rate-limit");
 
 let groq;
 try {
@@ -8,6 +9,17 @@ try {
 } catch {
   groq = new (Groq.default || Groq)({ apiKey: process.env.GROQ_API_KEY });
 }
+
+const publicChatLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  handler: (req, res) => {
+    res.status(429).json({ error: "Demasiadas consultas. Espere 15 minutos." });
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
+});
 
 // GET /guia — public chat page
 router.get("/", (req, res) => {
@@ -18,7 +30,7 @@ router.get("/", (req, res) => {
 });
 
 // POST /guia/api/chat — public chat API (no auth, no tools)
-router.post("/api/chat", async (req, res) => {
+router.post("/api/chat", publicChatLimiter, async (req, res) => {
   if (!groq || !process.env.GROQ_API_KEY) {
     return res.status(500).json({ error: "Servicio no disponible" });
   }

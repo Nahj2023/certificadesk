@@ -211,6 +211,17 @@ router.post("/api/messages/:msgId/favorite", (req, res) => {
   res.json({ ok: true, is_favorite: newVal });
 });
 
+function escapeHtmlExport(text) {
+  if (!text) return "";
+  var s = String(text);
+  s = s.replace(/&/g, "&amp;");
+  s = s.replace(/</g, "&lt;");
+  s = s.replace(/>/g, "&gt;");
+  s = s.replace(/"/g, "&quot;");
+  s = s.replace(/\n/g, "<br>");
+  return s;
+}
+
 // API — export conversation
 router.get("/api/conversations/:convId/export", (req, res) => {
   const db = getDb();
@@ -236,7 +247,7 @@ router.get("/api/conversations/:convId/export", (req, res) => {
     const cls = m.role + (m.is_favorite ? ' fav' : '');
     html += '<div class="msg ' + cls + '">';
     html += '<div class="role">' + (m.role === 'user' ? 'Tu' : conv.agent_name) + '</div>';
-    html += '<div>' + (m.content || '').replace(/\n/g, '<br>') + '</div>';
+    html += '<div>' + escapeHtmlExport(m.content) + '</div>';
     if (m.created_at) html += '<div class="time">' + m.created_at.substring(0, 16).replace('T', ' ') + '</div>';
     html += '</div>';
   }

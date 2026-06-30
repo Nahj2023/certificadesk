@@ -143,6 +143,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
 <script>
 const AGENT_ID = <%= agent.id %>;
 let CONV_ID = <%= conversation ? conversation.id : "null" %>;
@@ -180,7 +181,7 @@ function appendMessage(role, content, toolResults, msgId) {
         '<pre class="tool-data">' + JSON.stringify(t.result, null, 2) + '</pre></details>'
       ).join('') + '</div>';
     }
-    const rendered = marked.parse(content || '');
+    const rendered = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(marked.parse(content || '')) : marked.parse(content || '');
     const favHtml = msgId ? '<button class="fav-btn" onclick="toggleFav(this,' + msgId + ')" title="Favorito"><i class="bi bi-star"></i></button>' : '';
     div.innerHTML = '<span class="msg-avatar-sm"><%= agent.avatar || "🤖" %></span><div>' +
       toolHtml + '<div class="msg-bubble msg-bubble-assistant markdown-body">' + rendered + favHtml + '</div></div>';

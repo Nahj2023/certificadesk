@@ -103,7 +103,7 @@ function validatePassword(password) {
 }
 
 function isPasswordExpired(user) {
-  if (!user.password_changed_at) return false;
+  if (!user.password_changed_at) return true;
   const changed = new Date(user.password_changed_at);
   const now = new Date();
   const diffDays = (now - changed) / (1000 * 60 * 60 * 24);
