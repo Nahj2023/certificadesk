@@ -3,13 +3,16 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h4 class="mb-1">Medicion de Satisfaccion</h4>
-    <span class="text-muted" style="font-size:0.85rem">Procedimiento 7 — Encuestas de satisfaccion D016</span>
+    <span class="text-muted" style="font-size:0.85rem">Procedimiento 7 — Encuestas, NPS y mejora continua</span>
   </div>
-  <a href="/satisfaccion/nueva" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva Encuesta</a>
+  <div class="d-flex gap-2">
+    <a href="/satisfaccion/export/csv" class="btn btn-outline-secondary btn-sm"><i class="bi bi-download"></i> CSV</a>
+    <a href="/satisfaccion/nueva" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva Encuesta</a>
+  </div>
 </div>
 
 <% if (avg.total > 0) { %>
-<!-- KPI + Charts -->
+<!-- KPI Row: Gauge + NPS + Comparison -->
 <div class="row g-3 mb-4">
   <div class="col-md-3">
     <div class="card kpi-card h-100">
@@ -32,18 +35,91 @@
       </div>
     </div>
   </div>
-  <div class="col-md-5">
+  <div class="col-md-3">
+    <div class="card kpi-card h-100">
+      <div class="card-body d-flex align-items-center gap-3 py-3">
+        <div class="kpi-gauge">
+          <svg viewBox="0 0 80 80" style="width:80px;height:80px">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="7"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="<%= nps >= 50 ? '#2ECC71' : nps >= 0 ? '#F39C12' : '#E74C3C' %>"
+              stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="<%= (Math.max(0, nps + 100) / 200 * 213.6).toFixed(1) %> 213.6"
+              transform="rotate(-90 40 40)"/>
+            <text x="40" y="37" text-anchor="middle" font-size="16" font-weight="800" fill="#2D3436"><%= nps !== null ? nps : '-' %></text>
+            <text x="40" y="50" text-anchor="middle" font-size="7" font-weight="600" fill="#636E72">NPS</text>
+          </svg>
+        </div>
+        <div>
+          <div class="kpi-label">Net Promoter Score</div>
+          <div class="kpi-detail">
+            <span style="color:#2ECC71"><%= npsData.promoters %></span> /
+            <span style="color:#F39C12"><%= npsData.passives %></span> /
+            <span style="color:#E74C3C"><%= npsData.detractors %></span>
+          </div>
+          <div style="font-size:0.65rem;color:var(--text-secondary)">Promotores / Pasivos / Detractores</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card h-100">
+      <div class="card-body py-3">
+        <div style="font-size:0.7rem;text-transform:uppercase;font-weight:700;color:var(--text-secondary);letter-spacing:0.03em;margin-bottom:8px">Comparacion Trimestral</div>
+        <div class="d-flex align-items-end gap-3">
+          <div class="text-center">
+            <div style="font-size:1.6rem;font-weight:800;color:#2D3436"><%= comparison.current.avg || '-' %></div>
+            <div style="font-size:0.7rem;color:var(--text-secondary)"><%= comparison.current.label %> (<%= comparison.current.total %>)</div>
+          </div>
+          <div class="text-center" style="opacity:0.5">
+            <div style="font-size:1.2rem;font-weight:700;color:#636E72"><%= comparison.previous.avg || '-' %></div>
+            <div style="font-size:0.7rem;color:var(--text-secondary)"><%= comparison.previous.label %> (<%= comparison.previous.total %>)</div>
+          </div>
+          <% if (comparison.current.avg && comparison.previous.avg) { %>
+            <% const diff = (comparison.current.avg - comparison.previous.avg).toFixed(1); %>
+            <span class="badge bg-<%= diff >= 0 ? 'success' : 'danger' %>" style="font-size:0.75rem">
+              <i class="bi bi-arrow-<%= diff >= 0 ? 'up' : 'down' %>"></i> <%= diff > 0 ? '+' : '' %><%= diff %>
+            </span>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card h-100">
+      <div class="card-body py-3">
+        <div style="font-size:0.7rem;text-transform:uppercase;font-weight:700;color:var(--text-secondary);letter-spacing:0.03em;margin-bottom:4px">Distribucion NPS</div>
+        <% const pPct = avg.total > 0 ? (npsData.promoters/avg.total*100).toFixed(0) : 0; %>
+        <% const nPct = avg.total > 0 ? (npsData.passives/avg.total*100).toFixed(0) : 0; %>
+        <% const dPct = avg.total > 0 ? (npsData.detractors/avg.total*100).toFixed(0) : 0; %>
+        <div class="d-flex" style="height:18px;border-radius:9px;overflow:hidden;margin:10px 0">
+          <div style="width:<%= pPct %>%;background:#2ECC71" title="Promotores <%= pPct %>%"></div>
+          <div style="width:<%= nPct %>%;background:#F39C12" title="Pasivos <%= nPct %>%"></div>
+          <div style="width:<%= dPct %>%;background:#E74C3C" title="Detractores <%= dPct %>%"></div>
+        </div>
+        <div class="d-flex justify-content-between" style="font-size:0.7rem">
+          <span style="color:#2ECC71"><i class="bi bi-circle-fill" style="font-size:6px"></i> <%= pPct %>% Prom.</span>
+          <span style="color:#F39C12"><i class="bi bi-circle-fill" style="font-size:6px"></i> <%= nPct %>% Pas.</span>
+          <span style="color:#E74C3C"><i class="bi bi-circle-fill" style="font-size:6px"></i> <%= dPct %>% Det.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts: Radar + Trend -->
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
     <div class="card h-100">
       <div class="card-header py-2"><strong><i class="bi bi-hexagon"></i> Satisfaccion por Dimension</strong></div>
-      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:200px">
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:260px">
         <canvas id="chartSatRadar"></canvas>
       </div>
     </div>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-6">
     <div class="card h-100">
-      <div class="card-header py-2"><strong><i class="bi bi-graph-up"></i> Tendencia Mensual</strong></div>
-      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:200px">
+      <div class="card-header py-2"><strong><i class="bi bi-graph-up"></i> Tendencia Mensual (12 meses)</strong></div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:260px">
         <canvas id="chartSatTrend"></canvas>
       </div>
     </div>
@@ -65,6 +141,9 @@
         <div class="mt-2" style="height:4px;border-radius:2px;background:rgba(0,0,0,0.06);overflow:hidden">
           <div style="height:100%;width:<%= ((satDims[key]||0)/5*100).toFixed(0) %>%;background:<%= Number(satDims[key]) >= 4 ? '#2ECC71' : Number(satDims[key]) >= 3 ? '#F39C12' : '#E74C3C' %>;border-radius:2px;transition:width 0.6s"></div>
         </div>
+        <% if (Number(satDims[key]) > 0 && Number(satDims[key]) < 3) { %>
+          <div class="mt-1" style="font-size:0.65rem;color:#E74C3C"><i class="bi bi-exclamation-triangle"></i> Requiere plan de mejora</div>
+        <% } %>
       </div>
     </div>
   </div>
@@ -72,27 +151,79 @@
 </div>
 <% } %>
 
+<!-- Filters -->
+<div class="card mb-3">
+  <div class="card-body py-2">
+    <form method="GET" class="d-flex align-items-center gap-3 flex-wrap">
+      <span style="font-size:0.8rem;font-weight:600;color:var(--text-secondary)"><i class="bi bi-funnel"></i> Filtros:</span>
+      <select name="perfil" class="form-select form-select-sm" style="width:auto">
+        <option value="">Todos los perfiles</option>
+        <% profiles.forEach(p => { %>
+          <option value="<%= p.id %>" <%= filters.perfil == p.id ? 'selected' : '' %>><%= p.name %></option>
+        <% }) %>
+      </select>
+      <select name="periodo" class="form-select form-select-sm" style="width:auto">
+        <option value="">Todos los periodos</option>
+        <% periodos.forEach(m => { %>
+          <option value="<%= m %>" <%= filters.periodo === m ? 'selected' : '' %>><%= m %></option>
+        <% }) %>
+      </select>
+      <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-search"></i> Filtrar</button>
+      <% if (filters.perfil || filters.periodo) { %>
+        <a href="/satisfaccion" class="btn btn-sm btn-outline-secondary"><i class="bi bi-x"></i> Limpiar</a>
+      <% } %>
+      <span class="ms-auto text-muted" style="font-size:0.8rem"><%= total %> encuesta<%= total !== 1 ? 's' : '' %></span>
+    </form>
+  </div>
+</div>
+
 <!-- Table -->
 <div class="card"><div class="card-body p-0">
   <table class="table table-hover mb-0" data-enhance>
-    <thead><tr><th>Candidato</th><th>General</th><th>Evaluador</th><th>Proceso</th><th>Infraestructura</th><th>Comunicacion</th><th>Fecha</th></tr></thead>
+    <thead><tr><th>Candidato</th><th>Perfil</th><th>General</th><th>Evaluador</th><th>Proceso</th><th>Infra.</th><th>Comunic.</th><th>Fecha</th><th style="width:80px"></th></tr></thead>
     <tbody>
       <% if (surveys.length === 0) { %>
-        <tr><td colspan="7" class="empty-state"><i class="bi bi-emoji-smile"></i>Sin encuestas registradas</td></tr>
+        <tr><td colspan="9" class="empty-state"><i class="bi bi-emoji-smile"></i> Sin encuestas registradas</td></tr>
       <% } else { surveys.forEach(s => { %>
         <tr>
-          <td class="fw-bold"><%= s.candidate_name || '-' %></td>
+          <td class="fw-bold"><a href="/satisfaccion/<%= s.id %>" class="text-decoration-none"><%= s.candidate_name || '-' %></a></td>
+          <td class="text-muted" style="font-size:0.85rem"><%= s.profile_name || '-' %></td>
           <td><span class="badge bg-<%= s.score_overall >= 4 ? 'success' : s.score_overall >= 3 ? 'warning' : 'danger' %>"><%= s.score_overall %>/5</span></td>
-          <td class="text-muted"><%= s.score_evaluator || '-' %>/5</td>
-          <td class="text-muted"><%= s.score_process || '-' %>/5</td>
-          <td class="text-muted"><%= s.score_infrastructure || '-' %>/5</td>
-          <td class="text-muted"><%= s.score_communication || '-' %>/5</td>
-          <td class="text-muted"><%= s.created_at ? s.created_at.substring(0,10) : '-' %></td>
+          <td class="text-muted"><%= s.score_evaluator || '-' %></td>
+          <td class="text-muted"><%= s.score_process || '-' %></td>
+          <td class="text-muted"><%= s.score_infrastructure || '-' %></td>
+          <td class="text-muted"><%= s.score_communication || '-' %></td>
+          <td class="text-muted" style="font-size:0.85rem"><%= s.created_at ? s.created_at.substring(0,10) : '-' %></td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="/satisfaccion/<%= s.id %>" class="btn btn-sm btn-outline-secondary py-0 px-1" title="Ver"><i class="bi bi-eye"></i></a>
+              <a href="/satisfaccion/<%= s.id %>/editar" class="btn btn-sm btn-outline-primary py-0 px-1" title="Editar"><i class="bi bi-pencil"></i></a>
+            </div>
+          </td>
         </tr>
       <% })} %>
     </tbody>
   </table>
 </div></div>
+
+<!-- Pagination -->
+<% if (totalPages > 1) { %>
+<nav class="mt-3 d-flex justify-content-center">
+  <ul class="pagination pagination-sm">
+    <li class="page-item <%= page <= 1 ? 'disabled' : '' %>">
+      <a class="page-link" href="?page=<%= page-1 %><%= filters.perfil ? '&perfil='+filters.perfil : '' %><%= filters.periodo ? '&periodo='+filters.periodo : '' %>">Ant.</a>
+    </li>
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <li class="page-item <%= i === page ? 'active' : '' %>">
+        <a class="page-link" href="?page=<%= i %><%= filters.perfil ? '&perfil='+filters.perfil : '' %><%= filters.periodo ? '&periodo='+filters.periodo : '' %>"><%= i %></a>
+      </li>
+    <% } %>
+    <li class="page-item <%= page >= totalPages ? 'disabled' : '' %>">
+      <a class="page-link" href="?page=<%= page+1 %><%= filters.perfil ? '&perfil='+filters.perfil : '' %><%= filters.periodo ? '&periodo='+filters.periodo : '' %>">Sig.</a>
+    </li>
+  </ul>
+</nav>
+<% } %>
 
 <% if (avg.total > 0) { %>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -127,7 +258,7 @@
   var trendData = <%- JSON.stringify(trend) %>;
   if (trendData.length > 0) {
     var ctx = document.getElementById('chartSatTrend').getContext('2d');
-    var grad = ctx.createLinearGradient(0,0,0,180);
+    var grad = ctx.createLinearGradient(0,0,0,240);
     grad.addColorStop(0, coral + '44'); grad.addColorStop(1, coral + '05');
     new Chart(ctx, {
       type: 'line',
@@ -142,12 +273,18 @@
       },
       options: {
         responsive: true, maintainAspectRatio: false,
-        scales: { y: { min: 0, max: 5, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.04)' } }, x: { grid: { display: false } } },
-        plugins: { legend: { display: false } }
+        scales: {
+          y: { min: 0, max: 5, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.04)' } },
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: { afterLabel: function(ctx) { return trendData[ctx.dataIndex].total + ' encuestas'; } }
+          }
+        }
       }
     });
-  } else {
-    document.getElementById('chartSatTrend').parentElement.innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-graph-up" style="font-size:1.5rem;opacity:0.3"></i><br><span style="font-size:0.8rem">Sin tendencia</span></div>';
   }
 })();
 </script>

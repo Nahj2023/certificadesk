@@ -1,59 +1,153 @@
-<% const title = 'Nueva Encuesta' %>
+<% const title = survey ? 'Editar Encuesta' : 'Nueva Encuesta' %>
 <%- include('../partials/header', { title }) %>
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
-    <h4 class="mb-1">Nueva Encuesta de Satisfaccion</h4>
+    <h4 class="mb-1"><%= title %> de Satisfaccion</h4>
     <span class="text-muted" style="font-size:0.85rem">Procedimiento 7 — Registro de encuesta</span>
   </div>
   <a href="/satisfaccion" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
 </div>
-<form method="POST" action="/satisfaccion">
+
+<% if (error) { %>
+<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> <%= error %></div>
+<% } %>
+
+<form method="POST" action="<%= survey ? '/satisfaccion/' + survey.id : '/satisfaccion' %>">
   <div class="row g-4">
     <div class="col-md-7">
       <div class="card">
-        <div class="card-header"><i class="bi bi-star me-2" style="color:var(--coral)"></i> Puntajes (1 a 5)</div>
+        <div class="card-header"><i class="bi bi-person me-2" style="color:var(--coral)"></i> Datos</div>
         <div class="card-body">
           <div class="row g-3">
-            <div class="col-md-6"><label class="form-label">Candidato</label>
-              <select name="candidate_id" class="form-select"><option value="">Seleccionar...</option>
-                <% candidates.forEach(c => { %><option value="<%= c.id %>"><%= c.name %></option><% }) %>
+            <div class="col-md-6">
+              <label class="form-label">Evaluacion completada</label>
+              <select name="evaluation_id" class="form-select" id="evalSelect">
+                <option value="">Sin vincular</option>
+                <% evaluations.forEach(e => { %>
+                  <option value="<%= e.id %>" data-candidate="<%= e.candidate_id %>" <%= survey && survey.evaluation_id == e.id ? 'selected' : '' %>>
+                    <%= e.candidate_name %> — <%= e.profile_name %>
+                  </option>
+                <% }) %>
               </select>
+              <div class="form-text">Vincula a una evaluacion completada (previene duplicados)</div>
             </div>
-            <div class="col-md-6"><label class="form-label">Satisfaccion General *</label>
-              <select name="score_overall" class="form-select" required>
-                <option value="5">5 - Excelente</option><option value="4">4 - Bueno</option>
-                <option value="3">3 - Regular</option><option value="2">2 - Malo</option>
-                <option value="1">1 - Muy malo</option>
+            <div class="col-md-6">
+              <label class="form-label">Candidato</label>
+              <select name="candidate_id" class="form-select" id="candidateSelect">
+                <option value="">Seleccionar...</option>
+                <% candidates.forEach(c => { %>
+                  <option value="<%= c.id %>" <%= survey && survey.candidate_id == c.id ? 'selected' : '' %>><%= c.name %></option>
+                <% }) %>
               </select>
-            </div>
-            <div class="col-md-6"><label class="form-label">Evaluador</label>
-              <select name="score_evaluator" class="form-select"><option value="">-</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-            </div>
-            <div class="col-md-6"><label class="form-label">Proceso</label>
-              <select name="score_process" class="form-select"><option value="">-</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-            </div>
-            <div class="col-md-6"><label class="form-label">Infraestructura</label>
-              <select name="score_infrastructure" class="form-select"><option value="">-</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-            </div>
-            <div class="col-md-6"><label class="form-label">Comunicacion</label>
-              <select name="score_communication" class="form-select"><option value="">-</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="card mt-3">
+        <div class="card-header"><i class="bi bi-star me-2" style="color:var(--coral)"></i> Puntajes (1 a 5)</div>
+        <div class="card-body">
+          <div class="row g-4">
+            <% const scoreFields = [
+              { name: 'score_overall', label: 'Satisfaccion General', icon: 'star-fill', required: true },
+              { name: 'score_evaluator', label: 'Evaluador', icon: 'person-check', required: false },
+              { name: 'score_process', label: 'Proceso', icon: 'gear', required: false },
+              { name: 'score_infrastructure', label: 'Infraestructura', icon: 'building', required: false },
+              { name: 'score_communication', label: 'Comunicacion', icon: 'chat-dots', required: false }
+            ]; %>
+            <% scoreFields.forEach(function(f) { %>
+            <div class="col-md-6">
+              <label class="form-label"><i class="bi bi-<%= f.icon %>" style="color:var(--coral)"></i> <%= f.label %> <%= f.required ? '*' : '' %></label>
+              <div class="star-rating" data-field="<%= f.name %>">
+                <input type="hidden" name="<%= f.name %>" id="<%= f.name %>" value="<%= survey ? (survey[f.name] || '') : (f.required ? '5' : '') %>">
+                <% for (let s = 1; s <= 5; s++) { %>
+                  <span class="star <%= (survey ? survey[f.name] : (f.required ? 5 : 0)) >= s ? 'active' : '' %>" data-value="<%= s %>" title="<%= s %>">
+                    <i class="bi bi-star<%= (survey ? survey[f.name] : (f.required ? 5 : 0)) >= s ? '-fill' : '' %>"></i>
+                  </span>
+                <% } %>
+                <% if (!f.required) { %>
+                  <span class="star-clear" title="Limpiar" style="margin-left:8px;cursor:pointer;font-size:0.7rem;color:var(--text-secondary)"><i class="bi bi-x-circle"></i></span>
+                <% } %>
+                <span class="star-value ms-2" style="font-weight:700;font-size:0.9rem;color:var(--text-secondary)">
+                  <%= survey ? (survey[f.name] || '-') : (f.required ? '5' : '-') %>/5
+                </span>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+      </div>
     </div>
+
     <div class="col-md-5">
       <div class="card h-100">
         <div class="card-header"><i class="bi bi-chat-dots me-2" style="color:var(--coral)"></i> Comentarios</div>
         <div class="card-body">
-          <textarea name="comments" class="form-control" rows="8" placeholder="Comentarios adicionales del candidato sobre su experiencia..."></textarea>
+          <textarea name="comments" class="form-control" rows="12" placeholder="Comentarios del candidato sobre su experiencia de evaluacion y certificacion..."><%= survey ? (survey.comments || '') : '' %></textarea>
+          <div class="form-text mt-2">Registra observaciones, sugerencias o reclamos del candidato.</div>
         </div>
       </div>
     </div>
   </div>
+
   <div class="mt-4 d-flex gap-2">
-    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar Encuesta</button>
+    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> <%= survey ? 'Actualizar' : 'Guardar' %> Encuesta</button>
     <a href="/satisfaccion" class="btn btn-outline-secondary">Cancelar</a>
   </div>
 </form>
+
+<style>
+.star-rating { display: flex; align-items: center; gap: 4px; }
+.star-rating .star { cursor: pointer; font-size: 1.4rem; color: #DDD; transition: color 0.15s, transform 0.15s; }
+.star-rating .star:hover { transform: scale(1.2); }
+.star-rating .star.active { color: #F39C12; }
+.star-rating .star.hover-preview { color: #F5C842; }
+</style>
+
+<script>
+document.querySelectorAll('.star-rating').forEach(function(container) {
+  var field = container.dataset.field;
+  var input = container.querySelector('input[type="hidden"]');
+  var stars = container.querySelectorAll('.star');
+  var valueEl = container.querySelector('.star-value');
+  var clearBtn = container.querySelector('.star-clear');
+
+  function update(val) {
+    input.value = val || '';
+    stars.forEach(function(s, i) {
+      var active = val && (i + 1) <= val;
+      s.classList.toggle('active', active);
+      s.querySelector('i').className = 'bi bi-star' + (active ? '-fill' : '');
+    });
+    if (valueEl) valueEl.textContent = (val || '-') + '/5';
+  }
+
+  stars.forEach(function(star) {
+    star.addEventListener('click', function() { update(parseInt(this.dataset.value)); });
+    star.addEventListener('mouseenter', function() {
+      var v = parseInt(this.dataset.value);
+      stars.forEach(function(s, i) { s.classList.toggle('hover-preview', (i + 1) <= v); });
+    });
+    star.addEventListener('mouseleave', function() {
+      stars.forEach(function(s) { s.classList.remove('hover-preview'); });
+    });
+  });
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', function() { update(null); });
+  }
+});
+
+// Auto-select candidate when evaluation is selected
+var evalSel = document.getElementById('evalSelect');
+var candSel = document.getElementById('candidateSelect');
+if (evalSel && candSel) {
+  evalSel.addEventListener('change', function() {
+    var opt = this.options[this.selectedIndex];
+    var cid = opt.dataset.candidate;
+    if (cid) candSel.value = cid;
+  });
+}
+</script>
+
 <%- include('../partials/footer') %>

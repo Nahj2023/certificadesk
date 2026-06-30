@@ -1,0 +1,113 @@
+<% const title = 'Detalle Encuesta' %>
+<%- include('../partials/header', { title }) %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-1">Encuesta #<%= survey.id %></h4>
+    <span class="text-muted" style="font-size:0.85rem">Registrada el <%= survey.created_at ? survey.created_at.substring(0,10) : '-' %></span>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="/satisfaccion/<%= survey.id %>/editar" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil"></i> Editar</a>
+    <form method="POST" action="/satisfaccion/<%= survey.id %>/eliminar" onsubmit="return confirm('Eliminar esta encuesta?')">
+      <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Eliminar</button>
+    </form>
+    <a href="/satisfaccion" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Volver</a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-person me-2" style="color:var(--coral)"></i> Candidato</div>
+      <div class="card-body">
+        <div class="mb-2"><strong><%= survey.candidate_name || 'No especificado' %></strong></div>
+        <% if (survey.candidate_rut) { %>
+          <div class="text-muted" style="font-size:0.85rem">RUT: <%= typeof decrypt !== 'undefined' ? decrypt(survey.candidate_rut) : survey.candidate_rut %></div>
+        <% } %>
+        <% if (survey.profile_name) { %>
+          <div class="text-muted" style="font-size:0.85rem">Perfil: <%= survey.profile_name %></div>
+        <% } %>
+        <% if (survey.evaluator_name) { %>
+          <div class="text-muted" style="font-size:0.85rem">Evaluador: <%= survey.evaluator_name %></div>
+        <% } %>
+        <% if (survey.evaluation_id) { %>
+          <div class="mt-2"><a href="/evaluaciones/<%= survey.evaluation_id %>" class="btn btn-sm btn-outline-secondary"><i class="bi bi-link-45deg"></i> Ver evaluacion</a></div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-star me-2" style="color:var(--coral)"></i> Puntajes</div>
+      <div class="card-body">
+        <% const scores = [
+          { label: 'General', value: survey.score_overall, icon: 'star-fill' },
+          { label: 'Evaluador', value: survey.score_evaluator, icon: 'person-check' },
+          { label: 'Proceso', value: survey.score_process, icon: 'gear' },
+          { label: 'Infraestructura', value: survey.score_infrastructure, icon: 'building' },
+          { label: 'Comunicacion', value: survey.score_communication, icon: 'chat-dots' }
+        ]; %>
+        <% scores.forEach(function(s) { %>
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span style="font-size:0.85rem"><i class="bi bi-<%= s.icon %>" style="color:var(--coral);margin-right:6px"></i> <%= s.label %></span>
+          <div class="d-flex align-items-center gap-1">
+            <% if (s.value) { %>
+              <% for (let i = 1; i <= 5; i++) { %>
+                <i class="bi bi-star<%= i <= s.value ? '-fill' : '' %>" style="color:<%= i <= s.value ? '#F39C12' : '#DDD' %>;font-size:0.9rem"></i>
+              <% } %>
+              <span class="badge bg-<%= s.value >= 4 ? 'success' : s.value >= 3 ? 'warning' : 'danger' %> ms-1"><%= s.value %></span>
+            <% } else { %>
+              <span class="text-muted" style="font-size:0.8rem">—</span>
+            <% } %>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header"><i class="bi bi-hexagon me-2" style="color:var(--coral)"></i> Radar Individual</div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:200px">
+        <canvas id="chartDetail"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if (survey.comments) { %>
+<div class="card mt-3">
+  <div class="card-header"><i class="bi bi-chat-dots me-2" style="color:var(--coral)"></i> Comentarios</div>
+  <div class="card-body">
+    <p class="mb-0" style="white-space:pre-wrap"><%= survey.comments %></p>
+  </div>
+</div>
+<% } %>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  var coral = '#E85D3A';
+  Chart.defaults.font = { family: "'Inter', sans-serif", size: 11 };
+  new Chart(document.getElementById('chartDetail'), {
+    type: 'radar',
+    data: {
+      labels: ['General', 'Evaluador', 'Proceso', 'Infraestructura', 'Comunicacion'],
+      datasets: [{
+        label: 'Puntaje',
+        data: [<%= survey.score_overall||0 %>, <%= survey.score_evaluator||0 %>, <%= survey.score_process||0 %>, <%= survey.score_infrastructure||0 %>, <%= survey.score_communication||0 %>],
+        backgroundColor: coral + '22', borderColor: coral, borderWidth: 2,
+        pointBackgroundColor: coral, pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { r: { beginAtZero: true, min: 0, max: 5, ticks: { stepSize: 1, font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(0,0,0,0.06)' }, pointLabels: { font: { size: 10, weight: '600' } }, angleLines: { color: 'rgba(0,0,0,0.06)' } } },
+      plugins: { legend: { display: false } }
+    }
+  });
+})();
+</script>
+
+<%- include('../partials/footer') %>
