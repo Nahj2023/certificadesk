@@ -103,7 +103,7 @@
           <tr><td colspan="7" class="empty-state"><i class="bi bi-people"></i>Sin participantes</td></tr>
         <% } else { participantes.forEach(p => { %>
           <tr>
-            <td class="text-muted"><%= p.rut %></td>
+            <td class="text-muted"><%= decrypt(p.rut) || '-' %></td>
             <td class="fw-bold"><%= p.nombre %></td>
             <td><%= p.tramo_franquicia %></td>
             <td><%= p.porcentaje_franquicia %>%</td>

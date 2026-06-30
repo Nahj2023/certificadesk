@@ -3,7 +3,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h4 class="mb-1">Reporte Mensual ChileValora</h4>
-    <span class="text-muted" style="font-size:0.85rem">CEC: <%= org.name %> — RUT: <%= org.rut || '-' %></span>
+    <span class="text-muted" style="font-size:0.85rem">CEC: <%= org.name %> — RUT: <%= decrypt(org.rut) || '-' %></span>
   </div>
   <div class="d-flex gap-2 align-items-center">
     <form method="GET" action="/reportes/chilevalora" class="d-flex gap-2">
@@ -63,7 +63,7 @@
             <% if (evaluadores.length === 0) { %>
               <tr><td colspan="3" class="empty-state"><i class="bi bi-person-badge"></i>Sin evaluadores en este periodo</td></tr>
             <% } else { evaluadores.forEach(e => { %>
-              <tr><td class="fw-bold"><%= e.name || '-' %></td><td class="text-muted"><%= e.rut || '-' %></td><td><%= e.evaluaciones %></td></tr>
+              <tr><td class="fw-bold"><%= e.name || '-' %></td><td class="text-muted"><%= decrypt(e.rut) || '-' %></td><td><%= e.evaluaciones %></td></tr>
             <% })} %>
           </tbody>
         </table>
@@ -83,7 +83,7 @@
         <% } else { evaluaciones.forEach(e => { %>
           <tr>
             <td class="fw-bold"><%= e.candidate_name || '-' %></td>
-            <td class="text-muted"><%= e.candidate_rut || '-' %></td>
+            <td class="text-muted"><%= decrypt(e.candidate_rut) || '-' %></td>
             <td><%= e.profile_name || '-' %></td>
             <td class="text-muted"><%= e.evaluator_name || '-' %></td>
             <td class="text-muted"><%= e.completed_at ? e.completed_at.substring(0,10) : '-' %></td>

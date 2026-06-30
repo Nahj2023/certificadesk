@@ -52,7 +52,7 @@
           <div class="card-header"><strong>Datos del Candidato</strong></div>
           <div class="card-body p-0">
             <table class="table table-sm mb-0">
-              <tr><th style="width:35%">RUT</th><td><%= candidate.rut || '-' %></td></tr>
+              <tr><th style="width:35%">RUT</th><td><%= decrypt(candidate.rut) || '-' %></td></tr>
               <tr><th>Email</th><td><%= candidate.email || '-' %></td></tr>
               <tr><th>Telefono</th><td><%= candidate.phone || '-' %></td></tr>
               <tr><th>Region</th><td><%= candidate.region || '-' %></td></tr>

@@ -16,7 +16,7 @@
       <% } else { evaluators.forEach(ev => { %>
         <tr>
           <td><a href="/evaluadores/<%= ev.id %>" class="fw-bold text-decoration-none"><%= ev.name %></a></td>
-          <td class="text-muted"><%= ev.rut || '-' %></td>
+          <td class="text-muted"><%= decrypt(ev.rut) || '-' %></td>
           <td><%= ev.specialties || '-' %></td>
           <td><span class="badge bg-<%= ev.contract_type === 'planta' ? 'primary' : ev.contract_type === 'honorarios' ? 'info' : 'secondary' %>"><%= ev.contract_type || '-' %></span></td>
           <td class="<%= ev.djs_expiry && new Date(ev.djs_expiry) < new Date() ? 'text-danger fw-bold' : 'text-muted' %>"><%= ev.djs_expiry || '-' %></td>

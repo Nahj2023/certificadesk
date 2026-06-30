@@ -69,7 +69,7 @@
       <div class="section-title">1. Centro de Evaluacion y Certificacion</div>
       <div class="info-grid">
         <div class="cell"><div class="cell-label">Nombre CEC</div><div class="cell-value"><%= org.name %></div></div>
-        <div class="cell"><div class="cell-label">RUT</div><div class="cell-value"><%= org.rut || '-' %></div></div>
+        <div class="cell"><div class="cell-label">RUT</div><div class="cell-value"><%= decrypt(org.rut) || '-' %></div></div>
         <div class="cell"><div class="cell-label">Region</div><div class="cell-value"><%= org.region || '-' %></div></div>
         <div class="cell"><div class="cell-label">Email</div><div class="cell-value"><%= org.email || '-' %></div></div>
       </div>
@@ -107,7 +107,7 @@
           <% participantes.forEach((p, i) => { %>
           <tr>
             <td><%= i + 1 %></td>
-            <td><%= p.rut %></td>
+            <td><%= decrypt(p.rut) || '-' %></td>
             <td><%= p.nombre %></td>
             <td><%= p.tramo_franquicia %></td>
             <td><%= p.porcentaje_franquicia %>%</td>

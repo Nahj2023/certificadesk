@@ -3,7 +3,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <div>
     <h4 class="mb-1"><%= evaluator.name %></h4>
-    <span class="text-muted" style="font-size:0.85rem">Ficha del evaluador — RUT: <%= evaluator.rut || 'No registrado' %></span>
+    <span class="text-muted" style="font-size:0.85rem">Ficha del evaluador — RUT: <%= decrypt(evaluator.rut) || 'No registrado' %></span>
   </div>
   <div class="d-flex gap-2">
     <a href="/evaluadores/<%= evaluator.id %>/evaluar" class="btn btn-primary"><i class="bi bi-clipboard-check"></i> Evaluar</a>
@@ -18,7 +18,7 @@
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
           <tr><td class="text-muted" style="width:40%">Nombre</td><td class="fw-bold"><%= evaluator.name %></td></tr>
-          <tr><td class="text-muted">RUT</td><td><%= evaluator.rut || '-' %></td></tr>
+          <tr><td class="text-muted">RUT</td><td><%= decrypt(evaluator.rut) || '-' %></td></tr>
           <tr><td class="text-muted">Email</td><td><%= evaluator.email || '-' %></td></tr>
           <tr><td class="text-muted">Telefono</td><td><%= evaluator.phone || '-' %></td></tr>
           <tr><td class="text-muted">Especialidades</td><td><%= evaluator.specialties || '-' %></td></tr>

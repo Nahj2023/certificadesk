@@ -57,7 +57,7 @@ router.get("/", (req, res) => {
   const complaintsTotal = db.prepare("SELECT COUNT(*) as c FROM complaints WHERE org_id=?").get(oid).c;
   const complaintsResolved = db.prepare("SELECT COUNT(*) as c FROM complaints WHERE org_id=? AND status='resuelto'").get(oid).c;
   const auditsCompleted = db.prepare("SELECT COUNT(*) as c FROM audits WHERE org_id=? AND status='completada'").get(oid).c;
-  const profilesCount = db.prepare("SELECT COUNT(*) as c FROM profiles WHERE org_id=?").get(oid).c;
+  const profilesCount = db.prepare("SELECT COUNT(*) as c FROM profiles WHERE active=1").get().c;
 
   const complianceChecks = [
     profilesCount > 0,                       // P1: Perfiles activos

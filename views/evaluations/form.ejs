@@ -16,7 +16,7 @@
           <div class="row g-3">
             <div class="col-md-6"><label class="form-label">Candidato *</label>
               <select name="candidate_id" class="form-select" required><option value="">Seleccionar...</option>
-                <% candidates.forEach(c => { %><option value="<%= c.id %>"><%= c.name %> (<%= c.rut || 'sin RUT' %>)</option><% }) %>
+                <% candidates.forEach(c => { %><option value="<%= c.id %>"><%= c.name %> (<%= decrypt(c.rut) || 'sin RUT' %>)</option><% }) %>
               </select>
             </div>
             <div class="col-md-6"><label class="form-label">Perfil ocupacional</label>

@@ -104,13 +104,13 @@
 
     <div class="cert-content">
       <div class="cert-header-label">Centro de Evaluacion y Certificacion</div>
-      <div class="cert-org"><%= org.name %> — RUT <%= org.rut || '-' %></div>
+      <div class="cert-org"><%= org.name %> — RUT <%= decrypt(org.rut) || '-' %></div>
       <div class="cert-title">Certificado de Competencia Laboral</div>
       <div class="cert-subtitle">Ley 20.267 — Sistema Nacional de Certificacion</div>
       <div class="cert-line"></div>
       <div class="cert-otorga">Se certifica que</div>
       <div class="cert-name"><%= candidate.name %></div>
-      <div class="cert-rut">RUT <%= candidate.rut || '-' %></div>
+      <div class="cert-rut">RUT <%= decrypt(candidate.rut) || '-' %></div>
       <div class="cert-perfil-label">Ha demostrado competencia en el perfil</div>
       <div class="cert-perfil"><%= candidate.profile_name || '-' %></div>
       <div class="cert-perfil-code"><%= candidate.profile_code || '' %><%= candidate.profile_sector ? ' — ' + candidate.profile_sector : '' %></div>
