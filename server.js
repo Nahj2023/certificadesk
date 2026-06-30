@@ -59,6 +59,7 @@ app.get("/privacidad", (req, res) => res.render("privacy"));
 app.use("/guia", require("./routes/agents-public"));
 
 // Protected
+app.use("/api", require("./routes/api-public"));
 app.use(requireAuth);
 app.use("/portal", require("./routes/portal"));
 app.use("/dashboard", (req,res,next) => { if(req.user.role==="evaluador") return res.redirect("/portal"); next(); }, require("./routes/dashboard"));
