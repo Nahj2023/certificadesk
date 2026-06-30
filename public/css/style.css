@@ -152,7 +152,7 @@ body {
   -ms-overflow-style: none;
 }
 .main-content::-webkit-scrollbar { display: none; }
-.main-content > .container-fluid { padding: 2rem 2.5rem; }
+.main-content > .container-fluid { padding: 2rem 2.5rem; max-width: 1400px; }
 
 /* ── Page titles ── */
 h4, .h4 { font-weight: 700; font-size: 1.35rem; color: var(--text); letter-spacing: -0.02em; }
@@ -710,9 +710,7 @@ a:hover { color: #D14E2E; }
 }
 
 /* ── Table responsive global ── */
-.card-body:has(> .table), .card-body.p-0 + .table, .card > .card-body {
-  overflow-x: auto;
-}
-.table { min-width: 600px; }
-.table td, .table th { white-space: nowrap; }
-.table td.wrap { white-space: normal; }
+.card-body { overflow-x: auto; }
+.table[data-enhance] { min-width: 600px; }
+.table[data-enhance] td, .table[data-enhance] th { white-space: nowrap; }
+.table td.wrap, .table:not([data-enhance]) td { white-space: normal; word-break: break-word; }
