@@ -13,6 +13,7 @@
     .no-print button, .no-print a { padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; border: none; }
     .no-print button { background: #E85D3A; color: #fff; }
     .no-print a { background: #fff; color: #333; border: 1px solid #ddd; }
+    .no-print .btn-pdf { background: #2ECC71; color: #fff; border: none; }
     .cert-page {
       width: 297mm; height: 210mm; margin: 20px auto; background: #fff;
       position: relative; overflow: hidden; box-shadow: 0 4px 30px rgba(0,0,0,0.1);
@@ -38,42 +39,48 @@
     }
     .cert-content {
       position: relative; z-index: 1; height: 100%;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 18mm 25mm; text-align: center;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 16mm 25mm 20mm; text-align: center;
+    }
+    .cert-header {
+      margin-bottom: auto;
     }
     .cert-header-label {
       font-size: 11px; font-weight: 700; letter-spacing: 0.25em;
       text-transform: uppercase; color: #E85D3A; margin-bottom: 4px;
     }
-    .cert-org { font-size: 13px; color: #636E72; font-weight: 500; margin-bottom: 16px; }
+    .cert-org { font-size: 13px; color: #636E72; font-weight: 500; margin-bottom: 14px; }
     .cert-title {
       font-size: 32px; font-weight: 800; color: #2D3436;
       letter-spacing: -0.02em; margin-bottom: 4px;
     }
     .cert-subtitle {
-      font-size: 14px; color: #636E72; font-weight: 400; margin-bottom: 24px;
+      font-size: 14px; color: #636E72; font-weight: 400;
       letter-spacing: 0.08em; text-transform: uppercase;
     }
-    .cert-line { width: 80px; height: 3px; background: #E85D3A; border-radius: 2px; margin: 0 auto 20px; }
-    .cert-otorga { font-size: 12px; color: #999; margin-bottom: 6px; }
+    .cert-body {
+      margin-bottom: auto;
+    }
+    .cert-line { width: 80px; height: 3px; background: #E85D3A; border-radius: 2px; margin: 0 auto 24px; }
+    .cert-otorga { font-size: 12px; color: #999; margin-bottom: 8px; }
     .cert-name {
       font-size: 36px; font-weight: 800; color: #E85D3A;
-      letter-spacing: -0.01em; margin-bottom: 4px;
+      letter-spacing: -0.01em; margin-bottom: 6px;
     }
-    .cert-rut { font-size: 13px; color: #636E72; margin-bottom: 18px; }
-    .cert-perfil-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2px; }
+    .cert-rut { font-size: 13px; color: #636E72; margin-bottom: 24px; }
+    .cert-perfil-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
     .cert-perfil {
-      font-size: 18px; font-weight: 700; color: #2D3436; margin-bottom: 4px;
+      font-size: 20px; font-weight: 700; color: #2D3436; margin-bottom: 4px;
     }
-    .cert-perfil-code { font-size: 12px; color: #636E72; margin-bottom: 16px; }
+    .cert-perfil-code { font-size: 12px; color: #636E72; margin-bottom: 20px; }
     .cert-score-box {
-      display: inline-flex; align-items: center; gap: 8px;
+      display: inline-flex; align-items: center; gap: 10px;
       background: rgba(46,204,113,0.08); border: 1.5px solid rgba(46,204,113,0.3);
-      border-radius: 12px; padding: 6px 18px; margin-bottom: 24px;
+      border-radius: 12px; padding: 8px 24px;
     }
-    .cert-score-box .score { font-size: 22px; font-weight: 800; color: #2ECC71; }
-    .cert-score-box .label { font-size: 11px; color: #27AE60; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-    .cert-firmas { display: flex; justify-content: center; gap: 80px; margin-top: auto; }
+    .cert-score-box .score { font-size: 24px; font-weight: 800; color: #2ECC71; }
+    .cert-score-box .label { font-size: 12px; color: #27AE60; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .cert-firmas { display: flex; justify-content: center; gap: 80px; }
     .cert-firma { text-align: center; min-width: 160px; }
     .cert-firma-line { width: 160px; border-top: 1.5px solid #2D3436; margin-bottom: 4px; }
     .cert-firma-name { font-size: 11px; font-weight: 700; color: #2D3436; }
@@ -89,7 +96,7 @@
 <body>
   <div class="no-print">
     <button onclick="window.print()">Imprimir</button>
-    <a href="/docs/pdf/certificado/<%= candidate.id %>" style="padding:10px 20px;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;border:none;background:#2ECC71;color:#fff">Descargar PDF</a>
+    <a href="/docs/pdf/certificado/<%= candidate.id %>" class="btn-pdf">Descargar PDF</a>
     <a href="/candidatos/<%= candidate.id %>">Volver</a>
   </div>
 
@@ -103,24 +110,29 @@
     <div class="cert-watermark">CERTIFICADO</div>
 
     <div class="cert-content">
-      <div class="cert-header-label">Centro de Evaluacion y Certificacion</div>
-      <div class="cert-org"><%= org.name %> — RUT <%= decrypt(org.rut) || '-' %></div>
-      <div class="cert-title">Certificado de Competencia Laboral</div>
-      <div class="cert-subtitle">Ley 20.267 — Sistema Nacional de Certificacion</div>
-      <div class="cert-line"></div>
-      <div class="cert-otorga">Se certifica que</div>
-      <div class="cert-name"><%= candidate.name %></div>
-      <div class="cert-rut">RUT <%= decrypt(candidate.rut) || '-' %></div>
-      <div class="cert-perfil-label">Ha demostrado competencia en el perfil</div>
-      <div class="cert-perfil"><%= candidate.profile_name || '-' %></div>
-      <div class="cert-perfil-code"><%= candidate.profile_code || '' %><%= candidate.profile_sector ? ' — ' + candidate.profile_sector : '' %></div>
-
-      <% if (evaluation && evaluation.score_ponderado) { %>
-      <div class="cert-score-box">
-        <span class="score"><%= evaluation.score_ponderado.toFixed(2) %>/4.0</span>
-        <span class="label">Competente</span>
+      <div class="cert-header">
+        <div class="cert-header-label">Centro de Evaluacion y Certificacion</div>
+        <div class="cert-org"><%= org.name %> — RUT <%= decrypt(org.rut) || '-' %></div>
+        <div class="cert-title">Certificado de Competencia Laboral</div>
+        <div class="cert-subtitle">Ley 20.267 — Sistema Nacional de Certificacion</div>
       </div>
-      <% } %>
+
+      <div class="cert-body">
+        <div class="cert-line"></div>
+        <div class="cert-otorga">Se certifica que</div>
+        <div class="cert-name"><%= candidate.name %></div>
+        <div class="cert-rut">RUT <%= decrypt(candidate.rut) || '-' %></div>
+        <div class="cert-perfil-label">Ha demostrado competencia en el perfil</div>
+        <div class="cert-perfil"><%= candidate.profile_name || '-' %></div>
+        <div class="cert-perfil-code"><%= candidate.profile_code || '' %><%= candidate.profile_sector ? ' — ' + candidate.profile_sector : '' %></div>
+
+        <% if (evaluation && evaluation.score_ponderado) { %>
+        <div class="cert-score-box">
+          <span class="score"><%= evaluation.score_ponderado.toFixed(2) %>/4.0</span>
+          <span class="label">Competente</span>
+        </div>
+        <% } %>
+      </div>
 
       <div class="cert-firmas">
         <div class="cert-firma">
