@@ -529,3 +529,79 @@ a { color: var(--coral); text-decoration: none; }
     border-radius: 12px;
   }
 }
+
+
+/* D016 Procedures Grid */
+.d016-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 32px;
+}
+.d016-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+.d016-card:hover {
+  border-color: #E85D3A;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(232,93,58,0.12);
+}
+.d016-num {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-size: 28px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.05);
+  line-height: 1;
+}
+.d016-check {
+  width: 22px;
+  height: 22px;
+  background: #27ae60;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.d016-card h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.d016-card p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.d016-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.d016-tags span {
+  font-size: 11px;
+  background: rgba(232,93,58,0.12);
+  color: #E85D3A;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+@media (max-width: 992px) {
+  .d016-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 576px) {
+  .d016-grid { grid-template-columns: 1fr; gap: 12px; }
+  .d016-card { padding: 16px; }
+}
