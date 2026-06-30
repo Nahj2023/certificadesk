@@ -2,13 +2,6 @@ const router = require("express").Router();
 const { getDb } = require("../database/db");
 
 router.get("/", (req, res) => {
-  if (req.cookies && req.cookies.token) {
-    try {
-      const jwt = require("jsonwebtoken");
-      jwt.verify(req.cookies.token, process.env.JWT_SECRET);
-      return res.redirect("/dashboard");
-    } catch {}
-  }
   res.render("landing");
 });
 
