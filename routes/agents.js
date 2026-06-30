@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { getDb, logActivity } = require("../database/db");
-const { TOOL_DEFINITIONS, executeTool } = require("../services/agent-tools");
+const { TOOL_DEFINITIONS, executeTool, buildPageContext } = require("../services/agent-tools");
 const Groq = require("groq-sdk");
 
 let groq;
@@ -10,7 +10,7 @@ try {
   groq = new (Groq.default || Groq)({ apiKey: process.env.GROQ_API_KEY });
 }
 
-// Hub — lista de agentes
+// Hub
 router.get("/", (req, res) => {
   const db = getDb();
   const agents = db.prepare("SELECT * FROM ai_agents WHERE active=1 AND is_public=0 ORDER BY id").all();
@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
   res.render("agents/hub", { agents, conversations });
 });
 
-// Chat — nueva conversacion o existente
+// Chat
 router.get(["/:agentId/chat", "/:agentId/chat/:convId"], (req, res) => {
   const db = getDb();
   const agent = db.prepare("SELECT * FROM ai_agents WHERE id=? AND active=1").get(req.params.agentId);
@@ -42,7 +42,10 @@ router.get(["/:agentId/chat", "/:agentId/chat/:convId"], (req, res) => {
     "SELECT id, title, created_at FROM ai_conversations WHERE agent_id=? AND org_id=? AND user_id=? ORDER BY updated_at DESC LIMIT 20"
   ).all(agent.id, req.user.org_id, req.user.id);
 
-  res.render("agents/chat", { agent, conversation, messages, conversations });
+  res.render("agents/chat", {
+    agent, conversation, messages, conversations,
+    contextPath: req.query.context || null
+  });
 });
 
 // API — enviar mensaje
@@ -52,37 +55,39 @@ router.post("/api/chat", async (req, res) => {
   }
 
   const db = getDb();
-  const { agent_id, conversation_id, content } = req.body;
+  const { agent_id, conversation_id, content, context_path, context_data } = req.body;
 
   if (!content || !content.trim()) return res.status(400).json({ error: "Mensaje vacio" });
 
   const agent = db.prepare("SELECT * FROM ai_agents WHERE id=? AND active=1").get(agent_id);
   if (!agent) return res.status(404).json({ error: "Agente no encontrado" });
 
-  // Create or get conversation
   let convId = conversation_id ? parseInt(conversation_id) : null;
   if (!convId) {
     const r = db.prepare(
-      "INSERT INTO ai_conversations (org_id, user_id, agent_id, title, context_path) VALUES (?,?,?,?,?)"
-    ).run(req.user.org_id, req.user.id, agent_id, content.substring(0, 80), req.body.context_path || null);
+      "INSERT INTO ai_conversations (org_id, user_id, agent_id, title, context_path, context_data) VALUES (?,?,?,?,?,?)"
+    ).run(req.user.org_id, req.user.id, agent_id, content.substring(0, 80), context_path || null, context_data ? JSON.stringify(context_data) : null);
     convId = r.lastInsertRowid;
   }
 
-  // Save user message
   db.prepare("INSERT INTO ai_messages (conversation_id, role, content) VALUES (?,?,?)").run(convId, "user", content.trim());
 
-  // Load history (last 20 messages for context window)
   const history = db.prepare(
     "SELECT role, content FROM ai_messages WHERE conversation_id=? AND role IN ('user','assistant') ORDER BY created_at DESC LIMIT 20"
   ).all(convId).reverse();
 
-  // Build Groq messages
+  // Build system prompt with page context
+  let systemPrompt = agent.system_prompt;
+  const convCtxPath = context_path || db.prepare("SELECT context_path FROM ai_conversations WHERE id=?").get(convId)?.context_path;
+  if (convCtxPath) {
+    systemPrompt += buildPageContext(convCtxPath, context_data, req.user.org_id);
+  }
+
   const groqMessages = [
-    { role: "system", content: agent.system_prompt },
+    { role: "system", content: systemPrompt },
     ...history
   ];
 
-  // Determine tools
   const enabledTools = agent.tools_enabled ? JSON.parse(agent.tools_enabled) : [];
   const tools = enabledTools.length > 0
     ? TOOL_DEFINITIONS.filter(t => enabledTools.includes(t.function.name))
@@ -100,7 +105,6 @@ router.post("/api/chat", async (req, res) => {
     let toolResults = [];
     let iterations = 0;
 
-    // Tool execution loop (max 3 iterations to prevent infinite loops)
     while (response.choices[0].message.tool_calls && iterations < 3) {
       iterations++;
       const assistantMsg = response.choices[0].message;
@@ -120,6 +124,7 @@ router.post("/api/chat", async (req, res) => {
       response = await groq.chat.completions.create({
         model: agent.model || "llama-3.3-70b-versatile",
         messages: groqMessages,
+        tools: tools && tools.length > 0 ? tools : undefined,
         temperature: agent.temperature || 0.3,
         max_tokens: agent.max_tokens || 2048,
       });
@@ -128,17 +133,15 @@ router.post("/api/chat", async (req, res) => {
     const assistantContent = response.choices[0].message.content || "";
     const tokensUsed = response.usage?.total_tokens || 0;
 
-    // Save assistant message
     db.prepare(
       "INSERT INTO ai_messages (conversation_id, role, content, tool_calls, tokens_used) VALUES (?,?,?,?,?)"
     ).run(convId, "assistant", assistantContent,
       toolResults.length > 0 ? JSON.stringify(toolResults) : null,
       tokensUsed);
 
-    // Update conversation timestamp
     db.prepare("UPDATE ai_conversations SET updated_at=CURRENT_TIMESTAMP WHERE id=?").run(convId);
 
-    logActivity(req.user.org_id, req.user.id, "chat_ia", "agente", agent.id, `${agent.code}: ${content.substring(0, 50)}`);
+    logActivity(req.user.org_id, req.user.id, "chat_ia", "agente", agent.id, agent.code + ": " + content.substring(0, 50));
 
     res.json({
       conversation_id: convId,

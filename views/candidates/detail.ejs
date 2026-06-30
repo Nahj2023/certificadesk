@@ -17,6 +17,13 @@
     <% } %>
     <a href="/candidatos/<%= candidate.id %>/editar" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i> Editar</a>
     <a href="/candidatos" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+    <div class="dropdown">
+      <button class="btn btn-sm btn-outline-warning dropdown-toggle" data-bs-toggle="dropdown"><i class="bi bi-robot me-1"></i> Consultar IA</button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="/agentes/1/chat?context=/candidatos/<%= candidate.id %>"><i class="bi bi-book me-1"></i> Norma — Normativa</a></li>
+        <li><a class="dropdown-item" href="/agentes/2/chat?context=/candidatos/<%= candidate.id %>"><i class="bi bi-clipboard-check me-1"></i> Eva — Evaluacion</a></li>
+      </ul>
+    </div>
   </div>
 </div>
 

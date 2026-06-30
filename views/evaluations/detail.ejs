@@ -16,6 +16,14 @@
     <a href="/docs/informe/<%= evaluation.id %>" target="_blank" class="btn btn-sm btn-outline-success"><i class="bi bi-eye"></i> Ver</a>
     <a href="/docs/pdf/informe/<%= evaluation.id %>" class="btn btn-sm btn-success"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
     <a href="/evaluaciones" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i> Volver</a>
+    <div class="dropdown">
+      <button class="btn btn-sm btn-outline-warning dropdown-toggle" data-bs-toggle="dropdown"><i class="bi bi-robot me-1"></i> Consultar IA</button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="/agentes/2/chat?context=/evaluaciones/<%= evaluation.id %>"><i class="bi bi-clipboard-check me-1"></i> Eva — Asistente Evaluacion</a></li>
+        <li><a class="dropdown-item" href="/agentes/1/chat?context=/evaluaciones/<%= evaluation.id %>"><i class="bi bi-book me-1"></i> Norma — Normativa</a></li>
+        <li><a class="dropdown-item" href="/agentes/3/chat?context=/evaluaciones/<%= evaluation.id %>"><i class="bi bi-search me-1"></i> Auditor — Pre-auditoria</a></li>
+      </ul>
+    </div>
   </div>
 </div>
 
