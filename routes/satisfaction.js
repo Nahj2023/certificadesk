@@ -8,7 +8,30 @@ router.get("/", (req, res) => {
     "SELECT s.*, c.name as candidate_name FROM satisfaction s LEFT JOIN candidates c ON s.candidate_id=c.id WHERE s.org_id=? ORDER BY s.created_at DESC"
   ).all(oid);
   const avg = db.prepare("SELECT AVG(score_overall) as avg, COUNT(*) as total FROM satisfaction WHERE org_id=?").get(oid);
-  res.render("satisfaction/list", { surveys, avg });
+
+  const dims = db.prepare(
+    `SELECT AVG(score_overall) as general, AVG(score_evaluator) as evaluador,
+     AVG(score_process) as proceso, AVG(score_infrastructure) as infraestructura,
+     AVG(score_communication) as comunicacion
+     FROM satisfaction WHERE org_id=?`
+  ).get(oid);
+
+  const satDims = {
+    general: dims.general ? Number(dims.general).toFixed(1) : 0,
+    evaluador: dims.evaluador ? Number(dims.evaluador).toFixed(1) : 0,
+    proceso: dims.proceso ? Number(dims.proceso).toFixed(1) : 0,
+    infraestructura: dims.infraestructura ? Number(dims.infraestructura).toFixed(1) : 0,
+    comunicacion: dims.comunicacion ? Number(dims.comunicacion).toFixed(1) : 0
+  };
+
+  // Trend by month
+  const trend = db.prepare(
+    `SELECT strftime('%Y-%m', created_at) as month, AVG(score_overall) as avg, COUNT(*) as total
+     FROM satisfaction WHERE org_id=?
+     GROUP BY month ORDER BY month DESC LIMIT 6`
+  ).all(oid).reverse();
+
+  res.render("satisfaction/list", { surveys, avg, satDims, trend });
 });
 
 router.get("/nueva", (req, res) => {

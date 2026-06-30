@@ -7,24 +7,72 @@
   </div>
   <a href="/satisfaccion/nueva" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Nueva Encuesta</a>
 </div>
+
 <% if (avg.total > 0) { %>
+<!-- KPI + Charts -->
 <div class="row g-3 mb-4">
   <div class="col-md-3">
-    <div class="card text-center"><div class="card-body">
-      <div class="stat-icon coral"><i class="bi bi-star-fill"></i></div>
-      <div class="fs-3 fw-bold mt-2"><%= avg.avg ? Number(avg.avg).toFixed(1) : '-' %>/5</div>
-      <div class="text-muted small">Promedio General</div>
-    </div></div>
+    <div class="card kpi-card h-100">
+      <div class="card-body d-flex align-items-center gap-3 py-3">
+        <div class="kpi-gauge">
+          <svg viewBox="0 0 80 80" style="width:80px;height:80px">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="7"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="<%= Number(avg.avg) >= 4 ? '#2ECC71' : Number(avg.avg) >= 3 ? '#F39C12' : '#E74C3C' %>"
+              stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="<%= (Number(avg.avg) / 5 * 213.6).toFixed(1) %> 213.6"
+              transform="rotate(-90 40 40)"/>
+            <text x="40" y="37" text-anchor="middle" font-size="16" font-weight="800" fill="#2D3436"><%= avg.avg ? Number(avg.avg).toFixed(1) : '-' %></text>
+            <text x="40" y="50" text-anchor="middle" font-size="7" font-weight="600" fill="#636E72">/5.0</text>
+          </svg>
+        </div>
+        <div>
+          <div class="kpi-label">Promedio General</div>
+          <div class="kpi-detail"><%= avg.total %> encuestas</div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="col-md-3">
-    <div class="card text-center"><div class="card-body">
-      <div class="stat-icon green"><i class="bi bi-clipboard-check"></i></div>
-      <div class="fs-3 fw-bold mt-2"><%= avg.total %></div>
-      <div class="text-muted small">Total Encuestas</div>
-    </div></div>
+  <div class="col-md-5">
+    <div class="card h-100">
+      <div class="card-header py-2"><strong><i class="bi bi-hexagon"></i> Satisfaccion por Dimension</strong></div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:200px">
+        <canvas id="chartSatRadar"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header py-2"><strong><i class="bi bi-graph-up"></i> Tendencia Mensual</strong></div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:200px">
+        <canvas id="chartSatTrend"></canvas>
+      </div>
+    </div>
   </div>
 </div>
+
+<!-- Dimension bars -->
+<div class="row g-3 mb-4">
+  <% const dimNames = ['General','Evaluador','Proceso','Infraestructura','Comunicacion']; %>
+  <% const dimKeys = ['general','evaluador','proceso','infraestructura','comunicacion']; %>
+  <% const dimIcons = ['star-fill','person-check','gear','building','chat-dots']; %>
+  <% dimKeys.forEach(function(key, i) { %>
+  <div class="col">
+    <div class="card text-center">
+      <div class="card-body py-3">
+        <i class="bi bi-<%= dimIcons[i] %> mb-2" style="font-size:1.2rem;color:var(--coral)"></i>
+        <div class="fw-bold" style="font-size:1.1rem"><%= satDims[key] || '-' %><small class="text-muted">/5</small></div>
+        <div style="font-size:0.7rem;text-transform:uppercase;font-weight:700;color:var(--text-secondary);letter-spacing:0.03em"><%= dimNames[i] %></div>
+        <div class="mt-2" style="height:4px;border-radius:2px;background:rgba(0,0,0,0.06);overflow:hidden">
+          <div style="height:100%;width:<%= ((satDims[key]||0)/5*100).toFixed(0) %>%;background:<%= Number(satDims[key]) >= 4 ? '#2ECC71' : Number(satDims[key]) >= 3 ? '#F39C12' : '#E74C3C' %>;border-radius:2px;transition:width 0.6s"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }) %>
+</div>
 <% } %>
+
+<!-- Table -->
 <div class="card"><div class="card-body p-0">
   <table class="table table-hover mb-0" data-enhance>
     <thead><tr><th>Candidato</th><th>General</th><th>Evaluador</th><th>Proceso</th><th>Infraestructura</th><th>Comunicacion</th><th>Fecha</th></tr></thead>
@@ -45,4 +93,64 @@
     </tbody>
   </table>
 </div></div>
+
+<% if (avg.total > 0) { %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+  var coral = '#E85D3A', green = '#2ECC71', orange = '#F39C12';
+  Chart.defaults.font = { family: "'Inter', sans-serif", size: 11 };
+  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(30,35,40,0.92)';
+  Chart.defaults.plugins.tooltip.cornerRadius = 8;
+
+  // Radar
+  var satData = <%- JSON.stringify(satDims) %>;
+  new Chart(document.getElementById('chartSatRadar'), {
+    type: 'radar',
+    data: {
+      labels: ['General', 'Evaluador', 'Proceso', 'Infraestructura', 'Comunicacion'],
+      datasets: [{
+        label: 'Promedio',
+        data: [satData.general, satData.evaluador, satData.proceso, satData.infraestructura, satData.comunicacion],
+        backgroundColor: coral + '22', borderColor: coral, borderWidth: 2,
+        pointBackgroundColor: coral, pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 5
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { r: { beginAtZero: true, min: 0, max: 5, ticks: { stepSize: 1, font: { size: 9 }, backdropColor: 'transparent' }, grid: { color: 'rgba(0,0,0,0.06)' }, pointLabels: { font: { size: 10, weight: '600' }, color: '#636E72' }, angleLines: { color: 'rgba(0,0,0,0.06)' } } },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // Trend
+  var trendData = <%- JSON.stringify(trend) %>;
+  if (trendData.length > 0) {
+    var ctx = document.getElementById('chartSatTrend').getContext('2d');
+    var grad = ctx.createLinearGradient(0,0,0,180);
+    grad.addColorStop(0, coral + '44'); grad.addColorStop(1, coral + '05');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: trendData.map(function(d){return d.month}),
+        datasets: [{
+          label: 'Promedio',
+          data: trendData.map(function(d){return Number(d.avg).toFixed(1)}),
+          borderColor: coral, backgroundColor: grad, fill: true,
+          tension: 0.4, pointRadius: 5, pointBackgroundColor: '#fff', pointBorderColor: coral, pointBorderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: { y: { min: 0, max: 5, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.04)' } }, x: { grid: { display: false } } },
+        plugins: { legend: { display: false } }
+      }
+    });
+  } else {
+    document.getElementById('chartSatTrend').parentElement.innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-graph-up" style="font-size:1.5rem;opacity:0.3"></i><br><span style="font-size:0.8rem">Sin tendencia</span></div>';
+  }
+})();
+</script>
+<% } %>
+
 <%- include('../partials/footer') %>
