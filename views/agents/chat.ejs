@@ -36,6 +36,9 @@
         </div>
       </div>
       <% if (conversation) { %>
+      <a href="/agentes/api/conversations/<%= conversation.id %>/export" class="btn btn-sm btn-outline-success" title="Exportar HTML">
+        <i class="bi bi-download"></i>
+      </a>
       <button class="btn btn-sm btn-outline-danger" onclick="deleteConversation(<%= conversation.id %>)" title="Eliminar conversacion">
         <i class="bi bi-trash"></i>
       </button>
@@ -107,7 +110,7 @@
                 <% }) %>
               </div>
               <% } catch(e) {} } %>
-              <div class="msg-bubble msg-bubble-assistant markdown-body"><%= m.content %></div>
+              <div class="msg-bubble msg-bubble-assistant markdown-body"><%= m.content %><button class="fav-btn<%= m.is_favorite ? ' active' : ''%>" onclick="toggleFav(this,<%= m.id %>)" title="Favorito"><i class="bi bi-star<%= m.is_favorite ? '-fill' : ''%>"></i></button></div>
             </div>
           </div>
           <% } %>
@@ -159,7 +162,7 @@ function sendSuggestion(btn) {
   sendMessage(new Event('submit'));
 }
 
-function appendMessage(role, content, toolResults) {
+function appendMessage(role, content, toolResults, msgId) {
   // Remove welcome if present
   const welcome = chatMessages.querySelector('.welcome-msg');
   if (welcome) welcome.remove();
@@ -178,12 +181,22 @@ function appendMessage(role, content, toolResults) {
       ).join('') + '</div>';
     }
     const rendered = marked.parse(content || '');
+    const favHtml = msgId ? '<button class="fav-btn" onclick="toggleFav(this,' + msgId + ')" title="Favorito"><i class="bi bi-star"></i></button>' : '';
     div.innerHTML = '<span class="msg-avatar-sm"><%= agent.avatar || "🤖" %></span><div>' +
-      toolHtml + '<div class="msg-bubble msg-bubble-assistant markdown-body">' + rendered + '</div></div>';
+      toolHtml + '<div class="msg-bubble msg-bubble-assistant markdown-body">' + rendered + favHtml + '</div></div>';
   }
 
   chatMessages.insertBefore(div, typingIndicator);
   scrollToBottom();
+}
+
+async function toggleFav(btn, msgId) {
+  const res = await fetch('/agentes/api/messages/' + msgId + '/favorite', { method: 'POST', headers: {'Content-Type':'application/json'} });
+  const d = await res.json();
+  if (d.ok) {
+    btn.querySelector('i').className = d.is_favorite ? 'bi bi-star-fill' : 'bi bi-star';
+    btn.classList.toggle('active', d.is_favorite);
+  }
 }
 
 function escapeHtml(text) {
@@ -230,7 +243,7 @@ async function sendMessage(e) {
         CONV_ID = data.conversation_id;
         history.replaceState(null, '', '/agentes/' + AGENT_ID + '/chat/' + CONV_ID);
       }
-      appendMessage('assistant', data.content, data.tool_results);
+      appendMessage('assistant', data.content, data.tool_results, data.msg_id);
     }
   } catch (err) {
     appendMessage('assistant', '⚠️ Error de conexion: ' + err.message);
@@ -315,6 +328,12 @@ chatInput.addEventListener('input', function() {
   align-items: center;
   flex-shrink: 0;
 }
+.fav-btn {
+  background: none; border: none; cursor: pointer; font-size: 0.75rem;
+  color: #CCC; padding: 2px 4px; float: right; margin-top: -2px;
+}
+.fav-btn:hover, .fav-btn.active { color: #FFD700; }
+.fav-btn.active i { color: #FFD700; }
 .agent-avatar-sm {
   font-size: 1.5rem;
   width: 38px;

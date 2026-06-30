@@ -1,0 +1,180 @@
+<div id="ai-widget" style="display:none">
+  <button id="ai-widget-btn" onclick="toggleWidget()">
+    <i class="bi bi-robot" id="ai-widget-icon"></i>
+    <span id="ai-widget-close" style="display:none">&times;</span>
+  </button>
+  <div id="ai-widget-panel">
+    <div class="ai-w-header">
+      <span id="ai-w-avatar">📜</span>
+      <div>
+        <strong id="ai-w-name">Norma</strong>
+        <small class="d-block text-muted" style="font-size:0.7rem" id="ai-w-desc">Normativa ChileValora</small>
+      </div>
+      <select id="ai-w-select" class="form-select form-select-sm" style="width:auto;font-size:0.75rem;margin-left:auto" onchange="switchWidgetAgent()"></select>
+    </div>
+    <div id="ai-w-messages"></div>
+    <form onsubmit="sendWidgetMsg(event)" class="ai-w-input">
+      <input type="text" id="ai-w-input" placeholder="Pregunta algo..." autocomplete="off">
+      <button type="submit"><i class="bi bi-send-fill"></i></button>
+    </form>
+  </div>
+</div>
+
+<style>
+#ai-widget { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+#ai-widget-btn {
+  width: 52px; height: 52px; border-radius: 50%; border: none;
+  background: var(--coral, #E85D3A); color: white; font-size: 1.4rem;
+  cursor: pointer; box-shadow: 0 4px 14px rgba(232,93,58,0.4);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s;
+}
+#ai-widget-btn:hover { transform: scale(1.08); }
+#ai-widget-panel {
+  display: none; position: absolute; bottom: 62px; right: 0;
+  width: 360px; max-height: 480px; background: white;
+  border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  flex-direction: column; overflow: hidden;
+}
+#ai-widget-panel.open { display: flex; }
+.ai-w-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-bottom: 1px solid #EEE;
+  font-size: 0.85rem;
+}
+.ai-w-header span:first-child { font-size: 1.3rem; }
+#ai-w-messages {
+  flex: 1; overflow-y: auto; padding: 12px;
+  min-height: 200px; max-height: 320px;
+  font-size: 0.83rem; line-height: 1.4;
+}
+.ai-w-msg { margin-bottom: 10px; }
+.ai-w-msg.user { text-align: right; }
+.ai-w-msg .w-bubble {
+  display: inline-block; max-width: 85%; padding: 7px 11px;
+  border-radius: 12px; text-align: left;
+}
+.ai-w-msg.user .w-bubble { background: var(--coral, #E85D3A); color: white; border-bottom-right-radius: 3px; }
+.ai-w-msg.assistant .w-bubble { background: #F5F5F5; color: #333; border-bottom-left-radius: 3px; }
+.ai-w-msg.assistant .w-bubble p { margin: 0 0 4px; }
+.ai-w-msg.assistant .w-bubble p:last-child { margin: 0; }
+.ai-w-input {
+  display: flex; gap: 6px; padding: 8px 12px;
+  border-top: 1px solid #EEE;
+}
+.ai-w-input input {
+  flex: 1; border: 1px solid #DDD; border-radius: 8px;
+  padding: 6px 10px; font-size: 0.82rem; outline: none;
+}
+.ai-w-input input:focus { border-color: var(--coral, #E85D3A); }
+.ai-w-input button {
+  background: var(--coral, #E85D3A); border: none; color: white;
+  border-radius: 8px; width: 34px; cursor: pointer; font-size: 0.8rem;
+}
+.ai-w-typing { color: #AAA; font-style: italic; font-size: 0.78rem; padding: 4px 0; }
+@media (max-width: 480px) {
+  #ai-widget-panel { width: calc(100vw - 40px); right: -10px; }
+}
+</style>
+
+<script>
+(function() {
+  const widget = document.getElementById('ai-widget');
+  const isAgentPage = window.location.pathname.startsWith('/agentes');
+  if (isAgentPage) return;
+  widget.style.display = 'block';
+
+  let wAgents = [];
+  let wAgentId = null;
+  let wConvId = null;
+
+  fetch('/agentes/api/widget-agents')
+    .then(r => r.json())
+    .then(agents => {
+      wAgents = agents;
+      const sel = document.getElementById('ai-w-select');
+      agents.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.id;
+        opt.textContent = a.avatar + ' ' + a.name.split(' — ')[0];
+        sel.appendChild(opt);
+      });
+      if (agents.length > 0) {
+        wAgentId = agents[0].id;
+        updateWidgetHeader(agents[0]);
+      }
+    })
+    .catch(() => {});
+
+  window.toggleWidget = function() {
+    const panel = document.getElementById('ai-widget-panel');
+    const icon = document.getElementById('ai-widget-icon');
+    const close = document.getElementById('ai-widget-close');
+    if (panel.classList.contains('open')) {
+      panel.classList.remove('open');
+      icon.style.display = '';
+      close.style.display = 'none';
+    } else {
+      panel.classList.add('open');
+      icon.style.display = 'none';
+      close.style.display = '';
+      document.getElementById('ai-w-input').focus();
+    }
+  };
+
+  window.switchWidgetAgent = function() {
+    const sel = document.getElementById('ai-w-select');
+    wAgentId = parseInt(sel.value);
+    wConvId = null;
+    document.getElementById('ai-w-messages').innerHTML = '';
+    const agent = wAgents.find(a => a.id === wAgentId);
+    if (agent) updateWidgetHeader(agent);
+  };
+
+  function updateWidgetHeader(agent) {
+    document.getElementById('ai-w-avatar').textContent = agent.avatar || '🤖';
+    document.getElementById('ai-w-name').textContent = agent.name.split(' — ')[0];
+    document.getElementById('ai-w-desc').textContent = agent.description.substring(0, 50);
+  }
+
+  window.sendWidgetMsg = async function(e) {
+    e.preventDefault();
+    const input = document.getElementById('ai-w-input');
+    const content = input.value.trim();
+    if (!content || !wAgentId) return;
+    input.value = '';
+
+    const msgs = document.getElementById('ai-w-messages');
+    msgs.innerHTML += '<div class="ai-w-msg user"><div class="w-bubble">' + escHtml(content) + '</div></div>';
+    msgs.innerHTML += '<div class="ai-w-typing" id="w-typing">Pensando...</div>';
+    msgs.scrollTop = msgs.scrollHeight;
+
+    try {
+      const contextPath = window.location.pathname;
+      const res = await fetch('/agentes/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ agent_id: wAgentId, conversation_id: wConvId, content, context_path: contextPath })
+      });
+      const data = await res.json();
+      document.getElementById('w-typing')?.remove();
+
+      if (data.error) {
+        msgs.innerHTML += '<div class="ai-w-msg assistant"><div class="w-bubble">Error: ' + escHtml(data.error) + '</div></div>';
+      } else {
+        wConvId = data.conversation_id;
+        const parsed = typeof marked !== 'undefined' ? marked.parse(data.content) : data.content.replace(/\n/g, '<br>');
+        msgs.innerHTML += '<div class="ai-w-msg assistant"><div class="w-bubble">' + parsed + '</div></div>';
+      }
+      msgs.scrollTop = msgs.scrollHeight;
+    } catch {
+      document.getElementById('w-typing')?.remove();
+      msgs.innerHTML += '<div class="ai-w-msg assistant"><div class="w-bubble">Error de conexion</div></div>';
+    }
+  };
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+})();
+</script>

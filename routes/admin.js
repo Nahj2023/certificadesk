@@ -322,4 +322,58 @@ function getRoles() {
   ];
 }
 
+
+// GET /admin/agentes
+router.get('/agentes', (req, res) => {
+  const agents = getDb().prepare('SELECT * FROM ai_agents ORDER BY id').all();
+  res.render('admin/agents', { agents });
+});
+
+// GET /admin/agentes/nuevo
+router.get('/agentes/nuevo', (req, res) => {
+  res.render('admin/agent-form', { agent: null });
+});
+
+// GET /admin/agentes/:id
+router.get('/agentes/:id', (req, res) => {
+  const agent = getDb().prepare('SELECT * FROM ai_agents WHERE id=?').get(req.params.id);
+  if (!agent) return res.redirect('/admin/agentes');
+  res.render('admin/agent-form', { agent });
+});
+
+// POST /admin/agentes (create)
+router.post('/agentes', (req, res) => {
+  const { code, name, avatar, description, model, temperature, max_tokens, system_prompt, tools_enabled, is_public, active } = req.body;
+  const db = getDb();
+  db.prepare('INSERT INTO ai_agents (org_id, code, name, avatar, description, model, temperature, max_tokens, system_prompt, tools_enabled, is_public, active) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)').run(
+    req.user.org_id, code, name, avatar || '🤖', description, model, parseFloat(temperature) || 0.3, parseInt(max_tokens) || 2048, system_prompt, tools_enabled || '[]', is_public ? 1 : 0, active ? 1 : 0
+  );
+  logActivity(req.user.org_id, req.user.id, 'crear', 'agente_ia', null, 'Nuevo agente: ' + code);
+  res.flash('Agente creado');
+  res.redirect('/admin/agentes');
+});
+
+// POST /admin/agentes/:id (update)
+router.post('/agentes/:id', (req, res) => {
+  const { code, name, avatar, description, model, temperature, max_tokens, system_prompt, tools_enabled, is_public, active } = req.body;
+  const db = getDb();
+  db.prepare('UPDATE ai_agents SET code=?, name=?, avatar=?, description=?, model=?, temperature=?, max_tokens=?, system_prompt=?, tools_enabled=?, is_public=?, active=? WHERE id=?').run(
+    code, name, avatar || '🤖', description, model, parseFloat(temperature) || 0.3, parseInt(max_tokens) || 2048, system_prompt, tools_enabled || '[]', is_public ? 1 : 0, active ? 1 : 0, req.params.id
+  );
+  logActivity(req.user.org_id, req.user.id, 'editar', 'agente_ia', parseInt(req.params.id), 'Editado: ' + code);
+  res.flash('Agente actualizado');
+  res.redirect('/admin/agentes');
+});
+
+// POST /admin/agentes/:id/toggle
+router.post('/agentes/:id/toggle', (req, res) => {
+  const db = getDb();
+  const agent = db.prepare('SELECT id, active, code FROM ai_agents WHERE id=?').get(req.params.id);
+  if (agent) {
+    db.prepare('UPDATE ai_agents SET active=? WHERE id=?').run(agent.active ? 0 : 1, agent.id);
+    logActivity(req.user.org_id, req.user.id, 'toggle', 'agente_ia', agent.id, agent.code + ': ' + (agent.active ? 'desactivado' : 'activado'));
+  }
+  res.redirect('/admin/agentes');
+});
+
 module.exports = router;

@@ -1,0 +1,48 @@
+<% const title = 'Admin — Agentes IA' %>
+<%- include('../partials/header', { title }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="mb-0"><i class="bi bi-robot me-1"></i> Administrar Agentes IA</h4>
+  <a href="/admin/agentes/nuevo" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i>Nuevo Agente</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0">
+      <thead><tr><th></th><th>Nombre</th><th>Modelo</th><th>Tools</th><th>Publico</th><th>Estado</th><th></th></tr></thead>
+      <tbody>
+      <% agents.forEach(a => { %>
+        <% const tools = a.tools_enabled ? JSON.parse(a.tools_enabled).length : 0; %>
+        <tr>
+          <td style="font-size:1.5rem"><%= a.avatar || '🤖' %></td>
+          <td>
+            <strong><%= a.name %></strong>
+            <small class="d-block text-muted"><%= a.code %></small>
+          </td>
+          <td><small><%= (a.model || 'llama-3.3-70b').substring(0, 20) %></small></td>
+          <td><span class="badge bg-light text-dark"><%= tools %></span></td>
+          <td>
+            <% if (a.is_public) { %>
+              <span class="badge bg-success">Si</span>
+            <% } else { %>
+              <span class="badge bg-secondary">No</span>
+            <% } %>
+          </td>
+          <td>
+            <form method="POST" action="/admin/agentes/<%= a.id %>/toggle" style="display:inline">
+              <button type="submit" class="btn btn-sm <%= a.active ? 'btn-success' : 'btn-outline-secondary' %>">
+                <%= a.active ? 'Activo' : 'Inactivo' %>
+              </button>
+            </form>
+          </td>
+          <td>
+            <a href="/admin/agentes/<%= a.id %>" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+          </td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

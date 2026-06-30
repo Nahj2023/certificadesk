@@ -55,6 +55,7 @@ app.use("/", require("./routes/landing"));
 app.use("/", require("./routes/auth"));
 app.use("/arco", require("./routes/arco"));
 app.get("/privacidad", (req, res) => res.render("privacy"));
+app.use("/guia", require("./routes/agents-public"));
 
 // Protected
 app.use(requireAuth);

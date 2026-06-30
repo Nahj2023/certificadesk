@@ -6,6 +6,12 @@
     <h4 class="mb-1">Agentes IA</h4>
     <span class="text-muted" style="font-size:0.85rem">Co-pilotos especializados en normativa ChileValora</span>
   </div>
+  <div class="d-flex gap-2">
+    <a href="/agentes/metricas" class="btn btn-sm btn-outline-secondary"><i class="bi bi-graph-up me-1"></i>Metricas</a>
+    <% if (typeof user !== "undefined" && user && user.role === "admin") { %>
+    <a href="/admin/agentes" class="btn btn-sm btn-outline-primary"><i class="bi bi-gear me-1"></i>Admin</a>
+    <% } %>
+  </div>
 </div>
 
 <div class="row g-3 mb-4">

@@ -1,0 +1,117 @@
+<% const title = 'Metricas IA' %>
+<%- include('../partials/header', { title }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-1">Metricas Agentes IA</h4>
+    <span class="text-muted" style="font-size:0.85rem">Uso, tokens y actividad de co-pilotos</span>
+  </div>
+  <a href="/agentes" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Hub</a>
+</div>
+
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm text-center p-3">
+      <div style="font-size:1.8rem;font-weight:700;color:var(--coral)"><%= totalConvs %></div>
+      <small class="text-muted">Conversaciones</small>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm text-center p-3">
+      <div style="font-size:1.8rem;font-weight:700;color:var(--coral)"><%= totalMsgs %></div>
+      <small class="text-muted">Mensajes</small>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm text-center p-3">
+      <div style="font-size:1.8rem;font-weight:700;color:var(--coral)"><%= (totalTokens / 1000).toFixed(1) %>K</div>
+      <small class="text-muted">Tokens Usados</small>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm text-center p-3">
+      <div style="font-size:1.8rem;font-weight:700;color:#FFD700"><%= totalFavs %></div>
+      <small class="text-muted">Favoritos</small>
+    </div>
+  </div>
+</div>
+
+<!-- Usage by Agent -->
+<div class="row g-3 mb-4">
+  <div class="col-md-7">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h6 class="mb-3"><i class="bi bi-bar-chart me-1"></i> Uso por Agente</h6>
+        <table class="table table-sm mb-0">
+          <thead><tr><th>Agente</th><th class="text-center">Convs</th><th class="text-center">Msgs</th><th class="text-end">Tokens</th></tr></thead>
+          <tbody>
+          <% byAgent.forEach(a => { %>
+            <tr>
+              <td><%= a.avatar %> <%= a.name %></td>
+              <td class="text-center"><%= a.conversaciones %></td>
+              <td class="text-center"><%= a.mensajes %></td>
+              <td class="text-end"><%= (a.tokens / 1000).toFixed(1) %>K</td>
+            </tr>
+          <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h6 class="mb-3"><i class="bi bi-calendar3 me-1"></i> Actividad Diaria (30d)</h6>
+        <canvas id="dailyChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Questions -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <h6 class="mb-3"><i class="bi bi-chat-quote me-1"></i> Consultas Recientes</h6>
+    <div class="list-group list-group-flush">
+      <% topQuestions.forEach(q => { %>
+      <div class="list-group-item px-0" style="font-size:0.85rem">
+        <span><%= q.avatar %></span>
+        <span class="text-muted"><%= q.agent_name %>:</span>
+        <span><%= q.content.substring(0, 120) %><%= q.content.length > 120 ? '...' : '' %></span>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+const dailyData = <%- JSON.stringify(daily) %>;
+if (dailyData.length > 0) {
+  new Chart(document.getElementById('dailyChart'), {
+    type: 'bar',
+    data: {
+      labels: dailyData.map(d => d.dia.substring(5)),
+      datasets: [{
+        label: 'Conversaciones',
+        data: dailyData.map(d => d.convs),
+        backgroundColor: 'rgba(232,93,58,0.6)',
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1 } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+} else {
+  document.getElementById('dailyChart').parentElement.innerHTML += '<p class="text-muted text-center small">Sin datos aun</p>';
+}
+</script>
+
+<%- include('../partials/footer') %>
