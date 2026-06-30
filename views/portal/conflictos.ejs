@@ -1,0 +1,117 @@
+<%- include('../partials/header', { title: 'Conflictos de Interes', currentPath: '/portal/conflictos' }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Conflictos de Interes</h5>
+  <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalConflicto">
+    <i class="bi bi-plus-lg me-1"></i>Declarar Conflicto
+  </button>
+</div>
+
+<div class="alert alert-info small">
+  <i class="bi bi-info-circle me-1"></i>
+  <strong>Norma D016:</strong> Todo evaluador debe declarar posibles conflictos de interes antes de iniciar un proceso de evaluacion. La no declaracion puede resultar en la suspension de la habilitacion.
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card text-center">
+      <div class="card-body py-3">
+        <div class="fs-2 fw-bold" style="color:var(--primary)"><%= conflicts.length %></div>
+        <small class="text-muted">Total Declaraciones</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center">
+      <div class="card-body py-3">
+        <div class="fs-2 fw-bold text-warning"><%= conflicts.filter(c => c.status === 'declarado').length %></div>
+        <small class="text-muted">Pendientes Revision</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center">
+      <div class="card-body py-3">
+        <div class="fs-2 fw-bold text-success"><%= conflicts.filter(c => c.status === 'resuelto').length %></div>
+        <small class="text-muted">Resueltos</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <% if (conflicts.length === 0) { %>
+    <div class="p-4 text-center text-muted">
+      <i class="bi bi-shield-check fs-1 d-block mb-2"></i>
+      No has declarado conflictos de interes
+    </div>
+    <% } else { %>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Fecha</th><th>Candidato</th><th>Tipo</th><th>Descripcion</th><th>Estado</th></tr></thead>
+        <tbody>
+        <% conflicts.forEach(c => {
+          const tipos = { familiar: 'Familiar', comercial: 'Comercial', laboral: 'Laboral', personal: 'Personal', otro: 'Otro' };
+          const estados = { declarado: 'warning', resuelto: 'success', rechazado: 'danger' };
+        %>
+        <tr>
+          <td><%= c.declaration_date || c.created_at?.substring(0,10) || '-' %></td>
+          <td><%= c.candidate_name || 'General' %></td>
+          <td><span class="badge bg-secondary"><%= tipos[c.type] || c.type %></span></td>
+          <td><%= c.description || '-' %></td>
+          <td><span class="badge bg-<%= estados[c.status] || 'secondary' %>"><%= c.status %></span></td>
+        </tr>
+        <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<div class="modal fade" id="modalConflicto" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="/portal/conflictos">
+        <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="bi bi-exclamation-triangle me-2"></i>Declarar Conflicto de Interes</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Tipo de Conflicto *</label>
+            <select name="type" class="form-select" required>
+              <option value="">Seleccionar...</option>
+              <option value="familiar">Familiar — parentesco con candidato</option>
+              <option value="comercial">Comercial — relacion de negocios</option>
+              <option value="laboral">Laboral — relacion laboral previa/actual</option>
+              <option value="personal">Personal — amistad u otra relacion personal</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Candidato (opcional)</label>
+            <select name="candidate_id" class="form-select">
+              <option value="">Declaracion general</option>
+              <% candidates.forEach(c => { %>
+              <option value="<%= c.id %>"><%= c.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Descripcion</label>
+            <textarea name="description" class="form-control" rows="3" placeholder="Describe la naturaleza del conflicto..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary"><i class="bi bi-send me-1"></i>Declarar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

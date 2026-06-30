@@ -1,0 +1,151 @@
+<%- include('../partials/header', { title: 'Mi DJS', currentPath: '/portal/djs' }) %>
+<% const decrypt = typeof locals.decrypt === 'function' ? locals.decrypt : (v => v); %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0"><i class="bi bi-shield-check me-2"></i>Mi Declaracion Jurada Simple</h5>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="row g-4 align-items-center">
+          <div class="col-md-4 text-center">
+            <% if (evaluator.djs_expiry) {
+              const days = Math.ceil((new Date(evaluator.djs_expiry) - new Date()) / 86400000);
+              const pct = Math.max(0, Math.min(100, (days / 365) * 100));
+              const color = days > 90 ? '#27ae60' : days > 30 ? '#f39c12' : '#e74c3c';
+            %>
+            <div style="position:relative;width:150px;height:150px;margin:0 auto">
+              <canvas id="djsGauge" width="150" height="150"></canvas>
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
+                <div class="fs-2 fw-bold" style="color:<%= color %>"><%= days > 0 ? days : 0 %></div>
+                <div class="text-muted small">dias</div>
+              </div>
+            </div>
+            <div class="mt-2">
+              <span class="badge bg-<%= days > 90 ? 'success' : days > 30 ? 'warning' : days > 0 ? 'danger' : 'dark' %> fs-6">
+                <%= days > 0 ? 'VIGENTE' : 'VENCIDA' %>
+              </span>
+            </div>
+            <% } else { %>
+            <div class="text-muted">
+              <i class="bi bi-shield-x fs-1 d-block mb-2"></i>
+              Sin DJS registrada
+            </div>
+            <% } %>
+          </div>
+          <div class="col-md-8">
+            <h6>Estado de Habilitacion</h6>
+            <table class="table table-sm">
+              <tr><td class="text-muted">Evaluador</td><td><strong><%= evaluator.name %></strong></td></tr>
+              <tr><td class="text-muted">RUT</td><td><%= decrypt(evaluator.rut) || '-' %></td></tr>
+              <tr><td class="text-muted">DJS Vencimiento</td><td><strong><%= evaluator.djs_expiry || 'No registrada' %></strong></td></tr>
+              <tr><td class="text-muted">Habilitacion CV</td><td>
+                <span class="badge bg-<%= evaluator.habilitacion_cv ? 'success' : 'secondary' %>">
+                  <%= evaluator.habilitacion_cv || 'No registrada' %>
+                </span>
+              </td></tr>
+              <tr><td class="text-muted">Tipo Contrato</td><td><%= evaluator.contract_type || '-' %></td></tr>
+              <tr><td class="text-muted">Especialidades</td><td><%= evaluator.specialties || '-' %></td></tr>
+            </table>
+            <div class="alert alert-info small mb-0">
+              <i class="bi bi-info-circle me-1"></i>La DJS debe renovarse anualmente. Contacta al CEC para gestionar la renovacion ante ChileValora.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Track Record</h6></div>
+      <div class="card-body">
+        <div class="row g-3 text-center mb-3">
+          <div class="col-4">
+            <div class="fs-3 fw-bold" style="color:var(--primary)"><%= evaluations.total || 0 %></div>
+            <small class="text-muted">Completadas</small>
+          </div>
+          <div class="col-4">
+            <div class="fs-3 fw-bold text-success"><%= evaluations.competentes || 0 %></div>
+            <small class="text-muted">Competentes</small>
+          </div>
+          <div class="col-4">
+            <div class="fs-3 fw-bold text-danger"><%= evaluations.no_competentes || 0 %></div>
+            <small class="text-muted">Aun No Competentes</small>
+          </div>
+        </div>
+        <% if (evaluations.total > 0) {
+          const rate = ((evaluations.competentes / evaluations.total) * 100).toFixed(0);
+        %>
+        <div class="d-flex align-items-center gap-2">
+          <small class="text-muted">Tasa Competencia</small>
+          <div class="progress flex-grow-1" style="height:10px">
+            <div class="progress-bar bg-<%= parseInt(rate) >= 70 ? 'success' : 'warning' %>" style="width:<%= rate %>%"></div>
+          </div>
+          <strong><%= rate %>%</strong>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="card mb-3">
+      <div class="card-header"><h6 class="mb-0"><i class="bi bi-star me-2"></i>Calificaciones del CEC</h6></div>
+      <div class="card-body p-0">
+        <% if (reviews.length === 0) { %>
+        <div class="p-3 text-center text-muted">Sin calificaciones registradas</div>
+        <% } else { %>
+        <% reviews.forEach(r => {
+          const avg = ((r.score_deadlines + r.score_report_quality + r.score_procedure_compliance) / 3).toFixed(1);
+        %>
+        <div class="p-3 border-bottom">
+          <div class="d-flex justify-content-between mb-2">
+            <strong><%= r.period %></strong>
+            <span class="badge bg-<%= parseFloat(avg) >= 4 ? 'success' : parseFloat(avg) >= 3 ? 'warning' : 'danger' %>"><%= avg %>/5</span>
+          </div>
+          <div class="mb-1 d-flex justify-content-between"><small>Cumplimiento Plazos</small>
+            <span><%= '\u2605'.repeat(r.score_deadlines) %><%= '\u2606'.repeat(5 - r.score_deadlines) %></span>
+          </div>
+          <div class="mb-1 d-flex justify-content-between"><small>Calidad Informes</small>
+            <span><%= '\u2605'.repeat(r.score_report_quality) %><%= '\u2606'.repeat(5 - r.score_report_quality) %></span>
+          </div>
+          <div class="d-flex justify-content-between"><small>Cumplimiento Proc.</small>
+            <span><%= '\u2605'.repeat(r.score_procedure_compliance) %><%= '\u2606'.repeat(5 - r.score_procedure_compliance) %></span>
+          </div>
+        </div>
+        <% }) %>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h6 class="mb-0"><i class="bi bi-lightbulb me-2"></i>Tips DJS</h6></div>
+      <div class="card-body small">
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"><i class="bi bi-check2 text-success me-1"></i>Renueva tu DJS <strong>30 dias antes</strong> del vencimiento</li>
+          <li class="mb-2"><i class="bi bi-check2 text-success me-1"></i>Mantén tu habilitacion ChileValora actualizada</li>
+          <li class="mb-2"><i class="bi bi-check2 text-success me-1"></i>Declara conflictos de interes <strong>antes</strong> de iniciar la evaluacion</li>
+          <li><i class="bi bi-check2 text-success me-1"></i>Cumple plazos — afecta tu calificacion</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if (evaluator.djs_expiry) { %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+const days = Math.max(0, Math.ceil((new Date('<%= evaluator.djs_expiry %>') - new Date()) / 86400000));
+const pct = Math.min(100, (days / 365) * 100);
+const color = days > 90 ? '#27ae60' : days > 30 ? '#f39c12' : '#e74c3c';
+const ctx = document.getElementById('djsGauge').getContext('2d');
+new Chart(ctx, {
+  type: 'doughnut',
+  data: { datasets: [{ data: [pct, 100 - pct], backgroundColor: [color, '#eee'], borderWidth: 0 }] },
+  options: { cutout: '75%', rotation: -90, circumference: 360, plugins: { legend: { display: false }, tooltip: { enabled: false } }, responsive: false }
+});
+</script>
+<% } %>
+
+<%- include('../partials/footer') %>

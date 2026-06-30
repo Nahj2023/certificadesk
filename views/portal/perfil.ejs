@@ -1,0 +1,116 @@
+<%- include('../partials/header', { title: 'Mi Perfil', currentPath: '/portal/perfil' }) %>
+<% const decrypt = typeof locals.decrypt === 'function' ? locals.decrypt : (v => v); %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0"><i class="bi bi-person-circle me-2"></i>Mi Perfil Profesional</h5>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card mb-3">
+      <div class="card-body text-center">
+        <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px">
+          <i class="bi bi-person-badge fs-1" style="color:var(--primary)"></i>
+        </div>
+        <h5 class="mb-1"><%= evaluator.name %></h5>
+        <small class="text-muted d-block mb-2">Evaluador ChileValora</small>
+        <% if (evaluator.djs_expiry) {
+          const days = Math.ceil((new Date(evaluator.djs_expiry) - new Date()) / 86400000);
+        %>
+        <span class="badge bg-<%= days > 30 ? 'success' : days > 0 ? 'warning' : 'danger' %> mb-2">
+          DJS <%= days > 0 ? 'Vigente' : 'Vencida' %>
+        </span>
+        <% } %>
+        <% if (evaluator.performance_score) { %>
+        <div class="mt-2">
+          <small class="text-muted d-block mb-1">Desempeno</small>
+          <div class="d-flex justify-content-center gap-1">
+            <% for (let i = 1; i <= 5; i++) { %>
+            <i class="bi bi-star<%= i <= Math.round(evaluator.performance_score) ? '-fill text-warning' : ' text-muted' %>"></i>
+            <% } %>
+          </div>
+          <small><%= evaluator.performance_score %>/5</small>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h6 class="mb-0"><i class="bi bi-trophy me-2"></i>Estadisticas</h6></div>
+      <div class="card-body">
+        <div class="mb-3 d-flex justify-content-between">
+          <span class="text-muted">Total evaluaciones</span>
+          <strong><%= stats.total || 0 %></strong>
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+          <span class="text-muted">Completadas</span>
+          <strong class="text-success"><%= stats.completadas || 0 %></strong>
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+          <span class="text-muted">Competentes</span>
+          <strong class="text-primary"><%= stats.competentes || 0 %></strong>
+        </div>
+        <% if (stats.completadas > 0) { %>
+        <hr>
+        <div class="d-flex justify-content-between">
+          <span class="text-muted">Tasa competencia</span>
+          <strong><%= ((stats.competentes / stats.completadas) * 100).toFixed(0) %>%</strong>
+        </div>
+        <% } %>
+        <% if (stats.primera) { %>
+        <hr>
+        <div class="mb-2 d-flex justify-content-between">
+          <span class="text-muted">Primera evaluacion</span>
+          <small><%= stats.primera %></small>
+        </div>
+        <% } %>
+        <% if (stats.ultima) { %>
+        <div class="d-flex justify-content-between">
+          <span class="text-muted">Ultima evaluacion</span>
+          <small><%= stats.ultima.substring(0,10) %></small>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card mb-3">
+      <div class="card-header"><h6 class="mb-0"><i class="bi bi-card-text me-2"></i>Datos Personales</h6></div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6"><small class="text-muted d-block">Nombre</small><strong><%= evaluator.name %></strong></div>
+          <div class="col-md-6"><small class="text-muted d-block">RUT</small><%= decrypt(evaluator.rut) || '-' %></div>
+          <div class="col-md-6"><small class="text-muted d-block">Email</small><%= decrypt(evaluator.email) || '-' %></div>
+          <div class="col-md-6"><small class="text-muted d-block">Telefono</small><%= decrypt(evaluator.phone) || '-' %></div>
+          <div class="col-md-6"><small class="text-muted d-block">Tipo de Contrato</small><%= evaluator.contract_type || '-' %></div>
+          <div class="col-md-6"><small class="text-muted d-block">DJS Vencimiento</small><%= evaluator.djs_expiry || '-' %></div>
+        </div>
+        <div class="alert alert-secondary small mt-3 mb-0">
+          <i class="bi bi-lock me-1"></i>Los datos personales son administrados por el CEC. Contactalos para actualizaciones.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h6 class="mb-0"><i class="bi bi-pencil me-2"></i>Datos Editables</h6></div>
+      <div class="card-body">
+        <form method="POST" action="/portal/perfil">
+          <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Especialidades</label>
+            <textarea name="specialties" class="form-control" rows="3" placeholder="Ej: Electricidad industrial, Soldadura MIG/MAG, Operacion de gruas horquilla..."><%= evaluator.specialties || '' %></textarea>
+            <small class="text-muted">Separa las especialidades con comas. Esto se muestra a los CECs que te asignan evaluaciones.</small>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Numero de Habilitacion ChileValora</label>
+            <input type="text" name="habilitacion_cv" class="form-control" value="<%= evaluator.habilitacion_cv || '' %>" placeholder="Ej: HAB-2024-001234">
+          </div>
+          <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Guardar Cambios</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

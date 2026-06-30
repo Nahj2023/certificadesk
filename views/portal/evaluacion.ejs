@@ -1,92 +1,166 @@
-<% const title = 'Evaluacion #' + evaluation.id %>
-<%- include('../partials/header', { title }) %>
-<div class="d-flex justify-content-between align-items-center mb-4">
+<%- include('../partials/header', { title: 'Evaluacion #' + evaluation.id, currentPath: '/portal/evaluacion' }) %>
+<% const decrypt = typeof locals.decrypt === 'function' ? locals.decrypt : (v => v); %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
   <div>
-    <h4 class="mb-1"><%= evaluation.candidate_name %></h4>
-    <span class="badge bg-<%= evaluation.status === 'completada' ? 'success' : evaluation.status === 'en_proceso' ? 'primary' : 'warning' %> me-2"><%= evaluation.status %></span>
-    <span class="text-muted" style="font-size:0.85rem"><%= evaluation.profile_name || '' %></span>
+    <a href="/portal" class="text-decoration-none text-muted"><i class="bi bi-arrow-left me-1"></i>Volver</a>
+    <h5 class="mb-0 mt-1">Evaluacion #<%= evaluation.id %>
+      <% const badge = evaluation.status === 'programada' ? 'warning' : evaluation.status === 'en_proceso' ? 'info' : evaluation.status === 'completada' ? 'success' : 'secondary'; %>
+      <span class="badge bg-<%= badge %> fs-6"><%= evaluation.status %></span>
+    </h5>
   </div>
-  <a href="/portal" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Mi Portal</a>
+  <% if (evaluation.result) { %>
+  <span class="badge bg-<%= evaluation.result === 'competente' ? 'success' : 'danger' %> fs-6 px-3 py-2">
+    <i class="bi bi-<%= evaluation.result === 'competente' ? 'check-circle' : 'x-circle' %> me-1"></i>
+    <%= evaluation.result === 'competente' ? 'COMPETENTE' : 'AUN NO COMPETENTE' %>
+  </span>
+  <% } %>
 </div>
 
 <div class="row g-4">
-  <div class="col-md-6">
-    <div class="card">
-      <div class="card-header"><strong><i class="bi bi-clipboard-data me-2" style="color:var(--coral)"></i> Datos de la Evaluacion</strong></div>
+  <div class="col-lg-5">
+    <div class="card mb-3">
+      <div class="card-header"><h6 class="mb-0"><i class="bi bi-person me-2"></i>Candidato</h6></div>
       <div class="card-body">
-        <table class="table table-sm mb-0">
-          <tr><td class="text-muted" style="width:40%">Candidato</td><td class="fw-bold"><%= evaluation.candidate_name %></td></tr>
-          <tr><td class="text-muted">RUT</td><td><%= typeof decrypt !== 'undefined' ? decrypt(evaluation.candidate_rut) : evaluation.candidate_rut %></td></tr>
-          <tr><td class="text-muted">Perfil</td><td><%= evaluation.profile_name || '-' %></td></tr>
-          <tr><td class="text-muted">Codigo</td><td><%= evaluation.profile_code || '-' %></td></tr>
-          <tr><td class="text-muted">Sector</td><td><%= evaluation.profile_sector || '-' %></td></tr>
-          <tr><td class="text-muted">Fecha programada</td><td><%= evaluation.scheduled_date || '-' %></td></tr>
-          <tr><td class="text-muted">Ubicacion</td><td><%= evaluation.location || '-' %></td></tr>
-          <tr><td class="text-muted">Tipo</td><td><%= evaluation.eval_type || '-' %></td></tr>
-          <tr><td class="text-muted">Completada</td><td><%= evaluation.completed_at || '-' %></td></tr>
-          <% if (evaluation.result) { %>
-          <tr><td class="text-muted">Resultado</td><td><span class="badge bg-<%= evaluation.result === 'competente' ? 'success' : 'danger' %>" style="font-size:0.85rem"><%= evaluation.result %></span></td></tr>
-          <% } %>
+        <div class="mb-2"><small class="text-muted d-block">Nombre</small><strong><%= evaluation.candidate_name %></strong></div>
+        <div class="mb-2"><small class="text-muted d-block">RUT</small><%= decrypt(evaluation.candidate_rut) || '-' %></div>
+        <div class="mb-2"><small class="text-muted d-block">Perfil</small><%= evaluation.profile_name || '-' %> <small class="text-muted">(<%= evaluation.profile_code || '' %>)</small></div>
+        <% if (evaluation.profile_sector) { %>
+        <div class="mb-2"><small class="text-muted d-block">Sector</small><%= evaluation.profile_sector %></div>
+        <% } %>
+        <div class="mb-2"><small class="text-muted d-block">Fecha Programada</small><%= evaluation.scheduled_date || '-' %></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h6 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Puntajes</h6></div>
+      <div class="card-body">
+        <% const scores = [
+          { label: 'Conocimientos (20%)', val: evaluation.score_conocimientos, color: '#3498db' },
+          { label: 'Jefe/Caso (25%)', val: evaluation.score_jefe_directo, color: '#9b59b6' },
+          { label: 'Terreno (30%)', val: evaluation.score_terreno, color: '#e67e22' },
+          { label: 'Evidencias (25%)', val: evaluation.score_evidencias, color: '#2ecc71' }
+        ]; %>
+        <% scores.forEach(s => { %>
+        <div class="mb-3">
+          <div class="d-flex justify-content-between mb-1">
+            <small><%= s.label %></small>
+            <strong><%= s.val !== null ? s.val + '%' : '-' %></strong>
+          </div>
+          <div class="progress" style="height:6px">
+            <div class="progress-bar" style="width:<%= s.val || 0 %>%;background:<%= s.color %>"></div>
+          </div>
+        </div>
+        <% }) %>
+        <hr>
+        <div class="d-flex justify-content-between">
+          <strong>Puntaje Ponderado</strong>
           <% if (evaluation.score_ponderado) { %>
-          <tr><td class="text-muted">Puntaje ponderado</td><td><strong style="font-size:1.1rem;color:var(--green)"><%= evaluation.score_ponderado.toFixed(2) %>/4.0</strong></td></tr>
-          <% } %>
-        </table>
+          <span class="fs-5 fw-bold" style="color:<%= evaluation.score_ponderado >= 75 ? '#27ae60' : '#e74c3c' %>"><%= evaluation.score_ponderado.toFixed(1) %>%</span>
+          <% } else { %><span class="text-muted">-</span><% } %>
+        </div>
       </div>
     </div>
   </div>
-  <div class="col-md-6">
+
+  <div class="col-lg-7">
+    <% if (evaluation.status !== 'completada') { %>
     <div class="card mb-3">
-      <div class="card-header"><strong><i class="bi bi-rulers me-2" style="color:var(--coral)"></i> Instrumentos (<%= instruments.length %>)</strong></div>
-      <div class="card-body p-0">
-        <% if (instruments.length === 0) { %>
-          <div class="text-center text-muted py-4"><i class="bi bi-inbox" style="opacity:0.3"></i><br>Sin instrumentos registrados</div>
-        <% } else { %>
-        <table class="table table-sm mb-0">
-          <thead><tr><th>Instrumento</th><th>Puntaje</th><th>Peso</th></tr></thead>
-          <tbody>
-            <% instruments.forEach(inst => { %>
-            <tr>
-              <td><%= inst.instrument_type %></td>
-              <td><span class="badge bg-<%= inst.score >= 3 ? 'success' : inst.score >= 2 ? 'warning' : 'danger' %>"><%= inst.score ? inst.score.toFixed(1) : '-' %>/4</span></td>
-              <td class="text-muted"><%= inst.weight ? (inst.weight * 100).toFixed(0) + '%' : '-' %></td>
-            </tr>
-            <% }) %>
-          </tbody>
-        </table>
-        <% } %>
+      <div class="card-header bg-primary bg-opacity-10"><h6 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Instrumentos de Evaluacion</h6></div>
+      <div class="card-body">
+        <form method="POST" action="/portal/evaluacion/<%= evaluation.id %>/instrumentos">
+          <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Conocimientos Teoricos (20%)</label>
+              <div class="input-group">
+                <input type="number" name="score_conocimientos" class="form-control" min="0" max="100" step="0.1" value="<%= evaluation.score_conocimientos || '' %>" placeholder="0-100">
+                <span class="input-group-text">%</span>
+              </div>
+              <small class="text-muted">Prueba de conocimientos del perfil</small>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Jefe Directo / Caso (25%)</label>
+              <div class="input-group">
+                <input type="number" name="score_jefe_directo" class="form-control" min="0" max="100" step="0.1" value="<%= evaluation.score_jefe_directo || '' %>" placeholder="0-100">
+                <span class="input-group-text">%</span>
+              </div>
+              <div class="mt-1">
+                <select name="tipo_jefe" class="form-select form-select-sm">
+                  <option value="jefe_directo" <%= evaluation.tipo_jefe !== 'caso_simulado' ? 'selected' : '' %>>Entrevista Jefe Directo</option>
+                  <option value="caso_simulado" <%= evaluation.tipo_jefe === 'caso_simulado' ? 'selected' : '' %>>Caso Simulado</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Terreno / Simulacion (30%)</label>
+              <div class="input-group">
+                <input type="number" name="score_terreno" class="form-control" min="0" max="100" step="0.1" value="<%= evaluation.score_terreno || '' %>" placeholder="0-100">
+                <span class="input-group-text">%</span>
+              </div>
+              <div class="mt-1">
+                <select name="tipo_terreno" class="form-select form-select-sm">
+                  <option value="terreno" <%= evaluation.tipo_terreno !== 'simulacion' ? 'selected' : '' %>>Observacion en Terreno</option>
+                  <option value="simulacion" <%= evaluation.tipo_terreno === 'simulacion' ? 'selected' : '' %>>Simulacion</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Evidencias Portafolio (25%)</label>
+              <div class="input-group">
+                <input type="number" name="score_evidencias" class="form-control" min="0" max="100" step="0.1" value="<%= evaluation.score_evidencias || '' %>" placeholder="0-100">
+                <span class="input-group-text">%</span>
+              </div>
+              <small class="text-muted">Revision de evidencias documentales</small>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Observaciones</label>
+              <textarea name="observations" class="form-control" rows="3" placeholder="Observaciones del proceso evaluativo..."><%= evaluation.observations || '' %></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Plan de Trabajo (si aplica)</label>
+              <textarea name="plan_trabajo" class="form-control" rows="2" placeholder="Plan de trabajo para cierre de brechas..."><%= evaluation.plan_trabajo || '' %></textarea>
+            </div>
+          </div>
+          <div class="mt-3">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save me-1"></i>Guardar Instrumentos</button>
+          </div>
+        </form>
       </div>
     </div>
+    <% } %>
+
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <strong><i class="bi bi-archive me-2" style="color:var(--coral)"></i> Evidencias (<%= evidence.length %>)</strong>
+        <h6 class="mb-0"><i class="bi bi-archive me-2"></i>Evidencias (<%= evidence.length %>)</h6>
+        <% if (evaluation.status !== 'completada') { %>
+        <a href="/portal/evidencias" class="btn btn-sm btn-outline-primary"><i class="bi bi-upload me-1"></i>Subir</a>
+        <% } %>
       </div>
       <div class="card-body p-0">
         <% if (evidence.length === 0) { %>
-          <div class="text-center text-muted py-4"><i class="bi bi-folder2-open" style="opacity:0.3"></i><br>Sin evidencias</div>
+        <div class="p-3 text-center text-muted">Sin evidencias registradas</div>
         <% } else { %>
-        <table class="table table-sm mb-0">
-          <thead><tr><th>Tipo</th><th>Descripcion</th><th>Fecha</th></tr></thead>
-          <tbody>
+        <div class="table-responsive">
+          <table class="table table-sm mb-0">
+            <thead><tr><th>Archivo</th><th>Criterio</th><th>Tipo</th><th>Verificado</th><th>Fecha</th></tr></thead>
+            <tbody>
             <% evidence.forEach(ev => { %>
             <tr>
-              <td><span class="badge bg-secondary"><%= ev.evidence_type || 'archivo' %></span></td>
-              <td style="font-size:0.85rem"><%= ev.description || ev.file_name || '-' %></td>
-              <td class="text-muted" style="font-size:0.85rem"><%= ev.created_at ? ev.created_at.substring(0,10) : '-' %></td>
+              <td><i class="bi bi-file-earmark me-1"></i><%= ev.file_name %></td>
+              <td><%= ev.criterion || '-' %></td>
+              <td><span class="badge bg-secondary"><%= ev.type %></span></td>
+              <td><i class="bi bi-<%= ev.verified ? 'check-circle text-success' : 'clock text-muted' %>"></i></td>
+              <td><small><%= ev.uploaded_at ? ev.uploaded_at.substring(0,10) : '' %></small></td>
             </tr>
             <% }) %>
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
         <% } %>
       </div>
     </div>
   </div>
 </div>
-
-<% if (evaluation.observations) { %>
-<div class="card mt-3">
-  <div class="card-header"><strong><i class="bi bi-chat-left-text me-2" style="color:var(--coral)"></i> Observaciones</strong></div>
-  <div class="card-body"><p class="mb-0" style="white-space:pre-wrap"><%= evaluation.observations %></p></div>
-</div>
-<% } %>
 
 <%- include('../partials/footer') %>

@@ -1,0 +1,146 @@
+<%- include('../partials/header', { title: 'Mi Portafolio', currentPath: '/portal/portafolio' }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0"><i class="bi bi-folder me-2"></i>Mi Portafolio Profesional</h5>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card text-center" style="border-left:4px solid var(--primary)">
+      <div class="card-body py-3">
+        <div class="fs-2 fw-bold" style="color:var(--primary)"><%= totals.total || 0 %></div>
+        <small class="text-muted">Evaluaciones</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card text-center" style="border-left:4px solid #27ae60">
+      <div class="card-body py-3">
+        <div class="fs-2 fw-bold text-success"><%= totals.competentes || 0 %></div>
+        <small class="text-muted">Competentes</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card text-center" style="border-left:4px solid #e74c3c">
+      <div class="card-body py-3">
+        <div class="fs-2 fw-bold text-danger"><%= totals.no_competentes || 0 %></div>
+        <small class="text-muted">No Competentes</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card text-center" style="border-left:4px solid #9b59b6">
+      <div class="card-body py-3">
+        <div class="fs-2 fw-bold" style="color:#9b59b6"><%= totals.avg_score ? totals.avg_score.toFixed(0) + '%' : '-' %></div>
+        <small class="text-muted">Puntaje Promedio</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if (byProfile.length > 0) { %>
+<div class="row g-4 mb-4">
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header"><h6 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Distribucion por Perfil</h6></div>
+      <div class="card-body">
+        <canvas id="chartPerfiles" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header"><h6 class="mb-0"><i class="bi bi-list-check me-2"></i>Resumen por Perfil</h6></div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <thead><tr><th>Perfil</th><th class="text-center">Total</th><th class="text-center">Comp.</th><th class="text-center">Tasa</th></tr></thead>
+          <tbody>
+          <% byProfile.forEach(p => {
+            const rate = p.total > 0 ? ((p.competentes / p.total) * 100).toFixed(0) : 0;
+          %>
+          <tr>
+            <td><%= p.profile || 'Sin perfil' %></td>
+            <td class="text-center"><%= p.total %></td>
+            <td class="text-center"><%= p.competentes %></td>
+            <td class="text-center">
+              <span class="badge bg-<%= parseInt(rate) >= 70 ? 'success' : 'warning' %>"><%= rate %>%</span>
+            </td>
+          </tr>
+          <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h6 class="mb-0">Historial de Evaluaciones Completadas</h6>
+    <form class="d-flex gap-2" method="GET" action="/portal/portafolio">
+      <% if (years.length > 0) { %>
+      <select name="year" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
+        <option value="">Todos los anos</option>
+        <% years.forEach(y => { %>
+        <option value="<%= y %>" <%= filters.year === y ? 'selected' : '' %>><%= y %></option>
+        <% }) %>
+      </select>
+      <% } %>
+      <select name="result" class="form-select form-select-sm" style="width:auto" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        <option value="competente" <%= filters.result === 'competente' ? 'selected' : '' %>>Competente</option>
+        <option value="aun_no_competente" <%= filters.result === 'aun_no_competente' ? 'selected' : '' %>>Aun No Competente</option>
+      </select>
+    </form>
+  </div>
+  <div class="card-body p-0">
+    <% if (evaluations.length === 0) { %>
+    <div class="p-4 text-center text-muted"><i class="bi bi-folder2-open fs-1 d-block mb-2"></i>No hay evaluaciones completadas</div>
+    <% } else { %>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>#</th><th>Candidato</th><th>Perfil</th><th>Sector</th><th>Puntaje</th><th>Resultado</th><th>Fecha</th></tr></thead>
+        <tbody>
+        <% evaluations.forEach(e => { %>
+        <tr>
+          <td><a href="/portal/evaluacion/<%= e.id %>">#<%= e.id %></a></td>
+          <td><%= e.candidate_name %></td>
+          <td><small><%= e.profile_code || '' %></small> <%= e.profile_name || '-' %></td>
+          <td><small><%= e.profile_sector || '-' %></small></td>
+          <td>
+            <% if (e.score_ponderado) { %>
+            <strong style="color:<%= e.score_ponderado >= 75 ? '#27ae60' : '#e74c3c' %>"><%= e.score_ponderado.toFixed(0) %>%</strong>
+            <% } else { %>-<% } %>
+          </td>
+          <td>
+            <span class="badge bg-<%= e.result === 'competente' ? 'success' : 'danger' %>">
+              <%= e.result === 'competente' ? 'Competente' : 'Aun No Competente' %>
+            </span>
+          </td>
+          <td><%= e.completed_at ? e.completed_at.substring(0,10) : '-' %></td>
+        </tr>
+        <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<% if (byProfile.length > 0) { %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+const colors = ['#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF','#FF9F40','#C9CBCF','#7BC8A4'];
+const labels = [<%= byProfile.map(p => "'" + (p.profile || 'Sin perfil').replace(/'/g,"\\'") + "'").join(',') %>];
+const data = [<%= byProfile.map(p => p.total).join(',') %>];
+new Chart(document.getElementById('chartPerfiles'), {
+  type: 'doughnut',
+  data: { labels, datasets: [{ data, backgroundColor: colors.slice(0, labels.length), borderWidth: 2 }] },
+  options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
+});
+</script>
+<% } %>
+
+<%- include('../partials/footer') %>

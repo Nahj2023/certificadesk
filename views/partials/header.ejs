@@ -27,30 +27,46 @@
       <ul class="nav flex-column">
         <li class="nav-item">
           <a class="nav-link <%= currentPath === '/portal' ? 'active' : '' %>" href="/portal">
-            <i class="bi bi-house-door"></i> Mi Portal
+            <i class="bi bi-speedometer2"></i> Mi Portal
           </a>
         </li>
-        <li class="nav-section">Mis Asignaciones</li>
+        <li class="nav-section">Evaluaciones</li>
         <li class="nav-item">
           <a class="nav-link <%= currentPath.startsWith('/portal/evaluacion') ? 'active' : '' %>" href="/portal">
-            <i class="bi bi-clipboard-check"></i> Mis Evaluaciones
+            <i class="bi bi-clipboard-check"></i> Evaluaciones Activas
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <%= currentPath.startsWith('/evidencias') ? 'active' : '' %>" href="/evidencias">
-            <i class="bi bi-archive"></i> Evidencias
+          <a class="nav-link <%= currentPath === '/portal/portafolio' ? 'active' : '' %>" href="/portal/portafolio">
+            <i class="bi bi-folder"></i> Mi Portafolio
           </a>
         </li>
-        <li class="nav-section">Declaraciones</li>
+        <li class="nav-section">Trabajo de Campo</li>
         <li class="nav-item">
-          <a class="nav-link <%= currentPath.startsWith('/conflictos') ? 'active' : '' %>" href="/conflictos">
-            <i class="bi bi-exclamation-triangle"></i> Conflictos de Interes
+          <a class="nav-link <%= currentPath === '/portal/evidencias' ? 'active' : '' %>" href="/portal/evidencias">
+            <i class="bi bi-cloud-upload"></i> Evidencias
+          </a>
+        </li>
+        <li class="nav-section">Habilitacion</li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/portal/djs' ? 'active' : '' %>" href="/portal/djs">
+            <i class="bi bi-shield-check"></i> Mi DJS
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/portal/conflictos' ? 'active' : '' %>" href="/portal/conflictos">
+            <i class="bi bi-exclamation-triangle"></i> Conflictos
           </a>
         </li>
         <li class="nav-section">Mi Cuenta</li>
         <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/portal/perfil' ? 'active' : '' %>" href="/portal/perfil">
+            <i class="bi bi-person-circle"></i> Mi Perfil
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link <%= currentPath === '/mi-cuenta/password' ? 'active' : '' %>" href="/mi-cuenta/password">
-            <i class="bi bi-key"></i> Cambiar contrasena
+            <i class="bi bi-key"></i> Contrasena
           </a>
         </li>
         <li class="nav-item">

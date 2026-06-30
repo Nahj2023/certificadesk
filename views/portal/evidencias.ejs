@@ -1,0 +1,107 @@
+<%- include('../partials/header', { title: 'Evidencias', currentPath: '/portal/evidencias' }) %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0"><i class="bi bi-archive me-2"></i>Mis Evidencias</h5>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header bg-primary bg-opacity-10"><h6 class="mb-0"><i class="bi bi-cloud-upload me-2"></i>Subir Evidencia</h6></div>
+      <div class="card-body">
+        <form method="POST" action="/portal/evidencias/subir" enctype="multipart/form-data">
+          <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Evaluacion</label>
+            <select name="evaluation_id" class="form-select" required>
+              <option value="">Seleccionar...</option>
+              <% evaluations.forEach(e => { %>
+              <option value="<%= e.id %>"><%= e.candidate_name %> — Eval #<%= e.id %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Tipo de Evidencia</label>
+            <select name="type" class="form-select">
+              <option value="documento">Documento</option>
+              <option value="foto">Fotografia</option>
+              <option value="video">Video</option>
+              <option value="certificado">Certificado</option>
+              <option value="informe">Informe</option>
+              <option value="planilla">Planilla/Excel</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Criterio/UCL</label>
+            <input type="text" name="criterion" class="form-control" placeholder="Ej: UCL1 - Criterio 3.2">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Archivo</label>
+            <input type="file" name="archivo" class="form-control" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.mp4,.webm,.zip" required>
+            <small class="text-muted">Max 20 MB. Formatos: imagenes, PDF, Office, video, ZIP</small>
+          </div>
+          <button type="submit" class="btn btn-primary w-100"><i class="bi bi-upload me-1"></i>Subir Evidencia</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-body text-center">
+        <div class="fs-2 fw-bold" style="color:var(--primary)"><%= evidence.length %></div>
+        <div class="text-muted">Evidencias Subidas</div>
+        <hr>
+        <div class="row g-1 text-center">
+          <div class="col-6">
+            <div class="fs-5 fw-bold text-success"><%= evidence.filter(e => e.verified).length %></div>
+            <small class="text-muted">Verificadas</small>
+          </div>
+          <div class="col-6">
+            <div class="fs-5 fw-bold text-warning"><%= evidence.filter(e => !e.verified).length %></div>
+            <small class="text-muted">Pendientes</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header"><h6 class="mb-0">Historial de Evidencias</h6></div>
+      <div class="card-body p-0">
+        <% if (evidence.length === 0) { %>
+        <div class="p-4 text-center text-muted"><i class="bi bi-cloud-upload fs-1 d-block mb-2"></i>Aun no has subido evidencias</div>
+        <% } else { %>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead><tr><th>Archivo</th><th>Evaluacion</th><th>Perfil</th><th>Tipo</th><th>Criterio</th><th>Estado</th><th>Fecha</th></tr></thead>
+            <tbody>
+            <% evidence.forEach(ev => { %>
+            <tr>
+              <td>
+                <i class="bi bi-<%= ev.type === 'foto' ? 'image' : ev.type === 'video' ? 'camera-video' : 'file-earmark' %> me-1"></i>
+                <span title="<%= ev.file_name %>"><%= ev.file_name.length > 25 ? ev.file_name.substring(0,22) + '...' : ev.file_name %></span>
+              </td>
+              <td><a href="/portal/evaluacion/<%= ev.eval_id %>">#<%= ev.eval_id %></a> <%= ev.candidate_name %></td>
+              <td><small><%= ev.profile_name || '-' %></small></td>
+              <td><span class="badge bg-secondary"><%= ev.type %></span></td>
+              <td><%= ev.criterion || '-' %></td>
+              <td>
+                <% if (ev.verified) { %>
+                <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Verificada</span>
+                <% } else { %>
+                <span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Pendiente</span>
+                <% } %>
+              </td>
+              <td><small><%= ev.uploaded_at ? ev.uploaded_at.substring(0,10) : '' %></small></td>
+            </tr>
+            <% }) %>
+            </tbody>
+          </table>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
