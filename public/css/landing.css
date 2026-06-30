@@ -399,7 +399,7 @@ a { color: var(--coral); text-decoration: none; }
 .fv-finding { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px; background: rgba(243,156,18,0.06); font-size: 13px; color: var(--warn); font-weight: 500; }
 
 /* ═══════════════════ TIMELINE ═══════════════════ */
-.eight { padding: 120px 0; }
+.eight { padding: 120px 0; background: #3E2723; color: #fff; }
 .timeline { position: relative; max-width: 800px; margin: 0 auto; }
 .timeline-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--stone-200); transform: translateX(-50%); }
 .tl-item { position: relative; display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0; align-items: start; margin-bottom: 24px; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
@@ -604,4 +604,84 @@ a { color: var(--coral); text-decoration: none; }
 @media (max-width: 576px) {
   .d016-grid { grid-template-columns: 1fr; gap: 12px; }
   .d016-card { padding: 16px; }
+}
+
+/* D016 section dark bg overrides */
+.eight .section-head h2 { color: #fff; }
+.eight .section-sub { color: rgba(255,255,255,0.7); }
+.eight .label-gold { background: rgba(232,93,58,0.2); color: #FF8A65; }
+.d016-card { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.1); }
+.d016-card:hover { background: rgba(255,255,255,0.12); }
+
+
+/* CTA Contact Section */
+.cta-sub {
+  font-size: 18px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 32px;
+}
+.cta-channels {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.cta-channel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  min-width: 220px;
+}
+.cta-channel div { text-align: left; }
+.cta-channel strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+.cta-channel span {
+  font-size: 13px;
+  opacity: 0.8;
+}
+.cta-channel.whatsapp {
+  background: #25D366;
+  color: #fff;
+}
+.cta-channel.whatsapp:hover {
+  background: #1ebe5d;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37,211,102,0.3);
+}
+.cta-channel.email {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+}
+.cta-channel.email:hover {
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255,255,255,0.1);
+}
+.cta-channel.phone {
+  background: rgba(232,93,58,0.15);
+  border: 1px solid rgba(232,93,58,0.3);
+  color: #fff;
+}
+.cta-channel.phone:hover {
+  background: rgba(232,93,58,0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(232,93,58,0.2);
+}
+.cta-info {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+}
+.cta-dot { margin: 0 6px; }
+@media (max-width: 768px) {
+  .cta-channels { flex-direction: column; align-items: center; }
+  .cta-channel { width: 100%; max-width: 300px; justify-content: center; }
 }
