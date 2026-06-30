@@ -506,3 +506,26 @@ a { color: var(--coral); text-decoration: none; }
     .fv-toprow { grid-template-columns: 1fr; }
     .problem-intro h2 { font-size: 24px; }
 }
+/* Dashboard preview in hero */
+.dashboard-preview {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
+  transform: perspective(1200px) rotateY(-4deg) rotateX(2deg);
+  transition: transform 0.5s ease;
+}
+.dashboard-preview:hover {
+  transform: perspective(1200px) rotateY(0deg) rotateX(0deg);
+}
+.dashboard-preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+@media (max-width: 768px) {
+  .dashboard-preview {
+    transform: none;
+    border-radius: 12px;
+  }
+}
