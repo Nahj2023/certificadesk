@@ -15,7 +15,7 @@
       <% } else { evaluations.forEach(ev => { %>
         <tr>
           <td class="fw-bold"><%= ev.candidate_name %></td>
-          <td class="text-muted"><%= ev.candidate_rut || '-' %></td>
+          <td class="text-muted"><%= decrypt(decrypt(ev.candidate_rut)) || '-' %></td>
           <td><%= ev.profile_name || '-' %></td>
           <td class="text-muted"><%= ev.evaluator_name || '-' %></td>
           <td class="text-muted"><%= ev.scheduled_date || '-' %></td>

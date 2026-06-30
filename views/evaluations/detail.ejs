@@ -46,7 +46,7 @@
           <div class="card-header"><strong>Datos Generales</strong></div>
           <div class="card-body p-0">
             <table class="table table-sm mb-0">
-              <tr><th style="width:35%">Candidato</th><td><%= evaluation.candidate_name %> (<%= evaluation.candidate_rut %>)</td></tr>
+              <tr><th style="width:35%">Candidato</th><td><%= evaluation.candidate_name %> (<%= decrypt(evaluation.candidate_rut) %>)</td></tr>
               <tr><th>Perfil</th><td><%= evaluation.profile_code || '' %> <%= evaluation.profile_name || '-' %></td></tr>
               <tr><th>Evaluador</th><td><%= evaluation.evaluator_name || '-' %></td></tr>
               <tr><th>Fecha Programada</th><td><%= evaluation.scheduled_date || '-' %></td></tr>

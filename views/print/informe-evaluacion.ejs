@@ -73,7 +73,7 @@
       <div class="section-title">1. Datos del Candidato</div>
       <table class="info-table">
         <tr><td class="label">Nombre</td><td class="value"><%= evaluation.candidate_name %></td></tr>
-        <tr><td class="label">RUT</td><td class="value"><%= evaluation.candidate_rut || '-' %></td></tr>
+        <tr><td class="label">RUT</td><td class="value"><%= decrypt(evaluation.candidate_rut) || '-' %></td></tr>
         <tr><td class="label">Email</td><td class="value"><%= evaluation.candidate_email || '-' %></td></tr>
         <tr><td class="label">Region</td><td class="value"><%= evaluation.candidate_region || '-' %></td></tr>
         <tr><td class="label">Educacion</td><td class="value"><%= evaluation.education_level || '-' %></td></tr>
@@ -93,7 +93,7 @@
     <div class="section">
       <div class="section-title">3. Datos de la Evaluacion</div>
       <table class="info-table">
-        <tr><td class="label">Evaluador</td><td class="value"><%= evaluation.evaluator_name || '-' %> (<%= evaluation.evaluator_rut || '-' %>)</td></tr>
+        <tr><td class="label">Evaluador</td><td class="value"><%= evaluation.evaluator_name || '-' %> (<%= decrypt(evaluation.evaluator_rut) || '-' %>)</td></tr>
         <tr><td class="label">Fecha</td><td class="value"><%= evaluation.scheduled_date || '-' %></td></tr>
         <tr><td class="label">Ubicacion</td><td class="value"><%= evaluation.location || '-' %></td></tr>
         <tr><td class="label">Tipo</td><td class="value"><%= evaluation.type || '-' %></td></tr>

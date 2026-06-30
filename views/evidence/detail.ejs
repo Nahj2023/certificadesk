@@ -14,7 +14,7 @@
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
           <tr><td class="text-muted" style="width:35%">Candidato</td><td class="fw-bold"><%= evaluation.candidate_name %></td></tr>
-          <tr><td class="text-muted">RUT</td><td><%= evaluation.candidate_rut || '-' %></td></tr>
+          <tr><td class="text-muted">RUT</td><td><%= decrypt(decrypt(evaluation.candidate_rut)) || '-' %></td></tr>
           <tr><td class="text-muted">Perfil</td><td><%= evaluation.profile_name || '-' %> <small class="text-muted">(<%= evaluation.profile_code || '' %>)</small></td></tr>
           <tr><td class="text-muted">Evaluador</td><td><%= evaluation.evaluator_name || '-' %></td></tr>
           <tr><td class="text-muted">Tipo</td><td><%= evaluation.type || '-' %></td></tr>

@@ -14,7 +14,7 @@
 
 <!-- Evaluation context -->
 <div class="alert alert-light border mb-4 small">
-  <i class="bi bi-person"></i> <strong><%= evaluation.candidate_name %></strong> (<%= evaluation.candidate_rut || 'sin RUT' %>)
+  <i class="bi bi-person"></i> <strong><%= evaluation.candidate_name %></strong> (<%= decrypt(evaluation.candidate_rut) || 'sin RUT' %>)
   <% if (evaluation.profile_name) { %> · <i class="bi bi-briefcase"></i> <%= evaluation.profile_name %><% } %>
   <% if (evaluation.evaluator_name) { %> · <i class="bi bi-person-badge"></i> <%= evaluation.evaluator_name %><% } %>
 </div>

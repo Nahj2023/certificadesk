@@ -25,7 +25,7 @@
         <% } else { evaluations.forEach(e => { %>
           <tr>
             <td><a href="/evaluaciones/<%= e.id %>"><%= e.candidate_name || '-' %></a></td>
-            <td><%= e.candidate_rut || '-' %></td>
+            <td><%= decrypt(e.candidate_rut) || '-' %></td>
             <td><%= e.profile_name || '-' %></td>
             <td><%= e.evaluator_name || '-' %></td>
             <td><%= e.scheduled_date || '-' %></td>
