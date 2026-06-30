@@ -17,7 +17,62 @@ router.get("/", (req, res) => {
   };
   const rate = summary.candidates_total > 0 ? ((summary.certified / summary.candidates_total) * 100).toFixed(1) : 0;
 
-  res.render("reports/index", { summary, rate });
+  // Certificaciones por mes (ultimos 12 meses)
+  const certByMonth = db.prepare(
+    `SELECT strftime('%Y-%m', COALESCE(completed_at, scheduled_date)) as month,
+     SUM(CASE WHEN result='competente' THEN 1 ELSE 0 END) as competentes,
+     SUM(CASE WHEN result='aun_no_competente' THEN 1 ELSE 0 END) as no_competentes,
+     COUNT(*) as total
+     FROM evaluations WHERE org_id=? AND status='completada'
+     GROUP BY month ORDER BY month DESC LIMIT 12`
+  ).all(oid).reverse();
+
+  // Satisfaccion por dimension
+  const satDims = db.prepare(
+    `SELECT AVG(score_overall) as general, AVG(score_evaluator) as evaluador,
+     AVG(score_process) as proceso, AVG(score_infrastructure) as infraestructura,
+     AVG(score_communication) as comunicacion,
+     COUNT(*) as total
+     FROM satisfaction WHERE org_id=?`
+  ).get(oid);
+
+  // Por perfil ocupacional
+  const byProfile = db.prepare(
+    `SELECT p.name as label, p.code,
+     COUNT(e.id) as total,
+     SUM(CASE WHEN e.result='competente' THEN 1 ELSE 0 END) as competentes,
+     SUM(CASE WHEN e.result='aun_no_competente' THEN 1 ELSE 0 END) as no_competentes
+     FROM evaluations e
+     LEFT JOIN profiles p ON e.profile_id=p.id
+     WHERE e.org_id=? AND e.status='completada'
+     GROUP BY p.id ORDER BY total DESC LIMIT 10`
+  ).all(oid);
+
+  // Evaluador workload
+  const evalWorkload = db.prepare(
+    `SELECT ev.name, COUNT(e.id) as evaluaciones,
+     AVG(CASE WHEN e.result='competente' THEN 1.0 ELSE 0.0 END) as tasa_cert
+     FROM evaluations e
+     LEFT JOIN evaluators ev ON e.evaluator_id=ev.id
+     WHERE e.org_id=? AND e.status='completada' AND ev.name IS NOT NULL
+     GROUP BY ev.id ORDER BY evaluaciones DESC LIMIT 8`
+  ).all(oid);
+
+  const charts = {
+    certByMonth: certByMonth,
+    satDims: {
+      general: satDims.general ? Number(satDims.general).toFixed(1) : 0,
+      evaluador: satDims.evaluador ? Number(satDims.evaluador).toFixed(1) : 0,
+      proceso: satDims.proceso ? Number(satDims.proceso).toFixed(1) : 0,
+      infraestructura: satDims.infraestructura ? Number(satDims.infraestructura).toFixed(1) : 0,
+      comunicacion: satDims.comunicacion ? Number(satDims.comunicacion).toFixed(1) : 0,
+      total: satDims.total
+    },
+    byProfile: byProfile,
+    evalWorkload: evalWorkload
+  };
+
+  res.render("reports/index", { summary, rate, charts });
 });
 
 // Reporte ChileValora mensual — D016 Proc 1.3

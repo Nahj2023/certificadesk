@@ -12,113 +12,146 @@
   </div>
 </div>
 
-<!-- Stat cards row 1 -->
+<% if (alerts && alerts.length > 0) { %>
+<div class="alert-banner mb-4">
+  <% alerts.forEach(a => { %>
+  <div class="alert-banner-item alert-<%= a.type %>">
+    <i class="bi bi-<%= a.icon %>"></i> <%= a.text %>
+  </div>
+  <% }) %>
+</div>
+<% } %>
+
+<!-- KPI Hero Row -->
 <div class="row g-3 mb-4">
-  <div class="col-md-3">
-    <div class="card stat-card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <div class="stat-label">Candidatos</div>
-            <div class="stat-value"><%= stats.candidates %></div>
-          </div>
-          <div class="stat-icon coral"><i class="bi bi-people fs-4"></i></div>
+  <div class="col-md-4">
+    <div class="card kpi-card h-100">
+      <div class="card-body d-flex align-items-center gap-3 py-3">
+        <div class="kpi-gauge">
+          <svg viewBox="0 0 80 80" class="gauge-svg">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="7"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="<%= Number(stats.certification_rate) >= 70 ? '#2ECC71' : Number(stats.certification_rate) >= 50 ? '#F39C12' : '#E74C3C' %>"
+              stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="<%= (Number(stats.certification_rate) / 100 * 213.6).toFixed(1) %> 213.6"
+              transform="rotate(-90 40 40)"/>
+            <text x="40" y="37" text-anchor="middle" font-size="16" font-weight="800" fill="#2D3436"><%= stats.certification_rate %>%</text>
+            <text x="40" y="50" text-anchor="middle" font-size="7" font-weight="600" fill="#636E72">TASA</text>
+          </svg>
+        </div>
+        <div>
+          <div class="kpi-label">Tasa de Certificacion</div>
+          <div class="kpi-detail"><%= stats.certified %> competentes de <%= stats.evaluations_done %> evaluados</div>
+          <% if (stats.not_certified > 0) { %>
+          <div class="kpi-sub"><span class="text-danger"><%= stats.not_certified %></span> aun no competentes</div>
+          <% } %>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-md-3">
-    <div class="card stat-card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <div class="stat-label">Certificados</div>
-            <div class="stat-value"><%= stats.certified %></div>
+  <div class="col-md-4">
+    <div class="card kpi-card h-100">
+      <div class="card-body d-flex align-items-center gap-3 py-3">
+        <div class="kpi-gauge">
+          <svg viewBox="0 0 80 80" class="gauge-svg">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="7"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="<%= stats.compliance_score >= 75 ? '#2ECC71' : stats.compliance_score >= 50 ? '#F39C12' : '#E74C3C' %>"
+              stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="<%= (stats.compliance_score / 100 * 213.6).toFixed(1) %> 213.6"
+              transform="rotate(-90 40 40)"/>
+            <text x="40" y="37" text-anchor="middle" font-size="16" font-weight="800" fill="#2D3436"><%= stats.compliance_score %>%</text>
+            <text x="40" y="50" text-anchor="middle" font-size="7" font-weight="600" fill="#636E72">D016</text>
+          </svg>
+        </div>
+        <div>
+          <div class="kpi-label">Cumplimiento D016</div>
+          <div class="kpi-detail"><%= stats.compliance_checks.filter(Boolean).length %>/8 procedimientos OK</div>
+          <div class="kpi-sub d-flex gap-1 mt-1 flex-wrap">
+            <% const procNames = ['P1','P2','P3','P4','P5','P6','P7','P8']; %>
+            <% stats.compliance_checks.forEach((ok, i) => { %>
+            <span class="proc-dot <%= ok ? 'ok' : 'fail' %>" title="<%= procNames[i] %>"><%= procNames[i] %></span>
+            <% }) %>
           </div>
-          <div class="stat-icon green"><i class="bi bi-patch-check fs-4"></i></div>
         </div>
       </div>
     </div>
   </div>
-  <div class="col-md-3">
-    <div class="card stat-card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <div class="stat-label">Eval. Pendientes</div>
-            <div class="stat-value"><%= stats.pending %></div>
-          </div>
-          <div class="stat-icon orange"><i class="bi bi-clock fs-4"></i></div>
+  <div class="col-md-4">
+    <div class="card kpi-card h-100">
+      <div class="card-body d-flex align-items-center gap-3 py-3">
+        <div class="kpi-gauge">
+          <svg viewBox="0 0 80 80" class="gauge-svg">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="7"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="<%= Number(stats.satisfaction_avg) >= 4 ? '#2ECC71' : Number(stats.satisfaction_avg) >= 3 ? '#F39C12' : '#E74C3C' %>"
+              stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="<%= (Number(stats.satisfaction_avg) / 5 * 213.6).toFixed(1) %> 213.6"
+              transform="rotate(-90 40 40)"/>
+            <text x="40" y="37" text-anchor="middle" font-size="16" font-weight="800" fill="#2D3436"><%= stats.satisfaction_avg ? Number(stats.satisfaction_avg).toFixed(1) : '-' %></text>
+            <text x="40" y="50" text-anchor="middle" font-size="7" font-weight="600" fill="#636E72">/5.0</text>
+          </svg>
         </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3">
-    <div class="card stat-card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <div class="stat-label">Reclamos Abiertos</div>
-            <div class="stat-value"><%= stats.complaints_open %></div>
-          </div>
-          <div class="stat-icon red"><i class="bi bi-exclamation-triangle fs-4"></i></div>
+        <div>
+          <div class="kpi-label">Satisfaccion Candidatos</div>
+          <div class="kpi-detail">Promedio general encuestas</div>
+          <div class="kpi-sub"><a href="/satisfaccion" class="text-decoration-none" style="font-size:0.75rem"><i class="bi bi-arrow-right"></i> Ver detalle dimensiones</a></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Stat cards row 2 -->
+<!-- Stat cards -->
 <div class="row g-3 mb-4">
-  <div class="col-md-3">
+  <div class="col-md-2">
     <div class="card stat-card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <div class="stat-label">Evaluadores</div>
-            <div class="stat-value"><%= stats.evaluators %></div>
-          </div>
-          <div class="stat-icon blue"><i class="bi bi-person-badge fs-4"></i></div>
-        </div>
+      <div class="card-body text-center py-3">
+        <div class="stat-icon mx-auto coral"><i class="bi bi-people fs-5"></i></div>
+        <div class="stat-value mt-2" style="font-size:1.5rem"><%= stats.candidates %></div>
+        <div class="stat-label">Candidatos</div>
       </div>
     </div>
   </div>
-  <div class="col-md-3">
+  <div class="col-md-2">
     <div class="card stat-card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <div class="stat-label">Docs por Vencer</div>
-            <div class="stat-value"><%= stats.docs_expiring %></div>
-          </div>
-          <div class="stat-icon orange"><i class="bi bi-file-earmark-x fs-4"></i></div>
-        </div>
+      <div class="card-body text-center py-3">
+        <div class="stat-icon mx-auto green"><i class="bi bi-patch-check fs-5"></i></div>
+        <div class="stat-value mt-2" style="font-size:1.5rem"><%= stats.certified %></div>
+        <div class="stat-label">Certificados</div>
       </div>
     </div>
   </div>
-  <div class="col-md-3">
+  <div class="col-md-2">
     <div class="card stat-card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <div class="stat-label">Satisfaccion</div>
-            <div class="stat-value"><%= stats.satisfaction_avg ? Number(stats.satisfaction_avg).toFixed(1) : '-' %><small style="font-size:0.9rem;font-weight:500">/5</small></div>
-          </div>
-          <div class="stat-icon green"><i class="bi bi-emoji-smile fs-4"></i></div>
-        </div>
+      <div class="card-body text-center py-3">
+        <div class="stat-icon mx-auto orange"><i class="bi bi-clock fs-5"></i></div>
+        <div class="stat-value mt-2" style="font-size:1.5rem"><%= stats.pending %></div>
+        <div class="stat-label">Pendientes</div>
       </div>
     </div>
   </div>
-  <div class="col-md-3">
+  <div class="col-md-2">
     <div class="card stat-card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <div class="stat-label">Evaluaciones</div>
-            <div class="stat-value"><%= stats.evaluations %></div>
-          </div>
-          <div class="stat-icon purple"><i class="bi bi-clipboard-check fs-4"></i></div>
-        </div>
+      <div class="card-body text-center py-3">
+        <div class="stat-icon mx-auto blue"><i class="bi bi-person-badge fs-5"></i></div>
+        <div class="stat-value mt-2" style="font-size:1.5rem"><%= stats.evaluators %></div>
+        <div class="stat-label">Evaluadores</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2">
+    <div class="card stat-card">
+      <div class="card-body text-center py-3">
+        <div class="stat-icon mx-auto purple"><i class="bi bi-clipboard-check fs-5"></i></div>
+        <div class="stat-value mt-2" style="font-size:1.5rem"><%= stats.evaluations %></div>
+        <div class="stat-label">Evaluaciones</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-2">
+    <div class="card stat-card">
+      <div class="card-body text-center py-3">
+        <div class="stat-icon mx-auto red"><i class="bi bi-exclamation-triangle fs-5"></i></div>
+        <div class="stat-value mt-2" style="font-size:1.5rem"><%= stats.complaints_open %></div>
+        <div class="stat-label">Reclamos</div>
       </div>
     </div>
   </div>
@@ -131,109 +164,106 @@
     <span class="badge bg-secondary"><%= stats.candidates %> total</span>
   </div>
   <div class="card-body py-4">
-    <div class="row align-items-center text-center g-2">
+    <div class="pipeline-progress mb-3">
+      <% const total = Math.max(stats.candidates, 1); %>
+      <% const pcts = [stats.registrados, stats.elegibles, stats.evaluando, stats.pendiente_comite, stats.certificados].map(v => (v/total*100).toFixed(1)); %>
+      <% const pColors = ['#636E72','#3498DB','#F39C12','#E85D3A','#2ECC71']; %>
+      <% const pLabels = ['Registrados','Elegibles','Evaluando','Pend. Comite','Certificados']; %>
+      <div class="pipeline-bar">
+        <% [stats.registrados, stats.elegibles, stats.evaluando, stats.pendiente_comite, stats.certificados].forEach((v, i) => { %>
+        <% if (v > 0) { %>
+        <div class="pipeline-segment" style="width:<%= pcts[i] %>%;background:<%= pColors[i] %>" title="<%= pLabels[i] %>: <%= v %>"></div>
+        <% } %>
+        <% }) %>
+      </div>
+    </div>
+    <div class="row text-center g-2">
+      <% [stats.registrados, stats.elegibles, stats.evaluando, stats.pendiente_comite, stats.certificados].forEach((v, i) => { %>
       <div class="col">
-        <div class="pipeline-step">
-          <div class="step-label text-muted">Registrados</div>
-          <div class="step-value"><%= stats.registrados %></div>
+        <div class="pipeline-step-mini">
+          <div class="step-dot" style="background:<%= pColors[i] %>"></div>
+          <div class="step-count" style="color:<%= pColors[i] %>"><%= v %></div>
+          <div class="step-name"><%= pLabels[i] %></div>
         </div>
       </div>
-      <div class="col-auto pipeline-arrow"><i class="bi bi-chevron-right"></i></div>
-      <div class="col">
-        <div class="pipeline-step" style="border-color: var(--blue)">
-          <div class="step-label" style="color: var(--blue)">Elegibles</div>
-          <div class="step-value" style="color: var(--blue)"><%= stats.elegibles %></div>
-        </div>
-      </div>
-      <div class="col-auto pipeline-arrow"><i class="bi bi-chevron-right"></i></div>
-      <div class="col">
-        <div class="pipeline-step" style="border-color: var(--orange)">
-          <div class="step-label" style="color: var(--orange)">Evaluando</div>
-          <div class="step-value" style="color: var(--orange)"><%= stats.evaluando %></div>
-        </div>
-      </div>
-      <div class="col-auto pipeline-arrow"><i class="bi bi-chevron-right"></i></div>
-      <div class="col">
-        <div class="pipeline-step" style="border-color: var(--coral)">
-          <div class="step-label" style="color: var(--coral)">Pend. Comite</div>
-          <div class="step-value" style="color: var(--coral)"><%= stats.pendiente_comite %></div>
-        </div>
-      </div>
-      <div class="col-auto pipeline-arrow"><i class="bi bi-chevron-right"></i></div>
-      <div class="col">
-        <div class="pipeline-step" style="border-color: var(--green)">
-          <div class="step-label" style="color: var(--green)">Certificados</div>
-          <div class="step-value" style="color: var(--green)"><%= stats.certificados %></div>
-        </div>
-      </div>
+      <% if (i < 4) { %><div class="col-auto d-flex align-items-center"><i class="bi bi-chevron-right text-muted" style="font-size:0.8rem"></i></div><% } %>
+      <% }) %>
     </div>
   </div>
 </div>
 
-<!-- Charts row -->
+<!-- Charts row 1 -->
 <div class="row g-3 mb-4">
   <div class="col-md-4">
     <div class="card h-100">
       <div class="card-header"><strong><i class="bi bi-pie-chart"></i> Candidatos por Estado</strong></div>
-      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:260px">
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:280px">
         <canvas id="chartPipeline"></canvas>
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="card h-100">
-      <div class="card-header"><strong><i class="bi bi-bar-chart"></i> Candidatos por Perfil</strong></div>
-      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:260px">
+      <div class="card-header"><strong><i class="bi bi-bar-chart"></i> Por Perfil Ocupacional</strong></div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:280px">
         <canvas id="chartProfiles"></canvas>
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="card h-100">
-      <div class="card-header"><strong><i class="bi bi-graph-up"></i> Evaluaciones por Mes</strong></div>
-      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:260px">
+      <div class="card-header"><strong><i class="bi bi-graph-up"></i> Evaluaciones Mensuales</strong></div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:280px">
         <canvas id="chartMonthly"></canvas>
       </div>
     </div>
   </div>
 </div>
 
-<!-- D016 Compliance -->
+<!-- Charts row 2 -->
 <div class="row g-3 mb-4">
   <div class="col-md-4">
     <div class="card h-100">
-      <div class="card-body text-center py-4">
-        <div class="stat-icon mx-auto mb-3 <%= stats.manuales >= 3 ? 'green' : 'red' %>">
-          <i class="bi bi-book fs-4"></i>
-        </div>
-        <div class="stat-label">Manuales ChileValora</div>
-        <div class="stat-value mt-1"><%= stats.manuales %><small style="font-size:1rem;font-weight:500">/3</small></div>
-        <% if (stats.manuales < 3) { %><span class="badge bg-danger mt-2">Incompleto</span><% } else { %><span class="badge bg-success mt-2">Completos</span><% } %>
+      <div class="card-header"><strong><i class="bi bi-speedometer2"></i> Distribucion de Puntajes</strong></div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:260px">
+        <canvas id="chartScores"></canvas>
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="card h-100">
-      <div class="card-body text-center py-4">
-        <div class="stat-icon mx-auto mb-3 <%= stats.eval_reviews_pending === 0 ? 'green' : 'orange' %>">
-          <i class="bi bi-clipboard2-check fs-4"></i>
-        </div>
-        <div class="stat-label">Eval. Desempeno Pendientes</div>
-        <div class="stat-value mt-1"><%= stats.eval_reviews_pending %></div>
-        <% if (stats.eval_reviews_pending > 0) { %><span class="badge bg-warning mt-2">Pendiente</span><% } else { %><span class="badge bg-success mt-2">Al dia</span><% } %>
+      <div class="card-header"><strong><i class="bi bi-hexagon"></i> Satisfaccion por Dimension</strong></div>
+      <div class="card-body d-flex align-items-center justify-content-center" style="min-height:260px">
+        <canvas id="chartSatisfaction"></canvas>
       </div>
     </div>
   </div>
   <div class="col-md-4">
     <div class="card h-100">
-      <div class="card-body text-center py-4">
-        <div class="stat-icon mx-auto mb-3 blue">
-          <i class="bi bi-file-earmark-bar-graph fs-4"></i>
-        </div>
-        <div class="stat-label">Reporte ChileValora</div>
-        <div class="mt-3">
-          <a href="/reportes/chilevalora" class="btn btn-sm btn-primary"><i class="bi bi-download"></i> Generar Mensual</a>
-        </div>
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong><i class="bi bi-shield-check"></i> Cumplimiento D016</strong>
+        <span class="badge bg-<%= stats.compliance_score >= 75 ? 'success' : stats.compliance_score >= 50 ? 'warning' : 'danger' %>"><%= stats.compliance_score %>%</span>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <% const procDescriptions = [
+            'Gestion de Perfiles Ocupacionales',
+            'Gestion de Evaluadores',
+            'Proceso de Evaluacion',
+            'Manuales ChileValora (3/3)',
+            'Evaluacion Desempeno Evaluadores',
+            'Gestion de Reclamos',
+            'Medicion de Satisfaccion',
+            'Auditorias Internas'
+          ]; %>
+          <% stats.compliance_checks.forEach((ok, i) => { %>
+          <tr>
+            <td style="width:36px;text-align:center"><i class="bi bi-<%= ok ? 'check-circle-fill' : 'x-circle' %>" style="color:<%= ok ? '#2ECC71' : '#E74C3C' %>"></i></td>
+            <td style="font-size:0.82rem"><%= procDescriptions[i] %></td>
+            <td style="width:40px"><span class="badge bg-<%= ok ? 'success' : 'danger' %>" style="font-size:0.65rem">P<%= i+1 %></span></td>
+          </tr>
+          <% }) %>
+        </table>
       </div>
     </div>
   </div>
@@ -244,7 +274,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>Proximas Evaluaciones</strong>
+        <strong><i class="bi bi-calendar-event"></i> Proximas Evaluaciones</strong>
         <a href="/evaluaciones" class="btn btn-sm btn-outline-primary">Ver todas</a>
       </div>
       <div class="card-body p-0">
@@ -264,7 +294,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <strong>Actividad Reciente</strong>
+        <strong><i class="bi bi-clock-history"></i> Actividad Reciente</strong>
         <span class="badge bg-secondary"><%= recent.length %></span>
       </div>
       <div class="card-body p-0">
@@ -292,8 +322,34 @@
   Chart.defaults.font = chartFont;
   Chart.defaults.plugins.legend.labels.usePointStyle = true;
   Chart.defaults.plugins.legend.labels.padding = 12;
+  Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(30,35,40,0.92)';
+  Chart.defaults.plugins.tooltip.cornerRadius = 8;
+  Chart.defaults.plugins.tooltip.titleFont = { family: "'Inter', sans-serif", size: 12, weight: '600' };
+  Chart.defaults.plugins.tooltip.bodyFont = { family: "'Inter', sans-serif", size: 11 };
+  Chart.defaults.plugins.tooltip.padding = { top: 8, bottom: 8, left: 12, right: 12 };
 
-  // Donut: candidatos por estado
+  // Donut with center text plugin
+  const centerTextPlugin = {
+    id: 'centerText',
+    afterDraw(chart) {
+      if (chart.config.type !== 'doughnut') return;
+      const { ctx, width, height } = chart;
+      const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+      ctx.save();
+      ctx.font = "800 22px 'Inter', sans-serif";
+      ctx.fillStyle = '#2D3436';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(total, width / 2, height / 2 - 6);
+      ctx.font = "600 9px 'Inter', sans-serif";
+      ctx.fillStyle = '#636E72';
+      ctx.fillText('TOTAL', width / 2, height / 2 + 12);
+      ctx.restore();
+    }
+  };
+  Chart.register(centerTextPlugin);
+
+  // 1. Donut
   const pipeData = <%- JSON.stringify(charts.pipeline) %>;
   new Chart(document.getElementById('chartPipeline'), {
     type: 'doughnut',
@@ -302,46 +358,70 @@
       datasets: [{
         data: pipeData,
         backgroundColor: [gray, blue, orange, coral, green],
-        borderWidth: 0, hoverOffset: 6
+        borderWidth: 0, hoverOffset: 8, hoverBorderWidth: 2, hoverBorderColor: '#fff'
       }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      cutout: '60%',
-      plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } }
+      cutout: '65%',
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8 } },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              var total = ctx.dataset.data.reduce(function(a,b){return a+b}, 0);
+              var pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : 0;
+              return ctx.label + ': ' + ctx.raw + ' (' + pct + '%)';
+            }
+          }
+        }
+      }
     }
   });
 
-  // Bar: candidatos por perfil
-  const profData = <%- JSON.stringify(charts.byProfile) %>;
+  // 2. Bar: por perfil (stacked)
+  var profData = <%- JSON.stringify(charts.byProfile) %>;
+  var hasStackData = profData.some(function(d) { return d.certificados > 0 || d.no_certificados > 0; });
   new Chart(document.getElementById('chartProfiles'), {
     type: 'bar',
     data: {
-      labels: profData.map(d => d.label ? (d.label.length > 18 ? d.label.substring(0,18)+'...' : d.label) : 'N/A'),
-      datasets: [{
-        label: 'Candidatos',
-        data: profData.map(d => d.value),
-        backgroundColor: coral + 'CC',
-        borderRadius: 6, barThickness: 28
+      labels: profData.map(function(d) { return d.label ? (d.label.length > 18 ? d.label.substring(0,18)+'...' : d.label) : 'N/A'; }),
+      datasets: hasStackData ? [
+        { label: 'Certificados', data: profData.map(function(d){return d.certificados||0}), backgroundColor: green+'CC', borderRadius: 4, barThickness: 20 },
+        { label: 'No Cert.', data: profData.map(function(d){return d.no_certificados||0}), backgroundColor: red+'99', borderRadius: 4, barThickness: 20 },
+        { label: 'En proceso', data: profData.map(function(d){return d.value - (d.certificados||0) - (d.no_certificados||0)}), backgroundColor: blue+'77', borderRadius: 4, barThickness: 20 }
+      ] : [{
+        label: 'Candidatos', data: profData.map(function(d){return d.value}),
+        backgroundColor: coral + 'CC', borderRadius: 6, barThickness: 28
       }]
     },
     options: {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-      scales: { x: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } }, grid: { display: false } }, y: { ticks: { font: { size: 10 } }, grid: { display: false } } },
-      plugins: { legend: { display: false } }
+      scales: {
+        x: { stacked: hasStackData, beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.04)' } },
+        y: { stacked: hasStackData, ticks: { font: { size: 10 } }, grid: { display: false } }
+      },
+      plugins: { legend: { display: hasStackData, position: 'bottom', labels: { font: { size: 9 } } } }
     }
   });
 
-  // Line: evaluaciones por mes
-  const monthData = <%- JSON.stringify(charts.byMonth) %>;
+  // 3. Line: evaluaciones mensuales
+  var monthData = <%- JSON.stringify(charts.byMonth) %>;
   if (monthData.length > 0) {
-    new Chart(document.getElementById('chartMonthly'), {
+    var ctx3 = document.getElementById('chartMonthly').getContext('2d');
+    var gradGreen = ctx3.createLinearGradient(0,0,0,250);
+    gradGreen.addColorStop(0, green + '44');
+    gradGreen.addColorStop(1, green + '05');
+    var gradRed = ctx3.createLinearGradient(0,0,0,250);
+    gradRed.addColorStop(0, red + '33');
+    gradRed.addColorStop(1, red + '05');
+    new Chart(ctx3, {
       type: 'line',
       data: {
-        labels: monthData.map(d => d.month),
+        labels: monthData.map(function(d){ return d.month; }),
         datasets: [
-          { label: 'Competentes', data: monthData.map(d => d.competentes), borderColor: green, backgroundColor: green+'33', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: green },
-          { label: 'No Competentes', data: monthData.map(d => d.no_competentes), borderColor: red, backgroundColor: red+'22', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: red }
+          { label: 'Competentes', data: monthData.map(function(d){return d.competentes}), borderColor: green, backgroundColor: gradGreen, fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#fff', pointBorderColor: green, pointBorderWidth: 2, pointHoverRadius: 7 },
+          { label: 'No Competentes', data: monthData.map(function(d){return d.no_competentes}), borderColor: red, backgroundColor: gradRed, fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#fff', pointBorderColor: red, pointBorderWidth: 2, pointHoverRadius: 7 }
         ]
       },
       options: {
@@ -351,7 +431,72 @@
       }
     });
   } else {
-    document.getElementById('chartMonthly').parentElement.innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-graph-up" style="font-size:2rem"></i><br>Sin datos aun</div>';
+    document.getElementById('chartMonthly').parentElement.innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-graph-up" style="font-size:2rem;opacity:0.3"></i><br><span style="font-size:0.85rem">Sin datos de evaluaciones completadas</span></div>';
+  }
+
+  // 4. Score distribution
+  var scoreData = <%- JSON.stringify(charts.scoreDistrib) %>;
+  var hasScores = (scoreData.bajo||0) + (scoreData.medio||0) + (scoreData.competente||0) + (scoreData.destacado||0) > 0;
+  if (hasScores) {
+    new Chart(document.getElementById('chartScores'), {
+      type: 'bar',
+      data: {
+        labels: ['< 2.0 Bajo', '2.0-3.0 Medio', '3.0-3.5 Comp.', '3.5+ Destacado'],
+        datasets: [{
+          data: [scoreData.bajo||0, scoreData.medio||0, scoreData.competente||0, scoreData.destacado||0],
+          backgroundColor: [red+'CC', orange+'CC', green+'CC', teal+'CC'],
+          borderRadius: 8, barThickness: 36
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0,0,0,0.04)' } },
+          x: { grid: { display: false }, ticks: { font: { size: 9 } } }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+  } else {
+    document.getElementById('chartScores').parentElement.innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-speedometer2" style="font-size:2rem;opacity:0.3"></i><br><span style="font-size:0.85rem">Sin puntajes registrados</span></div>';
+  }
+
+  // 5. Satisfaction radar
+  var satData = <%- JSON.stringify(charts.satDims) %>;
+  if (satData.total > 0) {
+    new Chart(document.getElementById('chartSatisfaction'), {
+      type: 'radar',
+      data: {
+        labels: ['General', 'Evaluador', 'Proceso', 'Infraestructura', 'Comunicacion'],
+        datasets: [{
+          label: 'Promedio',
+          data: [satData.general, satData.evaluador, satData.proceso, satData.infraestructura, satData.comunicacion],
+          backgroundColor: coral + '22',
+          borderColor: coral,
+          borderWidth: 2,
+          pointBackgroundColor: coral,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: {
+          r: {
+            beginAtZero: true, min: 0, max: 5,
+            ticks: { stepSize: 1, font: { size: 9 }, backdropColor: 'transparent' },
+            grid: { color: 'rgba(0,0,0,0.06)' },
+            pointLabels: { font: { size: 10, weight: '600' }, color: '#636E72' },
+            angleLines: { color: 'rgba(0,0,0,0.06)' }
+          }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+  } else {
+    document.getElementById('chartSatisfaction').parentElement.innerHTML = '<div class="text-center text-muted py-4"><i class="bi bi-hexagon" style="font-size:2rem;opacity:0.3"></i><br><span style="font-size:0.85rem">Sin encuestas de satisfaccion</span></div>';
   }
 })();
 </script>
