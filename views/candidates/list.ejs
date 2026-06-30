@@ -47,7 +47,7 @@
           <tr>
             <td><a href="/candidatos/<%= c.id %>" style="font-weight:600"><%= c.name %></a></td>
             <td class="text-muted"><%= decrypt(c.rut) || '-' %></td>
-            <td><%= c.profile_name || '<span class="text-muted">—</span>' %></td>
+            <td><%= c.profile_name || '-' %></td>
             <td>
               <%
                 const sc = {registrado:'secondary', elegible:'info', evaluando:'warning', pendiente_comite:'primary', certificado:'success', no_certificado:'danger', apelacion:'dark'};
