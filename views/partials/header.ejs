@@ -23,6 +23,43 @@
           </div>
         </form>
       </div>
+      <% if (user.role === 'evaluador') { %>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/portal' ? 'active' : '' %>" href="/portal">
+            <i class="bi bi-house-door"></i> Mi Portal
+          </a>
+        </li>
+        <li class="nav-section">Mis Asignaciones</li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath.startsWith('/portal/evaluacion') ? 'active' : '' %>" href="/portal">
+            <i class="bi bi-clipboard-check"></i> Mis Evaluaciones
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath.startsWith('/evidencias') ? 'active' : '' %>" href="/evidencias">
+            <i class="bi bi-archive"></i> Evidencias
+          </a>
+        </li>
+        <li class="nav-section">Declaraciones</li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath.startsWith('/conflictos') ? 'active' : '' %>" href="/conflictos">
+            <i class="bi bi-exclamation-triangle"></i> Conflictos de Interes
+          </a>
+        </li>
+        <li class="nav-section">Mi Cuenta</li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/mi-cuenta/password' ? 'active' : '' %>" href="/mi-cuenta/password">
+            <i class="bi bi-key"></i> Cambiar contrasena
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= currentPath === '/mi-cuenta/2fa' ? 'active' : '' %>" href="/mi-cuenta/2fa">
+            <i class="bi bi-shield-lock"></i> 2FA
+          </a>
+        </li>
+      </ul>
+      <% } else { %>
       <ul class="nav flex-column">
         <li class="nav-item">
           <a class="nav-link <%= currentPath === '/dashboard' ? 'active' : '' %>" href="/dashboard">
@@ -160,6 +197,7 @@
         </li>
         <% } %>
       </ul>
+      <% } %>
       <div class="sidebar-footer">
         <div class="d-flex align-items-center justify-content-between">
           <small><i class="bi bi-person-circle"></i> <%= user.display_name %> <span class="badge bg-dark" style="font-size:0.65rem"><%= user.role %></span></small>
@@ -186,6 +224,7 @@
             evidencias: 'Evidencias',
             busqueda: 'Busqueda',
             admin: 'Administracion',
+            portal: 'Mi Portal',
             usuarios: 'Usuarios',
             arco: 'ARCO',
             retencion: 'Retencion',

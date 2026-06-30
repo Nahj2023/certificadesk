@@ -60,7 +60,8 @@ app.use("/guia", require("./routes/agents-public"));
 
 // Protected
 app.use(requireAuth);
-app.use("/dashboard", require("./routes/dashboard"));
+app.use("/portal", require("./routes/portal"));
+app.use("/dashboard", (req,res,next) => { if(req.user.role==="evaluador") return res.redirect("/portal"); next(); }, require("./routes/dashboard"));
 app.use("/candidatos", requireWriteRole("candidatos"), logAccess("candidatos"), require("./routes/candidates"));
 app.use("/evaluaciones", requireWriteRole("evaluaciones"), logAccess("evaluaciones"), require("./routes/evaluations"));
 app.use("/evaluadores", requireWriteRole("evaluadores"), logAccess("evaluadores"), require("./routes/evaluators"));

@@ -1,0 +1,92 @@
+<% const title = 'Evaluacion #' + evaluation.id %>
+<%- include('../partials/header', { title }) %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-1"><%= evaluation.candidate_name %></h4>
+    <span class="badge bg-<%= evaluation.status === 'completada' ? 'success' : evaluation.status === 'en_proceso' ? 'primary' : 'warning' %> me-2"><%= evaluation.status %></span>
+    <span class="text-muted" style="font-size:0.85rem"><%= evaluation.profile_name || '' %></span>
+  </div>
+  <a href="/portal" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Mi Portal</a>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header"><strong><i class="bi bi-clipboard-data me-2" style="color:var(--coral)"></i> Datos de la Evaluacion</strong></div>
+      <div class="card-body">
+        <table class="table table-sm mb-0">
+          <tr><td class="text-muted" style="width:40%">Candidato</td><td class="fw-bold"><%= evaluation.candidate_name %></td></tr>
+          <tr><td class="text-muted">RUT</td><td><%= typeof decrypt !== 'undefined' ? decrypt(evaluation.candidate_rut) : evaluation.candidate_rut %></td></tr>
+          <tr><td class="text-muted">Perfil</td><td><%= evaluation.profile_name || '-' %></td></tr>
+          <tr><td class="text-muted">Codigo</td><td><%= evaluation.profile_code || '-' %></td></tr>
+          <tr><td class="text-muted">Sector</td><td><%= evaluation.profile_sector || '-' %></td></tr>
+          <tr><td class="text-muted">Fecha programada</td><td><%= evaluation.scheduled_date || '-' %></td></tr>
+          <tr><td class="text-muted">Ubicacion</td><td><%= evaluation.location || '-' %></td></tr>
+          <tr><td class="text-muted">Tipo</td><td><%= evaluation.eval_type || '-' %></td></tr>
+          <tr><td class="text-muted">Completada</td><td><%= evaluation.completed_at || '-' %></td></tr>
+          <% if (evaluation.result) { %>
+          <tr><td class="text-muted">Resultado</td><td><span class="badge bg-<%= evaluation.result === 'competente' ? 'success' : 'danger' %>" style="font-size:0.85rem"><%= evaluation.result %></span></td></tr>
+          <% } %>
+          <% if (evaluation.score_ponderado) { %>
+          <tr><td class="text-muted">Puntaje ponderado</td><td><strong style="font-size:1.1rem;color:var(--green)"><%= evaluation.score_ponderado.toFixed(2) %>/4.0</strong></td></tr>
+          <% } %>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card mb-3">
+      <div class="card-header"><strong><i class="bi bi-rulers me-2" style="color:var(--coral)"></i> Instrumentos (<%= instruments.length %>)</strong></div>
+      <div class="card-body p-0">
+        <% if (instruments.length === 0) { %>
+          <div class="text-center text-muted py-4"><i class="bi bi-inbox" style="opacity:0.3"></i><br>Sin instrumentos registrados</div>
+        <% } else { %>
+        <table class="table table-sm mb-0">
+          <thead><tr><th>Instrumento</th><th>Puntaje</th><th>Peso</th></tr></thead>
+          <tbody>
+            <% instruments.forEach(inst => { %>
+            <tr>
+              <td><%= inst.instrument_type %></td>
+              <td><span class="badge bg-<%= inst.score >= 3 ? 'success' : inst.score >= 2 ? 'warning' : 'danger' %>"><%= inst.score ? inst.score.toFixed(1) : '-' %>/4</span></td>
+              <td class="text-muted"><%= inst.weight ? (inst.weight * 100).toFixed(0) + '%' : '-' %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <% } %>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong><i class="bi bi-archive me-2" style="color:var(--coral)"></i> Evidencias (<%= evidence.length %>)</strong>
+      </div>
+      <div class="card-body p-0">
+        <% if (evidence.length === 0) { %>
+          <div class="text-center text-muted py-4"><i class="bi bi-folder2-open" style="opacity:0.3"></i><br>Sin evidencias</div>
+        <% } else { %>
+        <table class="table table-sm mb-0">
+          <thead><tr><th>Tipo</th><th>Descripcion</th><th>Fecha</th></tr></thead>
+          <tbody>
+            <% evidence.forEach(ev => { %>
+            <tr>
+              <td><span class="badge bg-secondary"><%= ev.evidence_type || 'archivo' %></span></td>
+              <td style="font-size:0.85rem"><%= ev.description || ev.file_name || '-' %></td>
+              <td class="text-muted" style="font-size:0.85rem"><%= ev.created_at ? ev.created_at.substring(0,10) : '-' %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if (evaluation.observations) { %>
+<div class="card mt-3">
+  <div class="card-header"><strong><i class="bi bi-chat-left-text me-2" style="color:var(--coral)"></i> Observaciones</strong></div>
+  <div class="card-body"><p class="mb-0" style="white-space:pre-wrap"><%= evaluation.observations %></p></div>
+</div>
+<% } %>
+
+<%- include('../partials/footer') %>
