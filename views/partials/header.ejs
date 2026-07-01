@@ -13,6 +13,7 @@
     <nav id="sidebar" class="sidebar">
       <div class="sidebar-header">
         <h5 class="mb-0">CertificaDesk</h5>
+        <% if (user.role === "evaluador") { %><span style="display:inline-block;background:#E85D3A;color:#fff;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:0.5px;margin-top:4px">PORTAL EVALUADOR</span><% } %>
         <small class="text-muted"><%= user.org_name %></small>
       </div>
       <div class="sidebar-search px-3 py-2" style="flex-shrink:0">

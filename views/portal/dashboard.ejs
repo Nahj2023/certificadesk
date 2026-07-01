@@ -1,9 +1,17 @@
-<%- include('../partials/header', { title: 'Mi Portal', currentPath: '/portal' }) %>
+<%- include('../partials/header', { title: 'Portal Evaluador', currentPath: '/portal' }) %>
 <% const decrypt = typeof locals.decrypt === 'function' ? locals.decrypt : (v => v); %>
 
 <% if (!evaluator) { %>
 <div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-2"></i>Tu cuenta no esta vinculada a un evaluador. Contacta al CEC.</div>
 <% } else { %>
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
+    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-1"><li class="breadcrumb-item"><i class="bi bi-house"></i></li><li class="breadcrumb-item active">Portal Evaluador</li></ol></nav>
+    <h4 class="mb-0 fw-bold">Portal Evaluador</h4>
+    <p class="text-muted mb-0">Bienvenido, <%= evaluator.name %> — gestiona tus evaluaciones, evidencias y conflictos de interes</p>
+  </div>
+</div>
 
 <% alerts.forEach(a => { %>
 <div class="alert alert-<%= a.type %> d-flex align-items-center"><i class="bi bi-<%= a.icon %> me-2 fs-5"></i><%= a.text %></div>

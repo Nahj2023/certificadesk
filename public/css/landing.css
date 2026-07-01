@@ -106,7 +106,7 @@ a { color: var(--coral); text-decoration: none; }
 }
 .hero-inner {
     max-width: 1140px; margin: 0 auto; width: 100%;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    display: grid; grid-template-columns: 1fr 1.3fr; gap: 60px;
     align-items: center;
 }
 .hero-text { position: relative; z-index: 2; }
@@ -512,11 +512,11 @@ a { color: var(--coral); text-decoration: none; }
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
-  transform: perspective(1200px) rotateY(-4deg) rotateX(2deg);
+  transform: none;
   transition: transform 0.5s ease;
 }
 .dashboard-preview:hover {
-  transform: perspective(1200px) rotateY(0deg) rotateX(0deg);
+  transform: none;
 }
 .dashboard-preview img {
   width: 100%;
@@ -957,3 +957,136 @@ a { color: var(--coral); text-decoration: none; }
   .pain-consequence-inner { flex-direction: column; gap: 12px; }
   .problem-lead { font-size: 16px; }
 }
+
+/* ── Lightbox zoom ── */
+.feature-visual img { cursor: zoom-in; transition: transform 0.2s ease; }
+.feature-visual img:hover { transform: scale(1.02); }
+#lightbox {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.88);
+  display: none; align-items: center; justify-content: center;
+  cursor: zoom-out;
+}
+#lightbox.active { display: flex; }
+#lightbox img {
+  max-width: 92vw; max-height: 92vh; border-radius: 8px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+  cursor: default;
+}
+#lightbox .lb-close {
+  position: absolute; top: 16px; right: 20px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); border: none;
+  color: #fff; font-size: 22px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+#lightbox .lb-close:hover { background: rgba(255,255,255,0.3); }
+
+/* ── Procedures D016 grid ── */
+.procedures { padding: 100px 0; background: #fafaf9; }
+.proc-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  margin-top: 48px;
+}
+.proc-card {
+  background: #fff; border-radius: 14px; padding: 28px 24px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.proc-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.proc-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, #E85D3A, #D44A2A);
+  color: #fff; font-weight: 800; font-size: 0.85rem;
+  margin-bottom: 14px;
+}
+.proc-card h4 {
+  font-size: 1.05rem; font-weight: 700; color: #1a1a1a;
+  margin-bottom: 8px;
+}
+.proc-card p {
+  font-size: 0.88rem; color: #666; line-height: 1.5;
+  margin-bottom: 12px;
+}
+.proc-module {
+  font-size: 0.78rem; color: #E85D3A; font-weight: 600;
+  padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.06);
+}
+.proc-module i { margin-right: 4px; }
+@media (max-width: 900px) { .proc-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 540px) { .proc-grid { grid-template-columns: 1fr; } }
+
+
+/* ── Docs carousel for module 09 ── */
+.docs-carousel {
+  position: relative; overflow: hidden; border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12); border: 1px solid rgba(0,0,0,0.06);
+  background: #fff; aspect-ratio: 16/9;
+}
+.docs-track {
+  display: flex; transition: transform 0.4s ease;
+  height: 100%;
+}
+.docs-track img {
+  min-width: 100%; max-width: 100%; height: 100%;
+  object-fit: cover; object-position: top;
+  display: block; cursor: zoom-in;
+}
+.docs-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.1);
+  color: #333; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: background 0.2s;
+  z-index: 2;
+}
+.docs-nav:hover { background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.docs-prev { left: 10px; }
+.docs-next { right: 10px; }
+.docs-dots {
+  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 8px; z-index: 2;
+}
+.docs-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(0,0,0,0.2); cursor: pointer; transition: background 0.2s;
+}
+.docs-dot.active { background: #E85D3A; width: 20px; border-radius: 4px; }
+
+/* ── Hero carousel ── */
+.hero-carousel {
+  position: relative; overflow: hidden;
+}
+.hero-track {
+  display: flex; transition: transform 0.5s ease;
+}
+.hero-track img {
+  min-width: 100%; max-width: 100%; height: auto; display: block; cursor: zoom-in;
+}
+.hero-dots {
+  position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 6px; z-index: 2;
+}
+.hero-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.2s;
+}
+.hero-dot.active { background: #E85D3A; width: 18px; border-radius: 3px; }
+
+/* ── Lightbox navigation arrows ── */
+.lb-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); border: none;
+  color: #fff; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s; z-index: 10000;
+}
+.lb-arrow:hover { background: rgba(255,255,255,0.3); }
+.lb-prev { left: 20px; }
+.lb-next { right: 20px; }
